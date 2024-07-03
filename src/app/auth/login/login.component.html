@@ -1,0 +1,25 @@
+<main class="w-100 h-100 d-flex justify-content-center align-items-center">
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <mat-card class="login-card border m-1 px-4 pt-5 pb-4">
+    <span class="h3 text-center mb-5">Login to continue</span>
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="abc@xyz.com" />
+        <mat-icon matSuffix>email</mat-icon>
+        <!-- <mat-hint>Hint</mat-hint> -->
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" placeholder="Password" />
+        <mat-icon matSuffix>lock</mat-icon>
+        <!-- <mat-hint>Hint</mat-hint> -->
+      </mat-form-field>
+
+      <button mat-flat-button type="submit">Log in</button>
+
+
+      <button mat-button type="button" class="mt-2" routerLink="/register">Not registered? Register</button>
+    </mat-card>
+  </form>
+</main>

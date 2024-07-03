@@ -1,0 +1,24 @@
+<header class="border-bottom">
+  <nav class="container w-100 d-flex justify-content-between p-3">
+    <h3
+      class="my-auto py-auto"
+      style="color: green; cursor: pointer"
+      routerLink="/home"
+    >
+      LMS
+    </h3>
+    <div>
+      @if(loggedIn()) {
+        <button mat-flat-button class="mx-1" (click)="onLogout()">Logout</button>
+      } @else {
+        @if(currentUrl() !== '/login'){
+          <button mat-flat-button class="mx-1" routerLink="/login">Login</button>
+        } @if(currentUrl() !== '/register'){
+          <button mat-flat-button class="mx-1" routerLink="/register">
+            Register
+          </button>
+        }
+      }
+    </div>
+  </nav>
+</header>
