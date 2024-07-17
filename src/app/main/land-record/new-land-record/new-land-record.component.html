@@ -171,39 +171,86 @@
             <mat-card class="px-2 py-1" appearance="outlined">
               <p class="text-center my-2">Scan Copy</p>
 
-              <mat-card appearance="outlined">
-                @if(fileInfoArray.scanCopyFile &&
-                fileInfoArray.scanCopyFile.length) {
+              @if((fileInfoArray.scanCopyFile &&
+              fileInfoArray.scanCopyFile.length) ||
+              (oldFileInfoArray.scanCopyFile &&
+              oldFileInfoArray.scanCopyFile.length)) { @if
+              (oldFileInfoArray.scanCopyFile &&
+              oldFileInfoArray.scanCopyFile.length) {
+              <mat-card appearance="outlined" class="text-secondary">
+                <p class="text-center small-text mb-0 text-dark">
+                  Previous Uploads
+                </p>
+                <mat-divider></mat-divider>
+                <mat-list role="list">
+                  @for(fileInfo of oldFileInfoArray.scanCopyFile; track
+                  $index+'hcd-'+fileInfo.fileName) {
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-1"
+                  >
+                    <span class="pt-2 text-truncate px-2"
+                      ><b class="text-dark">{{ $index + 1 }}. </b>
+                      @if(fileInfo.markedForDeletion) {
+                      <del>{{ fileInfo.fileName }}</del>
+                      } @else {
+                      {{ fileInfo.fileName }}
+                      }
+                    </span>
+                    @if(!viewMode) {
+                    <button
+                      mat-icon-button
+                      class="mt-1"
+                      (click)="
+                        removeFromPreviousUploads('scanCopyFile', $index)
+                      "
+                      [disabled]="disableFileRemoval()"
+                    >
+                      <mat-icon>{{
+                        fileInfo.markedForDeletion
+                          ? "undo"
+                          : "do_not_disturb_on"
+                      }}</mat-icon>
+                    </button>
+                    }
+                  </div>
+                  }
+                </mat-list>
+              </mat-card>
+              } @if (fileInfoArray.scanCopyFile &&
+              fileInfoArray.scanCopyFile.length){
+              <mat-card appearance="outlined" class="mt-2">
+                <p class="text-center small-text mb-0">New Uploads</p>
+                <mat-divider></mat-divider>
                 <mat-list role="list">
                   @for(fileInfo of fileInfoArray.scanCopyFile; track
                   $index+'hcd-'+fileInfo) {
-                  <mat-list-item role="listitem">
-                    <div
-                      class="d-flex justify-content-between align-items-center mb-1"
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-1"
+                  >
+                    <span class="pt-2 text-truncate px-2"
+                      ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
                     >
-                      <span class="pt-2 text-truncate"
-                        ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
-                      >
-                      @if(!viewMode) {
-                      <button
-                        mat-icon-button
-                        class="mt-1"
-                        (click)="removeFiles('scanCopyFile', $index)"
-                        [disabled]="disableFileRemoval()"
-                      >
-                        <mat-icon>do_not_disturb_on</mat-icon>
-                      </button>
-                      }
-                    </div>
-                  </mat-list-item>
+                    @if(!viewMode) {
+                    <button
+                      mat-icon-button
+                      class="mt-1"
+                      (click)="removeFiles('scanCopyFile', $index)"
+                      [disabled]="disableFileRemoval()"
+                    >
+                      <mat-icon>do_not_disturb_on</mat-icon>
+                    </button>
+                    }
+                  </div>
                   }
                 </mat-list>
-                } @else {
+              </mat-card>
+              } } @else {
+              <mat-card appearance="outlined">
                 <div class="drag-n-drop-box">
                   <p class="text-center small-text mt-3">DRAG AND DROP HERE</p>
                 </div>
-                }
               </mat-card>
+              }
 
               <button
                 type="button"
@@ -220,6 +267,7 @@
                 (change)="onClickUploadFiles($event, 'scanCopyFile')"
                 multiple
                 #scanCopyAttachments
+                [disabled]="viewMode"
               />
             </mat-card>
           </div>
@@ -295,20 +343,65 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 mb-2">
           <div class="pb-2">
             <mat-card class="px-2 py-1" appearance="outlined">
-              <p class="text-center my-2">
-                Mutation Details/ Mutation Certificate Upload
-              </p>
+              <p class="text-center my-2">Mutation Details/ Mutation Certificate Upload</p>
 
-              <mat-card appearance="outlined">
-                @if(fileInfoArray.mutationFile &&
-                fileInfoArray.mutationFile.length) {
+              @if((fileInfoArray.mutationFile &&
+              fileInfoArray.mutationFile.length) ||
+              (oldFileInfoArray.mutationFile &&
+              oldFileInfoArray.mutationFile.length)) { @if
+              (oldFileInfoArray.mutationFile &&
+              oldFileInfoArray.mutationFile.length) {
+              <mat-card appearance="outlined" class="text-secondary">
+                <p class="text-center small-text mb-0 text-dark">
+                  Previous Uploads
+                </p>
+                <mat-divider></mat-divider>
+                <mat-list role="list">
+                  @for(fileInfo of oldFileInfoArray.mutationFile; track
+                  $index+'hcd-'+fileInfo.fileName) {
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-1"
+                  >
+                    <span class="pt-2 text-truncate px-2"
+                      ><b class="text-dark">{{ $index + 1 }}. </b>
+                      @if(fileInfo.markedForDeletion) {
+                      <del>{{ fileInfo.fileName }}</del>
+                      } @else {
+                      {{ fileInfo.fileName }}
+                      }
+                    </span>
+                    @if(!viewMode) {
+                    <button
+                      mat-icon-button
+                      class="mt-1"
+                      (click)="
+                        removeFromPreviousUploads('mutationFile', $index)
+                      "
+                      [disabled]="disableFileRemoval()"
+                    >
+                      <mat-icon>{{
+                        fileInfo.markedForDeletion
+                          ? "undo"
+                          : "do_not_disturb_on"
+                      }}</mat-icon>
+                    </button>
+                    }
+                  </div>
+                  }
+                </mat-list>
+              </mat-card>
+              } @if (fileInfoArray.mutationFile &&
+              fileInfoArray.mutationFile.length){
+              <mat-card appearance="outlined" class="mt-2">
+                <p class="text-center small-text mb-0">New Uploads</p>
+                <mat-divider></mat-divider>
                 <mat-list role="list">
                   @for(fileInfo of fileInfoArray.mutationFile; track
                   $index+'hcd-'+fileInfo) {
                   <div
                     class="d-flex justify-content-between align-items-center mb-1"
                   >
-                    <span class="pt-2 text-truncate"
+                    <span class="pt-2 text-truncate px-2"
                       ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
                     >
                     @if(!viewMode) {
@@ -324,12 +417,14 @@
                   </div>
                   }
                 </mat-list>
-                } @else {
+              </mat-card>
+              } } @else {
+              <mat-card appearance="outlined">
                 <div class="drag-n-drop-box">
                   <p class="text-center small-text mt-3">DRAG AND DROP HERE</p>
                 </div>
-                }
               </mat-card>
+              }
 
               <button
                 type="button"
@@ -339,7 +434,6 @@
               >
                 <mat-icon>upload</mat-icon> Upload Files
               </button>
-
               <input
                 type="file"
                 accept=".odf, .pdf, .doc, .docx, image/jpeg, image/png"
@@ -347,6 +441,7 @@
                 (change)="onClickUploadFiles($event, 'mutationFile')"
                 multiple
                 #mutationAttachments
+                [disabled]="viewMode"
               />
             </mat-card>
           </div>
@@ -500,18 +595,66 @@
 
           <div class="pb-2">
             <mat-card class="px-2 py-1" appearance="outlined">
+
               <p class="text-center my-2">Attach Documents</p>
 
-              <mat-card appearance="outlined">
-                @if(fileInfoArray.documentFile &&
-                fileInfoArray.documentFile.length) {
+              @if((fileInfoArray.documentFile &&
+              fileInfoArray.documentFile.length) ||
+              (oldFileInfoArray.documentFile &&
+              oldFileInfoArray.documentFile.length)) { @if
+              (oldFileInfoArray.documentFile &&
+              oldFileInfoArray.documentFile.length) {
+              <mat-card appearance="outlined" class="text-secondary">
+                <p class="text-center small-text mb-0 text-dark">
+                  Previous Uploads
+                </p>
+                <mat-divider></mat-divider>
+                <mat-list role="list">
+                  @for(fileInfo of oldFileInfoArray.documentFile; track
+                  $index+'hcd-'+fileInfo.fileName) {
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-1"
+                  >
+                    <span class="pt-2 text-truncate px-2"
+                      ><b class="text-dark">{{ $index + 1 }}. </b>
+                      @if(fileInfo.markedForDeletion) {
+                      <del>{{ fileInfo.fileName }}</del>
+                      } @else {
+                      {{ fileInfo.fileName }}
+                      }
+                    </span>
+                    @if(!viewMode) {
+                    <button
+                      mat-icon-button
+                      class="mt-1"
+                      (click)="
+                        removeFromPreviousUploads('documentFile', $index)
+                      "
+                      [disabled]="disableFileRemoval()"
+                    >
+                      <mat-icon>{{
+                        fileInfo.markedForDeletion
+                          ? "undo"
+                          : "do_not_disturb_on"
+                      }}</mat-icon>
+                    </button>
+                    }
+                  </div>
+                  }
+                </mat-list>
+              </mat-card>
+              } @if (fileInfoArray.documentFile &&
+              fileInfoArray.documentFile.length){
+              <mat-card appearance="outlined" class="mt-2">
+                <p class="text-center small-text mb-0">New Uploads</p>
+                <mat-divider></mat-divider>
                 <mat-list role="list">
                   @for(fileInfo of fileInfoArray.documentFile; track
                   $index+'hcd-'+fileInfo) {
                   <div
                     class="d-flex justify-content-between align-items-center mb-1"
                   >
-                    <span class="pt-2 text-truncate"
+                    <span class="pt-2 text-truncate px-2"
                       ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
                     >
                     @if(!viewMode) {
@@ -527,12 +670,14 @@
                   </div>
                   }
                 </mat-list>
-                } @else {
+              </mat-card>
+              } } @else {
+              <mat-card appearance="outlined">
                 <div class="drag-n-drop-box">
                   <p class="text-center small-text mt-3">DRAG AND DROP HERE</p>
                 </div>
-                }
               </mat-card>
+              }
 
               <button
                 type="button"
@@ -542,7 +687,6 @@
               >
                 <mat-icon>upload</mat-icon> Upload Files
               </button>
-
               <input
                 type="file"
                 accept=".odf, .pdf, .doc, .docx, image/jpeg, image/png"
@@ -550,6 +694,7 @@
                 (change)="onClickUploadFiles($event, 'documentFile')"
                 multiple
                 #documentFileAttachments
+                [disabled]="viewMode"
               />
             </mat-card>
           </div>
@@ -600,18 +745,65 @@
 
           <div>
             <mat-card class="px-2 py-1" appearance="outlined">
-              <p class="text-center my-2">Attach Documents</p>
+              <p class="text-center my-2">History Chain Attachment Documents</p>
 
-              <mat-card appearance="outlined">
-                @if(fileInfoArray.hcdocumentFile &&
-                fileInfoArray.hcdocumentFile.length) {
+              @if((fileInfoArray.hcdocumentFile &&
+              fileInfoArray.hcdocumentFile.length) ||
+              (oldFileInfoArray.hcdocumentFile &&
+              oldFileInfoArray.hcdocumentFile.length)) { @if
+              (oldFileInfoArray.hcdocumentFile &&
+              oldFileInfoArray.hcdocumentFile.length) {
+              <mat-card appearance="outlined" class="text-secondary">
+                <p class="text-center small-text mb-0 text-dark">
+                  Previous Uploads
+                </p>
+                <mat-divider></mat-divider>
+                <mat-list role="list">
+                  @for(fileInfo of oldFileInfoArray.hcdocumentFile; track
+                  $index+'hcd-'+fileInfo.fileName) {
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-1"
+                  >
+                    <span class="pt-2 text-truncate px-2"
+                      ><b class="text-dark">{{ $index + 1 }}. </b>
+                      @if(fileInfo.markedForDeletion) {
+                      <del>{{ fileInfo.fileName }}</del>
+                      } @else {
+                      {{ fileInfo.fileName }}
+                      }
+                    </span>
+                    @if(!viewMode) {
+                    <button
+                      mat-icon-button
+                      class="mt-1"
+                      (click)="
+                        removeFromPreviousUploads('hcdocumentFile', $index)
+                      "
+                      [disabled]="disableFileRemoval()"
+                    >
+                      <mat-icon>{{
+                        fileInfo.markedForDeletion
+                          ? "undo"
+                          : "do_not_disturb_on"
+                      }}</mat-icon>
+                    </button>
+                    }
+                  </div>
+                  }
+                </mat-list>
+              </mat-card>
+              } @if (fileInfoArray.hcdocumentFile &&
+              fileInfoArray.hcdocumentFile.length){
+              <mat-card appearance="outlined" class="mt-2">
+                <p class="text-center small-text mb-0">New Uploads</p>
+                <mat-divider></mat-divider>
                 <mat-list role="list">
                   @for(fileInfo of fileInfoArray.hcdocumentFile; track
                   $index+'hcd-'+fileInfo) {
                   <div
                     class="d-flex justify-content-between align-items-center mb-1"
                   >
-                    <span class="pt-2 text-truncate"
+                    <span class="pt-2 text-truncate px-2"
                       ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
                     >
                     @if(!viewMode) {
@@ -627,12 +819,14 @@
                   </div>
                   }
                 </mat-list>
-                } @else {
+              </mat-card>
+              } } @else {
+              <mat-card appearance="outlined">
                 <div class="drag-n-drop-box">
                   <p class="text-center small-text mt-3">DRAG AND DROP HERE</p>
                 </div>
-                }
               </mat-card>
+              }
 
               <button
                 type="button"
@@ -649,6 +843,7 @@
                 (change)="onClickUploadFiles($event, 'hcdocumentFile')"
                 multiple
                 #historyChainAttachments
+                [disabled]="viewMode"
               />
             </mat-card>
           </div>
