@@ -15,7 +15,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideHttpClient(),
     provideNativeDateAdapter(),
-    {provide: MAT_DATE_LOCALE, useValue: 'en-IN'}
+    { provide: MAT_DATE_LOCALE, useValue: 'en-IN' },
   ],
 };
-

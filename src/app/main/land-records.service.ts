@@ -11,11 +11,11 @@ export class LandRecordsService {
   private http: HttpClient = inject(HttpClient);
   private router: Router = inject(Router);
 
-  newLandRecord(formValues: {}): void {
-    console.log({ ...formValues });
-    this.http.post(this.uri, formValues).subscribe((data) => {
-      this.router.navigateByUrl('/land-record');
+  newLandRecord(formValues: {}, fileObj: any, fileInfoArrayObj: any): void {
+    this.http.post(this.uri, formValues).subscribe((data: any) => {
       console.log(data);
+      this.uploadMultipleNewFiles(fileInfoArrayObj, fileObj, data.id);
+      this.router.navigateByUrl('/land-record');
     });
   }
 
@@ -27,11 +27,73 @@ export class LandRecordsService {
     return this.http.get(this.uri);
   }
 
-  updateLandRecord(id: number, updatedData: any): void {
+  updateLandRecord(
+    id: number,
+    updatedData: any,
+    fileObj: any,
+    fileInfoArrayObj: any,
+    oldFileInfoArray: any
+  ): void {
     const url = this.uri + '/' + id;
     this.http.patch(url, updatedData).subscribe((data) => {
-      this.router.navigateByUrl('/land-record');
       console.log(data);
+      this.uploadMultipleNewFiles(fileInfoArrayObj, fileObj, id);
+      for (const key of Object.keys(oldFileInfoArray)) {
+        oldFileInfoArray[key].forEach(
+          (item: { markedForDeletion: any; fileName: string }) => {
+            if (item.markedForDeletion)
+              this.deleteFile(key, item.fileName).subscribe((data) => {
+                console.log(data);
+              });
+          }
+        );
+      }
+      this.router.navigateByUrl('/land-record');
     });
+  }
+
+  deleteFile(fieldName: string, fileName: string): Observable<any> {
+    return this.http.delete(
+      this.uri + '/attachments/' + fieldName + '/' + fileName
+    );
+  }
+
+  private uploadMultipleNewFiles(
+    fileInfoArrayObj: any,
+    fileObj: any,
+    id: number | string
+  ): Observable<any> {
+    for (const key of Object.keys(fileInfoArrayObj)) {
+      for (let index = 0; index < fileObj[key + 'RAW'].length; index++) {
+        const fileNameSplitArray = fileInfoArrayObj[key][index].split('.');
+        const file = fileNameSplitArray.reduce(
+          (acc: string, curVal: string, idx: number) => {
+            if (idx < fileNameSplitArray.length - 1)
+              acc += (idx ? '.' : '') + curVal;
+            return acc;
+          },
+          ''
+        );
+        const ext = fileNameSplitArray[fileNameSplitArray.length - 1];
+        const fileUploadUri =
+          this.uri +
+          '/attachments/' +
+          key +
+          '?id=' +
+          id +
+          '&file=' +
+          file +
+          '&ext=' +
+          ext;
+        this.http
+          .post(fileUploadUri, fileObj[key + 'RAW'][index], {
+            responseType: 'text',
+          })
+          .subscribe((data) => {
+            console.log(data);
+          });
+      }
+    }
+    return new Observable();
   }
 }

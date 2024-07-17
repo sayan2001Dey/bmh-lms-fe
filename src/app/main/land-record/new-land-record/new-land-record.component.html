@@ -1,6 +1,10 @@
 <main class="container w-100">
   <section class="my-5 d-flex">
-    <button mat-icon-button class="my-sm-auto back-icon-button" routerLink="/land-record">
+    <button
+      mat-icon-button
+      class="my-sm-auto back-icon-button"
+      routerLink="/land-record"
+    >
       <mat-icon>arrow_back</mat-icon>
     </button>
     <span class="h1 my-auto"
@@ -133,20 +137,6 @@
             <input matInput formControlName="deedNo" />
           </mat-form-field>
 
-
-          <!-- <mat-form-field>
-            <mat-label>Date of Deed</mat-label>
-            <input matInput [matDatepicker]="dobPicker" formControlName="deedDate"
-          (click)="dobPicker.open()"/>
-            <mat-datepicker-toggle matSuffix [for]="dobPicker">
-              <mat-icon matDatepickerToggleIcon>calendar_month</mat-icon>
-            </mat-datepicker-toggle>
-            <mat-datepicker #dobPicker startView="multi-year">
-            </mat-datepicker>
-          </mat-form-field> -->
-          
-
-
           <mat-form-field appearance="outline">
             <mat-label>Date of Deed</mat-label>
             <input
@@ -186,10 +176,26 @@
                 fileInfoArray.scanCopyFile.length) {
                 <mat-list role="list">
                   @for(fileInfo of fileInfoArray.scanCopyFile; track
-                  $index+'hcd-'+fileInfo.name) {
-                  <mat-list-item role="listitem"
-                    ><b>{{ $index + 1 }}. </b>{{ fileInfo.name }}</mat-list-item
-                  >
+                  $index+'hcd-'+fileInfo) {
+                  <mat-list-item role="listitem">
+                    <div
+                      class="d-flex justify-content-between align-items-center mb-1"
+                    >
+                      <span class="pt-2 text-truncate"
+                        ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
+                      >
+                      @if(!viewMode) {
+                      <button
+                        mat-icon-button
+                        class="mt-1"
+                        (click)="removeFiles('scanCopyFile', $index)"
+                        [disabled]="disableFileRemoval()"
+                      >
+                        <mat-icon>do_not_disturb_on</mat-icon>
+                      </button>
+                      }
+                    </div>
+                  </mat-list-item>
                   }
                 </mat-list>
                 } @else {
@@ -298,10 +304,24 @@
                 fileInfoArray.mutationFile.length) {
                 <mat-list role="list">
                   @for(fileInfo of fileInfoArray.mutationFile; track
-                  $index+'hcd-'+fileInfo.name) {
-                  <mat-list-item role="listitem"
-                    ><b>{{ $index + 1 }}. </b>{{ fileInfo.name }}</mat-list-item
+                  $index+'hcd-'+fileInfo) {
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-1"
                   >
+                    <span class="pt-2 text-truncate"
+                      ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
+                    >
+                    @if(!viewMode) {
+                    <button
+                      mat-icon-button
+                      class="mt-1"
+                      (click)="removeFiles('mutationFile', $index)"
+                      [disabled]="disableFileRemoval()"
+                    >
+                      <mat-icon>do_not_disturb_on</mat-icon>
+                    </button>
+                    }
+                  </div>
                   }
                 </mat-list>
                 } @else {
@@ -354,23 +374,86 @@
                 Conversion Details/ Conversion Certificate Upload
               </p>
 
-              <mat-card appearance="outlined">
-                @if(fileInfoArray.conversionFile &&
-                fileInfoArray.conversionFile.length) {
+              @if((fileInfoArray.conversionFile &&
+              fileInfoArray.conversionFile.length) ||
+              (oldFileInfoArray.conversionFile &&
+              oldFileInfoArray.conversionFile.length)) { @if
+              (oldFileInfoArray.conversionFile &&
+              oldFileInfoArray.conversionFile.length) {
+              <mat-card appearance="outlined" class="text-secondary">
+                <p class="text-center small-text mb-0 text-dark">
+                  Previous Uploads
+                </p>
+                <mat-divider></mat-divider>
                 <mat-list role="list">
-                  @for(fileInfo of fileInfoArray.conversionFile; track
-                  $index+'hcd-'+fileInfo.name) {
-                  <mat-list-item role="listitem"
-                    ><b>{{ $index + 1 }}. </b>{{ fileInfo.name }}</mat-list-item
+                  @for(fileInfo of oldFileInfoArray.conversionFile; track
+                  $index+'hcd-'+fileInfo.fileName) {
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-1"
                   >
+                    <span class="pt-2 text-truncate px-2"
+                      ><b class="text-dark">{{ $index + 1 }}. </b>
+                      @if(fileInfo.markedForDeletion) {
+                      <del>{{ fileInfo.fileName }}</del>
+                      } @else {
+                      {{ fileInfo.fileName }}
+                      }
+                    </span>
+                    @if(!viewMode) {
+                    <button
+                      mat-icon-button
+                      class="mt-1"
+                      (click)="
+                        removeFromPreviousUploads('conversionFile', $index)
+                      "
+                      [disabled]="disableFileRemoval()"
+                    >
+                      <mat-icon>{{
+                        fileInfo.markedForDeletion
+                          ? "undo"
+                          : "do_not_disturb_on"
+                      }}</mat-icon>
+                    </button>
+                    }
+                  </div>
                   }
                 </mat-list>
-                } @else {
+              </mat-card>
+              } @if (fileInfoArray.conversionFile &&
+              fileInfoArray.conversionFile.length){
+              <mat-card appearance="outlined" class="mt-2">
+                <p class="text-center small-text mb-0">New Uploads</p>
+                <mat-divider></mat-divider>
+                <mat-list role="list">
+                  @for(fileInfo of fileInfoArray.conversionFile; track
+                  $index+'hcd-'+fileInfo) {
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-1"
+                  >
+                    <span class="pt-2 text-truncate px-2"
+                      ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
+                    >
+                    @if(!viewMode) {
+                    <button
+                      mat-icon-button
+                      class="mt-1"
+                      (click)="removeFiles('conversionFile', $index)"
+                      [disabled]="disableFileRemoval()"
+                    >
+                      <mat-icon>do_not_disturb_on</mat-icon>
+                    </button>
+                    }
+                  </div>
+                  }
+                </mat-list>
+              </mat-card>
+              } } @else {
+              <mat-card appearance="outlined">
                 <div class="drag-n-drop-box">
                   <p class="text-center small-text mt-3">DRAG AND DROP HERE</p>
                 </div>
-                }
               </mat-card>
+              }
 
               <button
                 type="button"
@@ -387,6 +470,7 @@
                 (change)="onClickUploadFiles($event, 'conversionFile')"
                 multiple
                 #conversionAttachments
+                [disabled]="viewMode"
               />
             </mat-card>
           </div>
@@ -423,10 +507,24 @@
                 fileInfoArray.documentFile.length) {
                 <mat-list role="list">
                   @for(fileInfo of fileInfoArray.documentFile; track
-                  $index+'hcd-'+fileInfo.name) {
-                  <mat-list-item role="listitem"
-                    ><b>{{ $index + 1 }}. </b>{{ fileInfo.name }}</mat-list-item
+                  $index+'hcd-'+fileInfo) {
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-1"
                   >
+                    <span class="pt-2 text-truncate"
+                      ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
+                    >
+                    @if(!viewMode) {
+                    <button
+                      mat-icon-button
+                      class="mt-1"
+                      (click)="removeFiles('documentFile', $index)"
+                      [disabled]="disableFileRemoval()"
+                    >
+                      <mat-icon>do_not_disturb_on</mat-icon>
+                    </button>
+                    }
+                  </div>
                   }
                 </mat-list>
                 } @else {
@@ -509,10 +607,24 @@
                 fileInfoArray.hcdocumentFile.length) {
                 <mat-list role="list">
                   @for(fileInfo of fileInfoArray.hcdocumentFile; track
-                  $index+'hcd-'+fileInfo.name) {
-                  <mat-list-item role="listitem"
-                    ><b>{{ $index + 1 }}. </b>{{ fileInfo.name }}</mat-list-item
+                  $index+'hcd-'+fileInfo) {
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-1"
                   >
+                    <span class="pt-2 text-truncate"
+                      ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
+                    >
+                    @if(!viewMode) {
+                    <button
+                      mat-icon-button
+                      class="mt-1"
+                      (click)="removeFiles('hcdocumentFile', $index)"
+                      [disabled]="disableFileRemoval()"
+                    >
+                      <mat-icon>do_not_disturb_on</mat-icon>
+                    </button>
+                    }
+                  </div>
                   }
                 </mat-list>
                 } @else {
@@ -588,30 +700,135 @@
           </button>
         </div>
 
-        <div class="d-flex flex-wrap">
-          <div class="mx-1">
-            <mat-card class="mb-2 w-auto p-2" appearance="outlined">
-              <mat-slide-toggle
-                formControlName="mortgaged"
-                labelPosition="before"
-              >
-                <span class="h6"> Mortgaged ? </span>
-              </mat-slide-toggle>
-            </mat-card>
-          </div>
-
-          <div class="mx-1">
-            <mat-card class="mb-2 w-auto p-2" appearance="outlined">
-              <mat-slide-toggle
-                formControlName="partlySold"
-                labelPosition="before"
-              >
-                <span class="h6"> Partly sold ? </span>
-              </mat-slide-toggle>
-            </mat-card>
-          </div>
+        <div class="mx-1 d-flex">
+          <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
+            <mat-slide-toggle
+              formControlName="mortgaged"
+              labelPosition="before"
+            >
+              <span class="h6"> Mortgaged ? </span>
+            </mat-slide-toggle>
+          </mat-card>
         </div>
 
+        @if(form['mortgaged'].value) {
+        <mat-card appearance="outlined" class="mx-1 p-2 mb-2">
+          <form [formGroup]="mortgagedDetails" (ngSubmit)="onAddMortgaged()">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+              <mat-form-field appearance="outline">
+                <mat-label>To Whom</mat-label>
+                <input matInput formControlName="party" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Mortgage Date</mat-label>
+                <input
+                  matInput
+                  formControlName="mortDate"
+                  [matDatepicker]="datePicker4"
+                  placeholder="DD/MM/YYYY"
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="datePicker4"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #datePicker4></mat-datepicker>
+              </mat-form-field>
+              <div class="d-flex">
+                <button mat-stroked-button type="submit" class="my-2 me-auto">
+                  <mat-icon>add</mat-icon>
+                  Add
+                </button>
+              </div>
+            </div>
+          </form>
+
+          @if(mortgagedData().length) {
+          <mat-divider></mat-divider>
+          <mat-table [dataSource]="mortgagedData()">
+            <ng-container matColumnDef="slno">
+              <mat-header-cell mat-header-cell *matHeaderCellDef
+                >No.</mat-header-cell
+              >
+              <mat-cell mat-cell *matCellDef="let element; let i = index">{{
+                i + 1
+              }}</mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="party">
+              <mat-header-cell *matHeaderCellDef>To Whom</mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{ row.party }} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="mortDate">
+              <mat-header-cell *matHeaderCellDef>Mortgage Date</mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{ row.mortDate }} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
+              <mat-cell *matCellDef="let i = index">
+                <button mat-icon-button (click)="onDeleteMortgaged(i)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row
+              *matHeaderRowDef="mortgagedDisplayedColumns"
+            ></mat-header-row>
+            <mat-row
+              *matRowDef="let row; columns: mortgagedDisplayedColumns"
+            ></mat-row>
+          </mat-table>
+          }
+        </mat-card>
+        }
+
+        <div class="mx-1 d-flex">
+          <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
+            <mat-slide-toggle
+              formControlName="partlySold"
+              labelPosition="before"
+            >
+              <span class="h6"> Partly sold ? </span>
+            </mat-slide-toggle>
+          </mat-card>
+        </div>
+
+        <!-- <mat-card appearance="outlined" class="mx-1 p-2">
+          <form [formGroup]="partlySoldDetails"></form>
+          <mat-form-field appearance="outline">
+            <mat-label>Sold to Whom</mat-label>
+            <input matInput formControlName="sale" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Date of Sale</mat-label>
+            <input
+              matInput
+              formControlName="date"
+              [matDatepicker]="datePicker5"
+              placeholder="DD/MM/YYYY"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="datePicker5"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #datePicker5></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Qty.</mat-label>
+            <input matInput formControlName="qty" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Deed to be Linked</mat-label>
+            <input matInput formControlName="deedLink" />
+          </mat-form-field>
+
+          <button mat-raised-button type="submit">Add</button>
+        </mat-card> -->
         <div class="row m-1">
           <button type="button" mat-stroked-button class="col-auto">
             <mat-icon>list</mat-icon> Tag Deed
