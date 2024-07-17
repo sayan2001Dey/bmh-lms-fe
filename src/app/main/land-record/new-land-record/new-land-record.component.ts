@@ -68,7 +68,7 @@ export class NewLandRecordComponent implements OnInit {
   disableFileRemoval: WritableSignal<boolean> = signal(false);
   viewMode: boolean = false;
   mortgagedData: WritableSignal<
-    { party: string; mortDate: string; docFile?: string[] }[]
+    { party: string; mortDate: string; docFile?: string[], docFileRAW?: File; }[]
   > = signal([]);
   partlySoldData: WritableSignal<
     { sale: string; date: string; qty: string; deedLink: string }[]
@@ -202,6 +202,7 @@ export class NewLandRecordComponent implements OnInit {
     conversionFile: [],
     documentFile: [],
     hcdocumentFile: [],
+    docFile: [],
   };
 
   fileObj: any = {
@@ -210,6 +211,7 @@ export class NewLandRecordComponent implements OnInit {
     conversionFileRAW: [],
     documentFileRAW: [],
     hcdocumentFileRAW: [],
+    docFileRAW: [],
   };
 
   oldFileInfoArray: any = {
@@ -218,6 +220,7 @@ export class NewLandRecordComponent implements OnInit {
     conversionFile: [],
     documentFile: [],
     hcdocumentFile: [],
+    docFile: [],
   };
 
   /**
@@ -289,9 +292,31 @@ export class NewLandRecordComponent implements OnInit {
       const newMortgagedRecord = {
         party: this.mortgagedDetails.value.party,
         mortDate: this.mortgagedDetails.value.mortDate.toLocaleDateString(),
+        docFile: this.fileInfoArray.docFile,
+        docFileRAW: this.fileObj.docFileRAW,
       };
       this.mortgagedData.set([...this.mortgagedData(), newMortgagedRecord]);
       this.mortgagedDetails.reset();
+      this.fileInfoArray.docFile = [];
+      this.fileObj.docFileRAW = [];
+    }
+  }
+
+  /**
+   * Adds a new partly sold record to the partlySoldData array if the form is valid.
+   *
+   * @return {void} This function does not return anything.
+   */
+  onAddPartlySold(): void {
+    if(this.partlySoldDetails.valid) {
+      const newPartlySoldRecord = {
+        sale: this.partlySoldDetails.value.sale,
+        date: this.partlySoldDetails.value.date.toLocaleDateString(),
+        qty: this.partlySoldDetails.value.qty,
+        deedLink: this.partlySoldDetails.value.deedLink,
+      };
+      this.partlySoldData.set([...this.partlySoldData(), newPartlySoldRecord]);
+      this.partlySoldDetails.reset();
     }
   }
 
@@ -304,6 +329,18 @@ export class NewLandRecordComponent implements OnInit {
   onDeleteMortgaged(idx: number): void {
     if (idx > -1) {
       this.mortgagedData.set(this.mortgagedData().splice(idx + 1, 1));
+    }
+  }
+
+  /**
+   * Deletes the partly sold data at the specified index.
+   *
+   * @param {number} idx - The index of the partly sold data to delete.
+   * @return {void} No return value.
+   */
+  onDeletePartlySold(idx: number): void {
+    if (idx > -1) {
+      this.partlySoldData.set(this.partlySoldData().splice(idx + 1, 1));
     }
   }
 

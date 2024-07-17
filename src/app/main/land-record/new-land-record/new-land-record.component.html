@@ -343,7 +343,9 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 mb-2">
           <div class="pb-2">
             <mat-card class="px-2 py-1" appearance="outlined">
-              <p class="text-center my-2">Mutation Details/ Mutation Certificate Upload</p>
+              <p class="text-center my-2">
+                Mutation Details/ Mutation Certificate Upload
+              </p>
 
               @if((fileInfoArray.mutationFile &&
               fileInfoArray.mutationFile.length) ||
@@ -595,7 +597,6 @@
 
           <div class="pb-2">
             <mat-card class="px-2 py-1" appearance="outlined">
-
               <p class="text-center my-2">Attach Documents</p>
 
               @if((fileInfoArray.documentFile &&
@@ -910,12 +911,12 @@
         <mat-card appearance="outlined" class="mx-1 p-2 mb-2">
           <form [formGroup]="mortgagedDetails" (ngSubmit)="onAddMortgaged()">
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-              <mat-form-field appearance="outline">
+              <mat-form-field appearance="outline" class="mb-auto">
                 <mat-label>To Whom</mat-label>
                 <input matInput formControlName="party" />
               </mat-form-field>
 
-              <mat-form-field appearance="outline">
+              <mat-form-field appearance="outline" class="mb-auto">
                 <mat-label>Mortgage Date</mat-label>
                 <input
                   matInput
@@ -929,12 +930,67 @@
                 ></mat-datepicker-toggle>
                 <mat-datepicker #datePicker4></mat-datepicker>
               </mat-form-field>
-              <div class="d-flex">
-                <button mat-stroked-button type="submit" class="my-2 me-auto">
-                  <mat-icon>add</mat-icon>
-                  Add
-                </button>
+
+              <div>
+                <mat-card class="px-2 py-1" appearance="outlined">
+                  <p class="text-center my-2">Attach Supporting Documents</p>
+                  <mat-card appearance="outlined" class="mt-2">
+                    @if(fileInfoArray.docFile && fileInfoArray.docFile.length){
+                    <mat-list role="list">
+                      @for(fileInfo of fileInfoArray.docFile; track
+                      $index+'hcd-'+fileInfo) {
+                      <div
+                        class="d-flex justify-content-between align-items-center mb-1"
+                      >
+                        <span class="pt-2 text-truncate px-2"
+                          ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
+                        >
+                        @if(!viewMode) {
+                        <button
+                          mat-icon-button
+                          class="mt-1"
+                          (click)="removeFiles('docFile', $index)"
+                          [disabled]="disableFileRemoval()"
+                        >
+                          <mat-icon>do_not_disturb_on</mat-icon>
+                        </button>
+                        }
+                      </div>
+                      }
+                    </mat-list>
+                    } @else {
+                    <div class="drag-n-drop-box">
+                      <p class="text-center small-text mt-3">
+                        DRAG AND DROP HERE
+                      </p>
+                    </div>
+                    }
+                  </mat-card>
+                  <button
+                    type="button"
+                    mat-stroked-button
+                    class="mt-2 mb-1"
+                    (click)="docFileAttachments.click()"
+                  >
+                    <mat-icon>upload</mat-icon> Upload Files
+                  </button>
+                  <input
+                    type="file"
+                    accept=".odf, .pdf, .doc, .docx, image/jpeg, image/png"
+                    class="d-none"
+                    (change)="onClickUploadFiles($event, 'docFile')"
+                    multiple
+                    #docFileAttachments
+                    [disabled]="viewMode"
+                  />
+                </mat-card>
               </div>
+            </div>
+            <div>
+              <button mat-stroked-button type="submit" class="my-2 me-auto">
+                <mat-icon>add</mat-icon>
+                Add
+              </button>
             </div>
           </form>
 
@@ -991,39 +1047,96 @@
           </mat-card>
         </div>
 
-        <!-- <mat-card appearance="outlined" class="mx-1 p-2">
-          <form [formGroup]="partlySoldDetails"></form>
-          <mat-form-field appearance="outline">
-            <mat-label>Sold to Whom</mat-label>
-            <input matInput formControlName="sale" />
-          </mat-form-field>
+        @if(form['partlySold'].value) {
+        <mat-card appearance="outlined" class="mx-1 p-2 mb-2">
+          <form [formGroup]="partlySoldDetails" (ngSubmit)="onAddPartlySold()">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+              <mat-form-field appearance="outline">
+                <mat-label>Sold to Whom</mat-label>
+                <input matInput formControlName="sale" />
+              </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Date of Sale</mat-label>
-            <input
-              matInput
-              formControlName="date"
-              [matDatepicker]="datePicker5"
-              placeholder="DD/MM/YYYY"
-            />
-            <mat-datepicker-toggle
-              matSuffix
-              [for]="datePicker5"
-            ></mat-datepicker-toggle>
-            <mat-datepicker #datePicker5></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Qty.</mat-label>
-            <input matInput formControlName="qty" />
-          </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Date of Sale</mat-label>
+                <input
+                  matInput
+                  formControlName="date"
+                  [matDatepicker]="datePicker5"
+                  placeholder="DD/MM/YYYY"
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="datePicker5"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #datePicker5></mat-datepicker>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Qty.</mat-label>
+                <input matInput formControlName="qty" />
+              </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Deed to be Linked</mat-label>
-            <input matInput formControlName="deedLink" />
-          </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Deed to be Linked</mat-label>
+                <input matInput formControlName="deedLink" />
+              </mat-form-field>
+            </div>
+            <button mat-raised-button type="submit">
+              <mat-icon>add</mat-icon>
+              Add
+            </button>
+          </form>
 
-          <button mat-raised-button type="submit">Add</button>
-        </mat-card> -->
+          @if(this.partlySoldData().length) {
+          <mat-divider></mat-divider>
+          <mat-table [dataSource]="partlySoldData()">
+            <ng-container matColumnDef="slno">
+              <mat-header-cell mat-header-cell *matHeaderCellDef
+                >No.</mat-header-cell
+              >
+              <mat-cell mat-cell *matCellDef="let element; let i = index">{{
+                i + 1
+              }}</mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="sale">
+              <mat-header-cell *matHeaderCellDef>To Whom</mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{ row.sale }} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="date">
+              <mat-header-cell *matHeaderCellDef>Date of Sale</mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{ row.date }} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="qty">
+              <mat-header-cell *matHeaderCellDef>Qty.</mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{ row.qty }} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="deedLink">
+              <mat-header-cell *matHeaderCellDef>Deed to be Linked</mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{ row.deedLink }} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
+              <mat-cell *matCellDef="let i = index">
+                <button mat-icon-button (click)="onDeletePartlySold(i)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row
+              *matHeaderRowDef="partlySoldDisplayedColumns"
+            ></mat-header-row>
+            <mat-row
+              *matRowDef="let row; columns: partlySoldDisplayedColumns"
+            ></mat-row>
+          </mat-table>
+          }
+        </mat-card>
+        }
         <div class="row m-1">
           <button type="button" mat-stroked-button class="col-auto">
             <mat-icon>list</mat-icon> Tag Deed
