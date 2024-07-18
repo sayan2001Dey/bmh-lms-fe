@@ -396,6 +396,8 @@ export class NewLandRecordComponent implements OnInit {
         this.route.params.subscribe((data) => {
           this.id = data['id'];
           this.landRecordsService.getLandRecord(this.id).subscribe((data) => {
+            data['mortgaged'] = data['mortgaged'] ? data['mortgaged'] == 'true' ? true : false : false;
+            data['partlySold'] = data['partlySold'] ? data['partlySold'] == 'true' ? true : false : false;
             this.newLandRecordForm.patchValue(data);
             if (data.scanCopyFile) {
               data.scanCopyFile.forEach((fileName: string) => {
