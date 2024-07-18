@@ -68,13 +68,25 @@ export class NewLandRecordComponent implements OnInit {
   disableFileRemoval: WritableSignal<boolean> = signal(false);
   viewMode: boolean = false;
   mortgagedData: WritableSignal<
-    { party: string; mortDate: string; docFile?: string[], docFileRAW?: File; }[]
+    { party: string; mortDate: string; docFile?: string[]; docFileRAW?: File }[]
   > = signal([]);
   partlySoldData: WritableSignal<
     { sale: string; date: string; qty: string; deedLink: string }[]
   > = signal([]);
-  mortgagedDisplayedColumns: string[] = ['slno', 'party', 'mortDate', 'actions'];
-  partlySoldDisplayedColumns: string[] = ['slno', 'sale', 'date', 'qty', 'deedLink', 'actions'];
+  mortgagedDisplayedColumns: string[] = [
+    'slno',
+    'party',
+    'mortDate',
+    'actions',
+  ];
+  partlySoldDisplayedColumns: string[] = [
+    'slno',
+    'sale',
+    'date',
+    'qty',
+    'deedLink',
+    'actions',
+  ];
 
   constructor(private fb: FormBuilder) {
     this.newLandRecordForm = fb.group({
@@ -142,6 +154,38 @@ export class NewLandRecordComponent implements OnInit {
 
   get sellerFormControls() {
     return this.sellerForms.controls as FormControl[];
+  }
+
+  /**
+   * Calculates the purchased quantity or returns 0 if the value is not a number.
+   *
+   * @return {number} The purchased quantity, or 0 if the value is not a number.
+   */
+  get purQty(): number {
+    return parseFloat(this.form['purQty'].value) || 0;
+  }
+
+  /**
+   * Calculates the remaining quantity based on the purchased quantity and the quantity sold.
+   *
+   * @return {number} The remaining quantity after subtracting the quantity sold from the purchased quantity.
+   */
+  get remainingQty(): number {
+    return this.purQty - this.soldQty;
+  }
+
+  /**
+   * Calculates the total quantity sold by summing up the quantities of all partly sold data
+   * and subtracting the quantity entered in the partly sold details form.
+   *
+   * @return {number} The total quantity sold.
+   */
+  get soldQty(): number {
+    return (
+      this.partlySoldData().reduce((accumulator: number, current: any) => {
+        return accumulator + (parseFloat(current.qty) || 0);
+      }, 0) + (parseFloat(this.partlySoldDetailsForm['qty'].value) || 0)
+    );
   }
 
   onStatesChange(): void {
@@ -245,7 +289,7 @@ export class NewLandRecordComponent implements OnInit {
         this.fileInfoArray[key].push(file.name);
         reader.readAsArrayBuffer(file);
       }
-    
+
     console.log(this.fileObj);
     console.log(this.fileInfoArray);
   }
@@ -288,7 +332,7 @@ export class NewLandRecordComponent implements OnInit {
    * @returns void
    */
   onAddMortgaged(): void {
-    if(this.mortgagedDetails.valid) {
+    if (this.mortgagedDetails.valid) {
       const newMortgagedRecord = {
         party: this.mortgagedDetails.value.party,
         mortDate: this.mortgagedDetails.value.mortDate.toLocaleDateString(),
@@ -308,7 +352,7 @@ export class NewLandRecordComponent implements OnInit {
    * @return {void} This function does not return anything.
    */
   onAddPartlySold(): void {
-    if(this.partlySoldDetails.valid) {
+    if (this.partlySoldDetails.valid) {
       const newPartlySoldRecord = {
         sale: this.partlySoldDetails.value.sale,
         date: this.partlySoldDetails.value.date.toLocaleDateString(),

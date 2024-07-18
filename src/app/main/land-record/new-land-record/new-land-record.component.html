@@ -1049,6 +1049,15 @@
 
         @if(form['partlySold'].value) {
         <mat-card appearance="outlined" class="mx-1 p-2 mb-2">
+          <div class="mx-1 d-flex">
+            <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
+              <div>Purchased Qty: {{ purQty }}</div>
+              <div>Sold Qty: {{ soldQty }}</div>
+              <div>Existing Qty: {{ remainingQty }}</div>
+            </mat-card>
+          </div>
+          <mat-divider></mat-divider>
+          <br />
           <form [formGroup]="partlySoldDetails" (ngSubmit)="onAddPartlySold()">
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
               <mat-form-field appearance="outline">
@@ -1080,13 +1089,14 @@
                 <input matInput formControlName="deedLink" />
               </mat-form-field>
             </div>
-            <button mat-raised-button type="submit">
+            <button mat-stroked-button type="submit">
               <mat-icon>add</mat-icon>
               Add
             </button>
           </form>
 
           @if(this.partlySoldData().length) {
+          <br />
           <mat-divider></mat-divider>
           <mat-table [dataSource]="partlySoldData()">
             <ng-container matColumnDef="slno">
@@ -1114,7 +1124,9 @@
             </ng-container>
 
             <ng-container matColumnDef="deedLink">
-              <mat-header-cell *matHeaderCellDef>Deed to be Linked</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef
+                >Deed to be Linked</mat-header-cell
+              >
               <mat-cell *matCellDef="let row"> {{ row.deedLink }} </mat-cell>
             </ng-container>
 

@@ -42,7 +42,7 @@ export class LandRecordsService {
         oldFileInfoArray[key].forEach(
           (item: { markedForDeletion: any; fileName: string }) => {
             if (item.markedForDeletion)
-              this.deleteFile(key, item.fileName).subscribe((data) => {
+              this.deleteFile(id, key, item.fileName).subscribe((data) => {
                 console.log(data);
               });
           }
@@ -52,9 +52,17 @@ export class LandRecordsService {
     });
   }
 
-  deleteFile(fieldName: string, fileName: string): Observable<any> {
+  /**
+   * Deletes a file associated with a specific field and ID.
+   *
+   * @param {string|number} id - The ID of the file.
+   * @param {string} fieldName - The name of the field.
+   * @param {string} fileName - The name of the file.
+   * @return {Observable<any>} An observable that emits the response from the server.
+   */
+  deleteFile(id: string|number, fieldName: string, fileName: string): Observable<any> {
     return this.http.delete(
-      this.uri + '/attachments/' + fieldName + '/' + fileName
+      this.uri + '/attachments/' + fieldName + '?id=' + id + '&filename=' + fileName
     );
   }
 
