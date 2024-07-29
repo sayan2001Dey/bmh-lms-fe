@@ -296,31 +296,36 @@
             <mat-label>Khatian No. (New)</mat-label>
             <input matInput formControlName="newKhatian" />
           </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Khatian No. (Current)</mat-label>
+            <input matInput formControlName="currKhatian" />
+          </mat-form-field>
         </div>
 
         <h6 class="font-regular my-3">Quantity Info</h6>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <mat-form-field appearance="outline">
             <mat-label>Total Qty</mat-label>
-            <input matInput formControlName="totalQty" />
+            <input type="number" matInput formControlName="totalQty" />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Purchased Qty</mat-label>
-            <input matInput formControlName="purQty" />
+            <input type="number" matInput formControlName="purQty" />
           </mat-form-field>
 
           <div>
             <mat-form-field class="w-100" appearance="outline">
               <mat-label>Mutated Qty</mat-label>
-              <input matInput formControlName="mutedQty" />
+              <input type="number" matInput formControlName="mutedQty" />
             </mat-form-field>
           </div>
 
           <div>
             <mat-form-field class="w-100" appearance="outline">
               <mat-label>Un-mutated Qty</mat-label>
-              <input matInput formControlName="unMutedQty" />
+              <input type="number" matInput formControlName="unMutedQty" />
             </mat-form-field>
           </div>
 

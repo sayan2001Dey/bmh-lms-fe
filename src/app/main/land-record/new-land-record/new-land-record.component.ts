@@ -55,7 +55,6 @@ import { MatTableModule } from '@angular/material/table';
   styleUrl: './new-land-record.component.scss',
 })
 export class NewLandRecordComponent implements OnInit {
-  private router: Router = inject(Router);
   private route: ActivatedRoute = inject(ActivatedRoute);
   private landRecordsService = inject(LandRecordsService);
   states: WritableSignal<State[]> = signal(statesCollection);
@@ -68,10 +67,10 @@ export class NewLandRecordComponent implements OnInit {
   disableFileRemoval: WritableSignal<boolean> = signal(false);
   viewMode: boolean = false;
   mortgagedData: WritableSignal<
-    { party: string; mortDate: string; docFile?: string[]; docFileRAW?: File }[]
+    { mortId?: string; party: string; mortDate: string; docFile?: string[]; docFileRAW?: File }[]
   > = signal([]);
   partlySoldData: WritableSignal<
-    { sale: string; date: string; qty: string; deedLink: string }[]
+    { partId?: string; sale: string; date: string; qty: string; deedLink: string }[]
   > = signal([]);
   mortgagedDisplayedColumns: string[] = [
     'slno',
@@ -105,6 +104,7 @@ export class NewLandRecordComponent implements OnInit {
       newLrDag: ['', Validators.required],
       oldKhatian: ['', Validators.required],
       newKhatian: ['', Validators.required],
+      currKhatian: ['', Validators.required],
       totalQty: ['', Validators.required],
       purQty: ['', Validators.required],
       mutedQty: ['', Validators.required],
@@ -188,6 +188,11 @@ export class NewLandRecordComponent implements OnInit {
     );
   }
 
+/**
+ * Updates the list of cities based on the selected state.
+ *
+ * @return {void} This function does not return a value.
+ */
   onStatesChange(): void {
     const state = this.states().find(
       (data) => data.code === this.form['state'].value
@@ -215,19 +220,45 @@ export class NewLandRecordComponent implements OnInit {
     if (this.sellerForms.length > 1) this.sellerForms.removeAt(idx);
   }
 
+  /**
+   * Returns the prepared form data.
+   *
+   * @return {Object} The prepared form data.
+   */
+  get preparedForm(): Object {
+    const data = this.newLandRecordForm.value;
+
+    if (data.mortgaged || data.mortgaged === 'true')
+      data.mortgagedData = this.mortgagedData();
+
+    if (data.partlySold || data.partlySold === 'true')
+      data.partlySoldData = this.partlySoldData();
+
+    return data;
+  }
+
+  /**
+   * Handles the form submission.
+   *
+   * If the form is valid, it either updates an existing land record or creates a new one.
+   * If the form is invalid, it logs an error message and displays an alert.
+   * Finally, it logs the form and its value for debugging purposes.
+   *
+   * @return {void} This function does not return anything.
+   */
   onSubmit(): void {
     if (this.newLandRecordForm.valid) {
       if (this.updateMode) {
         this.landRecordsService.updateLandRecord(
           this.id,
-          this.newLandRecordForm.value,
+          this.preparedForm,
           this.fileObj,
           this.fileInfoArray,
           this.oldFileInfoArray
         );
       } else {
         this.landRecordsService.newLandRecord(
-          this.newLandRecordForm.value,
+          this.preparedForm,
           this.fileObj,
           this.fileInfoArray
         );
@@ -396,16 +427,19 @@ export class NewLandRecordComponent implements OnInit {
         this.route.params.subscribe((data) => {
           this.id = data['id'];
           this.landRecordsService.getLandRecord(this.id).subscribe((data) => {
+            console.log(data);
             data['mortgaged'] = data['mortgaged']
               ? data['mortgaged'] == 'true'
                 ? true
                 : false
               : false;
+            this.mortgagedData.set(data['mortgagedData']);
             data['partlySold'] = data['partlySold']
               ? data['partlySold'] == 'true'
                 ? true
                 : false
               : false;
+            this.partlySoldData.set(data['partlySoldData']);
             this.newLandRecordForm.patchValue(data);
             if (data.scanCopyFile) {
               data.scanCopyFile.forEach((fileName: string) => {
