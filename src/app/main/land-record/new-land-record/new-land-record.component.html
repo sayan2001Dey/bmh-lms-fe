@@ -204,10 +204,12 @@
               (oldFileInfoArray.scanCopyFile &&
               oldFileInfoArray.scanCopyFile.length) {
               <mat-card appearance="outlined" class="text-secondary">
-                <p class="text-center small-text mb-0 text-dark">
-                  Previous Uploads
-                </p>
-                <mat-divider></mat-divider>
+                @if(!viewMode()) {
+                  <p class="text-center small-text mb-0 text-dark">
+                    Previous Uploads
+                  </p>
+                  <mat-divider></mat-divider>
+                }
                 <mat-list role="list">
                   @for(fileInfo of oldFileInfoArray.scanCopyFile; track
                   $index+'hcd-'+fileInfo.fileName) {
@@ -222,6 +224,16 @@
                       {{ fileInfo.fileName }}
                       }
                     </span>
+                    <span class="d-flex align-items-center">
+                      <button
+                      mat-icon-button
+                      class="mt-1"
+                      (click)="
+                        onWindowPopupOpenForFiles('scanCopyFile', fileInfo.fileName)
+                      "
+                    >
+                      <mat-icon>open_in_new</mat-icon>
+                    </button>
                     @if(!viewMode()) {
                     <button
                       mat-icon-button
@@ -238,6 +250,7 @@
                       }}</mat-icon>
                     </button>
                     }
+                    </span>
                   </div>
                   }
                 </mat-list>
@@ -289,7 +302,7 @@
               </button>
               <input
                 type="file"
-                accept=".odf, .pdf, .doc, .docx, image/jpeg, image/png"
+                accept=" .pdf, image/jpeg, image/png"
                 class="d-none"
                 (change)="onClickUploadFiles($event, 'scanCopyFile')"
                 multiple
