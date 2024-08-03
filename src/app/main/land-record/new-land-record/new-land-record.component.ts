@@ -62,15 +62,27 @@ export class NewLandRecordComponent implements OnInit {
   newLandRecordForm: FormGroup;
   mortgagedDetails: FormGroup;
   partlySoldDetails: FormGroup;
-  id: number = -1;
-  updateMode: boolean = false;
+  id: string = '';
+  updateMode: WritableSignal<boolean> = signal(false);
   disableFileRemoval: WritableSignal<boolean> = signal(false);
-  viewMode: boolean = false;
+  viewMode: WritableSignal<boolean> = signal(false);
   mortgagedData: WritableSignal<
-    { mortId?: string; party: string; mortDate: string; docFile?: string[]; docFileRAW?: File }[]
+    {
+      mortId?: string;
+      party: string;
+      mortDate: string;
+      docFile?: string[];
+      docFileRAW?: File;
+    }[]
   > = signal([]);
   partlySoldData: WritableSignal<
-    { partId?: string; sale: string; date: string; qty: string; deedLink: string }[]
+    {
+      partId?: string;
+      sale: string;
+      date: string;
+      qty: string;
+      deedLink: string;
+    }[]
   > = signal([]);
   mortgagedDisplayedColumns: string[] = [
     'slno',
@@ -188,11 +200,11 @@ export class NewLandRecordComponent implements OnInit {
     );
   }
 
-/**
- * Updates the list of cities based on the selected state.
- *
- * @return {void} This function does not return a value.
- */
+  /**
+   * Updates the list of cities based on the selected state.
+   *
+   * @return {void} This function does not return a value.
+   */
   onStatesChange(): void {
     const state = this.states().find(
       (data) => data.code === this.form['state'].value
@@ -248,7 +260,7 @@ export class NewLandRecordComponent implements OnInit {
    */
   onSubmit(): void {
     if (this.newLandRecordForm.valid) {
-      if (this.updateMode) {
+      if (this.updateMode()) {
         this.landRecordsService.updateLandRecord(
           this.id,
           this.preparedForm,
@@ -277,7 +289,7 @@ export class NewLandRecordComponent implements OnInit {
     conversionFile: [],
     documentFile: [],
     hcdocumentFile: [],
-    docFile: [],
+    mortDocFile: [],
   };
 
   fileObj: any = {
@@ -286,7 +298,7 @@ export class NewLandRecordComponent implements OnInit {
     conversionFileRAW: [],
     documentFileRAW: [],
     hcdocumentFileRAW: [],
-    docFileRAW: [],
+    mortDocFileRAW: [],
   };
 
   oldFileInfoArray: any = {
@@ -295,7 +307,7 @@ export class NewLandRecordComponent implements OnInit {
     conversionFile: [],
     documentFile: [],
     hcdocumentFile: [],
-    docFile: [],
+    mortDocFile: [],
   };
 
   /**
@@ -367,13 +379,13 @@ export class NewLandRecordComponent implements OnInit {
       const newMortgagedRecord = {
         party: this.mortgagedDetails.value.party,
         mortDate: this.mortgagedDetails.value.mortDate.toLocaleDateString(),
-        docFile: this.fileInfoArray.docFile,
-        docFileRAW: this.fileObj.docFileRAW,
+        mortDocFile: this.fileInfoArray.mortDocFile,
+        mortDocFileRAW: this.fileObj.mortDocFileRAW,
       };
       this.mortgagedData.set([...this.mortgagedData(), newMortgagedRecord]);
       this.mortgagedDetails.reset();
-      this.fileInfoArray.docFile = [];
-      this.fileObj.docFileRAW = [];
+      this.fileInfoArray.mortDocFile = [];
+      this.fileObj.mortDocFileRAW = [];
     }
   }
 
@@ -408,6 +420,19 @@ export class NewLandRecordComponent implements OnInit {
   }
 
   /**
+   * Edits the mortgaged data at the specified index.
+   *
+   * @param {number} idx - The index of the mortgaged data to edit.
+   * @return {void} This function does not return anything.
+   */
+  onEditMortgaged(idx: number): void {
+    if (idx > -1) {
+      this.mortgagedDetails.patchValue(this.mortgagedData()[idx]);
+      this.mortgagedData.set(this.mortgagedData().splice(idx + 1, 1));
+    }
+  }
+
+  /**
    * Deletes the partly sold data at the specified index.
    *
    * @param {number} idx - The index of the partly sold data to delete.
@@ -419,26 +444,48 @@ export class NewLandRecordComponent implements OnInit {
     }
   }
 
+  /**
+   * Updates the form with the details of a partly sold record at the specified index.
+   *
+   * @param {number} idx - The index of the partly sold record to edit.
+   * @return {void} This function does not return anything.
+   */
+  onEditPartlySold(idx: number): void {
+    if (idx > -1) {
+      this.partlySoldDetails.patchValue(this.partlySoldData()[idx]);
+      this.partlySoldData.set(this.partlySoldData().splice(idx + 1, 1));
+    }
+  }
+
+  /**
+   * Opens a new window to display the specified file from the attachments directory.
+   *
+   * @param {string} fieldName - The name of the field containing the file.
+   * @param {string} fileName - The name of the file to display.
+   * @return {void} This function does not return anything.
+   */
+  onWindowPopupOpenForFiles(fieldName: string, fileName: string): void {
+    window.open(
+      this.landRecordsService.uri +
+        '/attachments/' +
+        fieldName +
+        '/' +
+        fileName,
+      'FileViewer',
+      'width=1000, height=700, left=24, top=24, scrollbars, resizable'
+    );
+  }
+
   ngOnInit(): void {
     this.route.url.subscribe((data) => {
-      this.updateMode = data[0].path == 'update';
-      this.viewMode = data[0].path == 'view';
-      if (this.updateMode || this.viewMode) {
+      this.updateMode.set(data[0].path == 'update');
+      this.viewMode.set(data[0].path == 'view');
+      if (this.updateMode() || this.viewMode()) {
         this.route.params.subscribe((data) => {
           this.id = data['id'];
           this.landRecordsService.getLandRecord(this.id).subscribe((data) => {
             console.log(data);
-            data['mortgaged'] = data['mortgaged']
-              ? data['mortgaged'] == 'true'
-                ? true
-                : false
-              : false;
             this.mortgagedData.set(data['mortgagedData']);
-            data['partlySold'] = data['partlySold']
-              ? data['partlySold'] == 'true'
-                ? true
-                : false
-              : false;
             this.partlySoldData.set(data['partlySoldData']);
             this.newLandRecordForm.patchValue(data);
             if (data.scanCopyFile) {
@@ -484,9 +531,15 @@ export class NewLandRecordComponent implements OnInit {
           });
         });
       }
-      if (this.viewMode) {
-        this.newLandRecordForm.disable();
+      if (this.viewMode()) {
         this.disableFileRemoval.set(true);
+        this.newLandRecordForm.controls['city'].disable();
+        this.newLandRecordForm.controls['state'].disable();
+        this.newLandRecordForm.controls['deedName'].disable();
+        this.newLandRecordForm.controls['landStatus'].disable();
+        this.newLandRecordForm.controls['conversionLandStus'].disable();
+        this.newLandRecordForm.controls['mortgaged'].disable();
+        this.newLandRecordForm.controls['partlySold'].disable();
       }
     });
   }

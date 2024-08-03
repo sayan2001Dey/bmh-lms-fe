@@ -8,7 +8,7 @@
       <mat-icon>arrow_back</mat-icon>
     </button>
     <span class="h1 my-auto"
-      >{{ updateMode ? "Update" : viewMode ? "View" : "Add new" }} land
+      >{{ updateMode() ? "Update" : viewMode() ? "View" : "Add new" }} land
       record</span
     >
   </section>
@@ -20,7 +20,12 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <mat-form-field appearance="outline">
             <mat-label>Group Name</mat-label>
-            <input type="text" formControlName="groupName" matInput />
+            <input
+              type="text"
+              formControlName="groupName"
+              [readonly]="viewMode()"
+              matInput
+            />
           </mat-form-field>
         </div>
       </section>
@@ -62,22 +67,32 @@
 
           <mat-form-field appearance="outline">
             <mat-label>Mouza</mat-label>
-            <input formControlName="mouza" matInput />
+            <input formControlName="mouza" [readonly]="viewMode()" matInput />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Block</mat-label>
-            <input formControlName="block" matInput />
+            <input formControlName="block" [readonly]="viewMode()" matInput />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>JL No.</mat-label>
-            <input type="number" formControlName="jlno" matInput />
+            <input
+              type="number"
+              formControlName="jlno"
+              [readonly]="viewMode()"
+              matInput
+            />
           </mat-form-field>
         </div>
 
         <div class="row m-1">
-          <button type="button" mat-flat-button class="col-auto">
+          <button
+            type="button"
+            mat-flat-button
+            class="col-auto"
+            [disabled]="viewMode()"
+          >
             Banglar Bhumi Info
           </button>
         </div>
@@ -89,7 +104,11 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <mat-form-field appearance="outline">
             <mat-label>Buyer/Owner</mat-label>
-            <input formControlName="buyerOwner" matInput />
+            <input
+              formControlName="buyerOwner"
+              [readonly]="viewMode()"
+              matInput
+            />
           </mat-form-field>
         </div>
 
@@ -101,14 +120,18 @@
               <span class="h5 p-2 py-3 mb-auto">{{ $index + 1 }}.</span>
               <mat-form-field>
                 <mat-label>Seller</mat-label>
-                <input [formControl]="seller" matInput />
+                <input
+                  [formControl]="seller"
+                  [readonly]="viewMode()"
+                  matInput
+                />
               </mat-form-field>
               <span class="mt-2 mb-auto">
                 <button
                   mat-icon-button
                   type="button"
                   (click)="onRemoveSeller($index)"
-                  [disabled]="this.sellerForms.length < 2"
+                  [disabled]="this.sellerForms.length < 2 || viewMode()"
                 >
                   <mat-icon
                     [class]="this.sellerForms.length < 2 ? '' : 'text-red'"
@@ -124,6 +147,7 @@
               type="button"
               class="btn-sp2"
               (click)="onAddSeller()"
+              [disabled]="viewMode()"
             >
               <mat-icon>add</mat-icon> Add Seller
             </button>
@@ -134,7 +158,7 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <mat-form-field appearance="outline">
             <mat-label>Deed No.</mat-label>
-            <input matInput formControlName="deedNo" />
+            <input matInput formControlName="deedNo" [readonly]="viewMode()" />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
@@ -144,10 +168,12 @@
               formControlName="deedDate"
               [matDatepicker]="datePicker1"
               placeholder="DD/MM/YYYY"
+              [readonly]="viewMode()"
             />
             <mat-datepicker-toggle
               matSuffix
               [for]="datePicker1"
+              [disabled]="viewMode()"
             ></mat-datepicker-toggle>
             <mat-datepicker #datePicker1></mat-datepicker>
           </mat-form-field>
@@ -196,7 +222,7 @@
                       {{ fileInfo.fileName }}
                       }
                     </span>
-                    @if(!viewMode) {
+                    @if(!viewMode()) {
                     <button
                       mat-icon-button
                       class="mt-1"
@@ -230,7 +256,7 @@
                     <span class="pt-2 text-truncate px-2"
                       ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
                     >
-                    @if(!viewMode) {
+                    @if(!viewMode()) {
                     <button
                       mat-icon-button
                       class="mt-1"
@@ -257,6 +283,7 @@
                 mat-stroked-button
                 class="mt-2 mb-1"
                 (click)="scanCopyAttachments.click()"
+                [disabled]="viewMode()"
               >
                 <mat-icon>upload</mat-icon> Upload Files
               </button>
@@ -267,7 +294,6 @@
                 (change)="onClickUploadFiles($event, 'scanCopyFile')"
                 multiple
                 #scanCopyAttachments
-                [disabled]="viewMode"
               />
             </mat-card>
           </div>
@@ -279,27 +305,47 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <mat-form-field appearance="outline">
             <mat-label>RS Dag No. (Old)</mat-label>
-            <input formControlName="oldRsDag" matInput />
+            <input
+              formControlName="oldRsDag"
+              [readonly]="viewMode()"
+              matInput
+            />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>LR Dag No. (New)</mat-label>
-            <input matInput formControlName="newLrDag" />
+            <input
+              matInput
+              formControlName="newLrDag"
+              [readonly]="viewMode()"
+            />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Khatian No. (Old)</mat-label>
-            <input matInput formControlName="oldKhatian" />
+            <input
+              matInput
+              formControlName="oldKhatian"
+              [readonly]="viewMode()"
+            />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Khatian No. (New)</mat-label>
-            <input matInput formControlName="newKhatian" />
+            <input
+              matInput
+              formControlName="newKhatian"
+              [readonly]="viewMode()"
+            />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Khatian No. (Current)</mat-label>
-            <input matInput formControlName="currKhatian" />
+            <input
+              matInput
+              formControlName="currKhatian"
+              [readonly]="viewMode()"
+            />
           </mat-form-field>
         </div>
 
@@ -307,25 +353,45 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <mat-form-field appearance="outline">
             <mat-label>Total Qty</mat-label>
-            <input type="number" matInput formControlName="totalQty" />
+            <input
+              type="number"
+              matInput
+              formControlName="totalQty"
+              [readonly]="viewMode()"
+            />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Purchased Qty</mat-label>
-            <input type="number" matInput formControlName="purQty" />
+            <input
+              type="number"
+              matInput
+              formControlName="purQty"
+              [readonly]="viewMode()"
+            />
           </mat-form-field>
 
           <div>
             <mat-form-field class="w-100" appearance="outline">
               <mat-label>Mutated Qty</mat-label>
-              <input type="number" matInput formControlName="mutedQty" />
+              <input
+                type="number"
+                matInput
+                formControlName="mutedQty"
+                [readonly]="viewMode()"
+              />
             </mat-form-field>
           </div>
 
           <div>
             <mat-form-field class="w-100" appearance="outline">
               <mat-label>Un-mutated Qty</mat-label>
-              <input type="number" matInput formControlName="unMutedQty" />
+              <input
+                type="number"
+                matInput
+                formControlName="unMutedQty"
+                [readonly]="viewMode()"
+              />
             </mat-form-field>
           </div>
 
@@ -377,7 +443,7 @@
                       {{ fileInfo.fileName }}
                       }
                     </span>
-                    @if(!viewMode) {
+                    @if(!viewMode()) {
                     <button
                       mat-icon-button
                       class="mt-1"
@@ -411,7 +477,7 @@
                     <span class="pt-2 text-truncate px-2"
                       ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
                     >
-                    @if(!viewMode) {
+                    @if(!viewMode()) {
                     <button
                       mat-icon-button
                       class="mt-1"
@@ -438,6 +504,7 @@
                 mat-stroked-button
                 class="mt-2 mb-1"
                 (click)="mutationAttachments.click()"
+                [disabled]="viewMode()"
               >
                 <mat-icon>upload</mat-icon> Upload Files
               </button>
@@ -448,7 +515,6 @@
                 (change)="onClickUploadFiles($event, 'mutationFile')"
                 multiple
                 #mutationAttachments
-                [disabled]="viewMode"
               />
             </mat-card>
           </div>
@@ -501,7 +567,7 @@
                       {{ fileInfo.fileName }}
                       }
                     </span>
-                    @if(!viewMode) {
+                    @if(!viewMode()) {
                     <button
                       mat-icon-button
                       class="mt-1"
@@ -535,7 +601,7 @@
                     <span class="pt-2 text-truncate px-2"
                       ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
                     >
-                    @if(!viewMode) {
+                    @if(!viewMode()) {
                     <button
                       mat-icon-button
                       class="mt-1"
@@ -562,6 +628,7 @@
                 mat-stroked-button
                 class="mt-2 mb-1"
                 (click)="conversionAttachments.click()"
+                [disabled]="viewMode()"
               >
                 <mat-icon>upload</mat-icon> Upload Files
               </button>
@@ -572,7 +639,6 @@
                 (change)="onClickUploadFiles($event, 'conversionFile')"
                 multiple
                 #conversionAttachments
-                [disabled]="viewMode"
               />
             </mat-card>
           </div>
@@ -586,17 +652,29 @@
           <div>
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Location of Deed</mat-label>
-              <input matInput formControlName="deedLoc" />
+              <input
+                matInput
+                [readonly]="viewMode()"
+                formControlName="deedLoc"
+              />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Location of Photocopy</mat-label>
-              <input matInput formControlName="photoLoc" />
+              <input
+                matInput
+                [readonly]="viewMode()"
+                formControlName="photoLoc"
+              />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Status as per Govt. Records</mat-label>
-              <input matInput formControlName="govtRec" />
+              <input
+                matInput
+                [readonly]="viewMode()"
+                formControlName="govtRec"
+              />
             </mat-form-field>
           </div>
 
@@ -629,7 +707,7 @@
                       {{ fileInfo.fileName }}
                       }
                     </span>
-                    @if(!viewMode) {
+                    @if(!viewMode()) {
                     <button
                       mat-icon-button
                       class="mt-1"
@@ -663,7 +741,7 @@
                     <span class="pt-2 text-truncate px-2"
                       ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
                     >
-                    @if(!viewMode) {
+                    @if(!viewMode()) {
                     <button
                       mat-icon-button
                       class="mt-1"
@@ -690,6 +768,7 @@
                 mat-stroked-button
                 class="mt-2 mb-1"
                 (click)="documentFileAttachments.click()"
+                [disabled]="viewMode()"
               >
                 <mat-icon>upload</mat-icon> Upload Files
               </button>
@@ -700,7 +779,6 @@
                 (change)="onClickUploadFiles($event, 'documentFile')"
                 multiple
                 #documentFileAttachments
-                [disabled]="viewMode"
               />
             </mat-card>
           </div>
@@ -710,6 +788,7 @@
               <mat-label>Remarks</mat-label>
               <textarea
                 matInput
+                [readonly]="viewMode()"
                 formControlName="locationAndPropRemarks"
                 placeholder="Remarks..."
               ></textarea>
@@ -717,7 +796,11 @@
 
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Khazana Status</mat-label>
-              <input matInput formControlName="khazanaStatus" />
+              <input
+                matInput
+                [readonly]="viewMode()"
+                formControlName="khazanaStatus"
+              />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-100">
@@ -727,10 +810,12 @@
                 formControlName="dueDate"
                 [matDatepicker]="datePicker2"
                 placeholder="DD/MM/YYYY"
+                [readonly]="viewMode()"
               />
               <mat-datepicker-toggle
                 matSuffix
                 [for]="datePicker2"
+                [disabled]="viewMode()"
               ></mat-datepicker-toggle>
               <mat-datepicker #datePicker2></mat-datepicker>
             </mat-form-field>
@@ -778,7 +863,7 @@
                       {{ fileInfo.fileName }}
                       }
                     </span>
-                    @if(!viewMode) {
+                    @if(!viewMode()) {
                     <button
                       mat-icon-button
                       class="mt-1"
@@ -812,7 +897,7 @@
                     <span class="pt-2 text-truncate px-2"
                       ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
                     >
-                    @if(!viewMode) {
+                    @if(!viewMode()) {
                     <button
                       mat-icon-button
                       class="mt-1"
@@ -839,6 +924,7 @@
                 mat-stroked-button
                 class="mt-2 mb-1"
                 (click)="historyChainAttachments.click()"
+                [disabled]="viewMode()"
               >
                 <mat-icon>upload</mat-icon> Upload Files
               </button>
@@ -849,7 +935,6 @@
                 (change)="onClickUploadFiles($event, 'hcdocumentFile')"
                 multiple
                 #historyChainAttachments
-                [disabled]="viewMode"
               />
             </mat-card>
           </div>
@@ -857,13 +942,14 @@
 
         <h6 class="font-regular">Legal Matters</h6>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-          <mat-form-field>
+          <mat-form-field appearance="outline">
             <mat-label>Legal Matters</mat-label>
             <textarea
               rows="1"
               matInput
               formControlName="legalMatters"
               placeholder="Remarks..."
+              [readonly]="viewMode()"
             ></textarea>
           </mat-form-field>
 
@@ -873,10 +959,12 @@
               matInput
               formControlName="ledueDate"
               [matDatepicker]="datePicker3"
+              [readonly]="viewMode()"
             />
             <mat-datepicker-toggle
               matSuffix
               [for]="datePicker3"
+              [disabled]="viewMode()"
             ></mat-datepicker-toggle>
             <mat-datepicker #datePicker3></mat-datepicker>
           </mat-form-field>
@@ -891,12 +979,18 @@
               formControlName="historyChain"
               required
               matInput
+              [readonly]="viewMode()"
             ></textarea>
           </mat-form-field>
         </div>
 
         <div class="row mx-1 my-2">
-          <button type="button" mat-stroked-button class="col-auto">
+          <button
+            type="button"
+            mat-stroked-button
+            class="col-auto"
+            [disabled]="viewMode()"
+          >
             <mat-icon>list</mat-icon> Choose Existing Deed as Chain Deed
           </button>
         </div>
@@ -914,129 +1008,154 @@
 
         @if(form['mortgaged'].value) {
         <mat-card appearance="outlined" class="mx-1 p-2 mb-2">
-          <form [formGroup]="mortgagedDetails" (ngSubmit)="onAddMortgaged()">
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-              <mat-form-field appearance="outline" class="mb-auto">
-                <mat-label>To Whom</mat-label>
-                <input matInput formControlName="party" />
-              </mat-form-field>
+          @if (!viewMode()) {
+            <form [formGroup]="mortgagedDetails" (ngSubmit)="onAddMortgaged()">
+              <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+                <mat-form-field appearance="outline" class="mb-auto">
+                  <mat-label>To Whom</mat-label>
+                  <input
+                    matInput
+                    formControlName="party"
+                    [readonly]="viewMode()"
+                  />
+                </mat-form-field>
 
-              <mat-form-field appearance="outline" class="mb-auto">
-                <mat-label>Mortgage Date</mat-label>
-                <input
-                  matInput
-                  formControlName="mortDate"
-                  [matDatepicker]="datePicker4"
-                  placeholder="DD/MM/YYYY"
-                />
-                <mat-datepicker-toggle
-                  matSuffix
-                  [for]="datePicker4"
-                ></mat-datepicker-toggle>
-                <mat-datepicker #datePicker4></mat-datepicker>
-              </mat-form-field>
+                <mat-form-field appearance="outline" class="mb-auto">
+                  <mat-label>Mortgage Date</mat-label>
+                  <input
+                    matInput
+                    formControlName="mortDate"
+                    [readonly]="viewMode()"
+                    [matDatepicker]="datePicker4"
+                    placeholder="DD/MM/YYYY"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="datePicker4"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #datePicker4></mat-datepicker>
+                </mat-form-field>
 
-              <div>
-                <mat-card class="px-2 py-1" appearance="outlined">
-                  <p class="text-center my-2">Attach Supporting Documents</p>
-                  <mat-card appearance="outlined" class="mt-2">
-                    @if(fileInfoArray.docFile && fileInfoArray.docFile.length){
-                    <mat-list role="list">
-                      @for(fileInfo of fileInfoArray.docFile; track
-                      $index+'hcd-'+fileInfo) {
-                      <div
-                        class="d-flex justify-content-between align-items-center mb-1"
-                      >
-                        <span class="pt-2 text-truncate px-2"
-                          ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
+                <div>
+                  <mat-card class="px-2 py-1" appearance="outlined">
+                    <p class="text-center my-2">Attach Supporting Documents</p>
+                    <mat-card appearance="outlined" class="mt-2">
+                      @if(fileInfoArray.docFile && fileInfoArray.docFile.length){
+                      <mat-list role="list">
+                        @for(fileInfo of fileInfoArray.docFile; track
+                        $index+'hcd-'+fileInfo) {
+                        <div
+                          class="d-flex justify-content-between align-items-center mb-1"
                         >
-                        @if(!viewMode) {
-                        <button
-                          mat-icon-button
-                          class="mt-1"
-                          (click)="removeFiles('docFile', $index)"
-                          [disabled]="disableFileRemoval()"
-                        >
-                          <mat-icon>do_not_disturb_on</mat-icon>
-                        </button>
+                          <span class="pt-2 text-truncate px-2"
+                            ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
+                          >
+                          @if(!viewMode()) {
+                          <button
+                            mat-icon-button
+                            class="mt-1"
+                            (click)="removeFiles('docFile', $index)"
+                            [disabled]="disableFileRemoval()"
+                          >
+                            <mat-icon>do_not_disturb_on</mat-icon>
+                          </button>
+                          }
+                        </div>
                         }
+                      </mat-list>
+                      } @else {
+                      <div class="drag-n-drop-box">
+                        <p class="text-center small-text mt-3">
+                          DRAG AND DROP HERE
+                        </p>
                       </div>
                       }
-                    </mat-list>
-                    } @else {
-                    <div class="drag-n-drop-box">
-                      <p class="text-center small-text mt-3">
-                        DRAG AND DROP HERE
-                      </p>
-                    </div>
-                    }
+                    </mat-card>
+                    <button
+                      type="button"
+                      mat-stroked-button
+                      class="mt-2 mb-1"
+                      (click)="docFileAttachments.click()"
+                    >
+                      <mat-icon>upload</mat-icon> Upload Files
+                    </button>
+                    <input
+                      type="file"
+                      accept=".odf, .pdf, .doc, .docx, image/jpeg, image/png"
+                      class="d-none"
+                      (change)="onClickUploadFiles($event, 'docFile')"
+                      multiple
+                      #docFileAttachments
+                      [disabled]="viewMode()"
+                    />
                   </mat-card>
-                  <button
-                    type="button"
-                    mat-stroked-button
-                    class="mt-2 mb-1"
-                    (click)="docFileAttachments.click()"
-                  >
-                    <mat-icon>upload</mat-icon> Upload Files
-                  </button>
-                  <input
-                    type="file"
-                    accept=".odf, .pdf, .doc, .docx, image/jpeg, image/png"
-                    class="d-none"
-                    (change)="onClickUploadFiles($event, 'docFile')"
-                    multiple
-                    #docFileAttachments
-                    [disabled]="viewMode"
-                  />
-                </mat-card>
+                </div>
               </div>
-            </div>
-            <div>
-              <button mat-stroked-button type="submit" class="my-2 me-auto">
-                <mat-icon>add</mat-icon>
-                Add
-              </button>
-            </div>
-          </form>
-
-          @if(mortgagedData().length) {
-          <mat-divider></mat-divider>
-          <mat-table [dataSource]="mortgagedData()">
-            <ng-container matColumnDef="slno">
-              <mat-header-cell mat-header-cell *matHeaderCellDef
-                >No.</mat-header-cell
-              >
-              <mat-cell mat-cell *matCellDef="let element; let i = index">{{
-                i + 1
-              }}</mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="party">
-              <mat-header-cell *matHeaderCellDef>To Whom</mat-header-cell>
-              <mat-cell *matCellDef="let row"> {{ row.party }} </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="mortDate">
-              <mat-header-cell *matHeaderCellDef>Mortgage Date</mat-header-cell>
-              <mat-cell *matCellDef="let row"> {{ row.mortDate }} </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="actions">
-              <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
-              <mat-cell *matCellDef="let i = index">
-                <button mat-icon-button (click)="onDeleteMortgaged(i)">
-                  <mat-icon>delete</mat-icon>
+              <div>
+                <button
+                  mat-stroked-button
+                  type="submit"
+                  class="my-2 me-auto"
+                  [disabled]="viewMode()"
+                >
+                  <mat-icon>add</mat-icon>
+                  Add
                 </button>
-              </mat-cell>
-            </ng-container>
+              </div>
+            </form>
+          }
 
-            <mat-header-row
-              *matHeaderRowDef="mortgagedDisplayedColumns"
-            ></mat-header-row>
-            <mat-row
-              *matRowDef="let row; columns: mortgagedDisplayedColumns"
-            ></mat-row>
-          </mat-table>
+          @if(mortgagedData().length) { 
+            @if (!viewMode()) {
+              <mat-divider></mat-divider>
+            }
+            <mat-table [dataSource]="mortgagedData()">
+              <ng-container matColumnDef="slno">
+                <mat-header-cell mat-header-cell *matHeaderCellDef
+                  >No.</mat-header-cell
+                >
+                <mat-cell mat-cell *matCellDef="let element; let i = index">{{
+                  i + 1
+                }}</mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="party">
+                <mat-header-cell *matHeaderCellDef>To Whom</mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{ row.party }} </mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="mortDate">
+                <mat-header-cell *matHeaderCellDef>Mortgage Date</mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{ row.mortDate }} </mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
+                <mat-cell *matCellDef="let i = index">
+                  <button
+                    mat-icon-button
+                    (click)="onEditMortgaged(i)"
+                    [disabled]="viewMode()"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    (click)="onDeleteMortgaged(i)"
+                    [disabled]="viewMode()"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </mat-cell>
+              </ng-container>
+
+              <mat-header-row
+                *matHeaderRowDef="mortgagedDisplayedColumns"
+              ></mat-header-row>
+              <mat-row
+                *matRowDef="let row; columns: mortgagedDisplayedColumns"
+              ></mat-row>
+            </mat-table>
           }
         </mat-card>
         }
@@ -1062,47 +1181,61 @@
             </mat-card>
           </div>
           <mat-divider></mat-divider>
-          <br />
-          <form [formGroup]="partlySoldDetails" (ngSubmit)="onAddPartlySold()">
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-              <mat-form-field appearance="outline">
-                <mat-label>Sold to Whom</mat-label>
-                <input matInput formControlName="sale" />
-              </mat-form-field>
+          
+          @if (!viewMode()) {
+            <br />
+            <form [formGroup]="partlySoldDetails" (ngSubmit)="onAddPartlySold()">
+              <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+                <mat-form-field appearance="outline">
+                  <mat-label>Sold to Whom</mat-label>
+                  <input
+                    matInput
+                    formControlName="sale"
+                    [readonly]="viewMode()"
+                  />
+                </mat-form-field>
 
-              <mat-form-field appearance="outline">
-                <mat-label>Date of Sale</mat-label>
-                <input
-                  matInput
-                  formControlName="date"
-                  [matDatepicker]="datePicker5"
-                  placeholder="DD/MM/YYYY"
-                />
-                <mat-datepicker-toggle
-                  matSuffix
-                  [for]="datePicker5"
-                ></mat-datepicker-toggle>
-                <mat-datepicker #datePicker5></mat-datepicker>
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Qty.</mat-label>
-                <input matInput formControlName="qty" />
-              </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Date of Sale</mat-label>
+                  <input
+                    matInput
+                    formControlName="date"
+                    [readonly]="viewMode()"
+                    [matDatepicker]="datePicker5"
+                    placeholder="DD/MM/YYYY"
+                  />
+                  <mat-datepicker-toggle
+                    matSuffix
+                    [for]="datePicker5"
+                  ></mat-datepicker-toggle>
+                  <mat-datepicker #datePicker5></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Qty.</mat-label>
+                  <input matInput formControlName="qty" [readonly]="viewMode()" />
+                </mat-form-field>
 
-              <mat-form-field appearance="outline">
-                <mat-label>Deed to be Linked</mat-label>
-                <input matInput formControlName="deedLink" />
-              </mat-form-field>
-            </div>
-            <button mat-stroked-button type="submit">
-              <mat-icon>add</mat-icon>
-              Add
-            </button>
-          </form>
+                <mat-form-field appearance="outline">
+                  <mat-label>Deed to be Linked</mat-label>
+                  <input
+                    matInput
+                    formControlName="deedLink"
+                    [readonly]="viewMode()"
+                  />
+                </mat-form-field>
+              </div>
+              <button mat-stroked-button type="submit" [disabled]="viewMode()">
+                <mat-icon>add</mat-icon>
+                Add
+              </button>
+            </form>
+          }
 
           @if(this.partlySoldData().length) {
-          <br />
-          <mat-divider></mat-divider>
+            @if (!viewMode()) {
+              <br />
+              <mat-divider></mat-divider>
+            }
           <mat-table [dataSource]="partlySoldData()">
             <ng-container matColumnDef="slno">
               <mat-header-cell mat-header-cell *matHeaderCellDef
@@ -1138,7 +1271,18 @@
             <ng-container matColumnDef="actions">
               <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
               <mat-cell *matCellDef="let i = index">
-                <button mat-icon-button (click)="onDeletePartlySold(i)">
+                <button
+                  mat-icon-button
+                  (click)="onEditPartlySold(i)"
+                  [disabled]="viewMode()"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  (click)="onDeletePartlySold(i)"
+                  [disabled]="viewMode()"
+                >
                   <mat-icon>delete</mat-icon>
                 </button>
               </mat-cell>
@@ -1155,7 +1299,12 @@
         </mat-card>
         }
         <div class="row m-1">
-          <button type="button" mat-stroked-button class="col-auto">
+          <button
+            type="button"
+            mat-stroked-button
+            class="col-auto"
+            [disabled]="viewMode()"
+          >
             <mat-icon>list</mat-icon> Tag Deed
           </button>
         </div>
@@ -1164,15 +1313,25 @@
       <mat-divider class="mt-4"></mat-divider>
 
       <section class="d-flex">
-        @if(!viewMode){
+        @if(!viewMode()){
         <button
           mat-flat-button
           type="submit"
           class="btn-sp btn-sp-final mt-4 mb-3 me-2 ms-auto"
           (click)="onSubmit()"
         >
-          <mat-icon>{{ updateMode ? "edit" : "save" }}save</mat-icon>
-          {{ updateMode ? "Update" : "Submit" }}
+          <mat-icon>{{ updateMode() ? "edit" : "save" }}save</mat-icon>
+          {{ updateMode() ? "Save Changes" : "Submit" }}
+        </button>
+        } @else {
+        <button
+          mat-flat-button
+          type="submit"
+          class="btn-sp btn-sp-final mt-4 mb-3 me-2 ms-auto"
+          routerLink="/land-record/update/{{ id }}"
+        >
+          <mat-icon>arrow_forward</mat-icon>
+          Go to Update Page
         </button>
         }
       </section>

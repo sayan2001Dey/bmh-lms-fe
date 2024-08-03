@@ -7,28 +7,63 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class LandRecordsService {
-  private readonly uri: string = 'http://127.0.0.1:8081/api/landrecord';
+  public readonly uri: string = 'http://127.0.0.1:8081/api/landrecord';
   private http: HttpClient = inject(HttpClient);
   private router: Router = inject(Router);
 
-  newLandRecord(formValues: {}, fileObj: any, fileInfoArrayObj: any): void {
-    this.http.post(this.uri, formValues).subscribe((data: any) => {
-      console.log(data);
-      this.uploadMultipleNewFiles(fileInfoArrayObj, fileObj, data.id);
-      this.router.navigateByUrl('/land-record');
-    });
+  /**
+   * Sends a new land record to the server and performs additional actions.
+   *
+   * @param {object} formValues - The values of the form to be submitted.
+   * @param {any} fileObj - The file object to be uploaded.
+   * @param {any} fileInfoArrayObj - The array of file information objects.
+   * @return {void} This function does not return anything.
+   */
+  public newLandRecord(
+    formValues: {},
+    fileObj: any,
+    fileInfoArrayObj: any
+  ): void {
+    this.http
+      .post(this.uri, formValues, { responseType: 'text' })
+      .subscribe((data: string) => {
+        console.log(data);
+        this.uploadMultipleNewFiles(fileInfoArrayObj, fileObj, data);
+        this.router.navigateByUrl('/land-record');
+      });
   }
 
-  getLandRecord(id: number): Observable<any> {
+  /**
+   * Retrieves a land record from the server by its ID.
+   *
+   * @param {string} id - The ID of the land record to retrieve.
+   * @return {Observable<any>} An observable that emits the retrieved land record data.
+   */
+  public getLandRecord(id: string): Observable<any> {
     return this.http.get(this.uri + '/' + id);
   }
 
-  getLandRecordList(): Observable<any> {
+  /**
+   * Retrieves a list of land records from the server.
+   *
+   * @return {Observable<any>} An observable that emits the list of land records.
+   */
+  public getLandRecordList(): Observable<any> {
     return this.http.get(this.uri);
   }
 
-  updateLandRecord(
-    id: number,
+  /**
+   * Updates a land record on the server by its ID with the provided data and files.
+   *
+   * @param {string} id - The ID of the land record to update.
+   * @param {any} updatedData - The data to update the land record with.
+   * @param {any} fileObj - The file object to be uploaded.
+   * @param {any} fileInfoArrayObj - The array of file information objects.
+   * @param {any} oldFileInfoArray - The array of old file information objects.
+   * @return {void} This function does not return anything.
+   */
+  public updateLandRecord(
+    id: string,
     updatedData: any,
     fileObj: any,
     fileInfoArrayObj: any,
@@ -52,24 +87,49 @@ export class LandRecordsService {
     });
   }
 
+  public deleteLandRecord(recId: string): void {
+    this.http.delete(this.uri + '/' + recId).subscribe((data) => {
+      console.log(data);
+      this.router.navigateByUrl('/land-record');
+    });
+  }
+
   /**
    * Deletes a file associated with a specific field and ID.
    *
-   * @param {string|number} id - The ID of the file.
+   * @param {string} id - The ID of the land record.
    * @param {string} fieldName - The name of the field.
    * @param {string} fileName - The name of the file.
    * @return {Observable<any>} An observable that emits the response from the server.
    */
-  deleteFile(id: string|number, fieldName: string, fileName: string): Observable<any> {
+  deleteFile(
+    id: string,
+    fieldName: string,
+    fileName: string
+  ): Observable<any> {
     return this.http.delete(
-      this.uri + '/attachments/' + fieldName + '?id=' + id + '&filename=' + fileName
+      this.uri +
+        '/attachments/' +
+        fieldName +
+        '?id=' +
+        id +
+        '&filename=' +
+        fileName
     );
   }
 
+  /**
+   * Uploads multiple new files based on fileInfoArrayObj and fileObj for a specific ID.
+   *
+   * @param {any} fileInfoArrayObj - Object containing file information arrays.
+   * @param {any} fileObj - Object containing raw file data.
+   * @param {string} id - The ID associated with the files.
+   * @return {Observable<any>} An observable for the file upload process.
+   */
   private uploadMultipleNewFiles(
     fileInfoArrayObj: any,
     fileObj: any,
-    id: number | string
+    id: string
   ): Observable<any> {
     for (const key of Object.keys(fileInfoArrayObj)) {
       for (let index = 0; index < fileObj[key + 'RAW'].length; index++) {
