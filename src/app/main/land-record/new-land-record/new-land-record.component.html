@@ -438,9 +438,12 @@
               (oldFileInfoArray.mutationFile &&
               oldFileInfoArray.mutationFile.length) {
               <mat-card appearance="outlined" class="text-secondary">
-                <p class="text-center small-text mb-0 text-dark">
-                  Previous Uploads
-                </p>
+                @if(!viewMode()) {
+                  <p class="text-center small-text mb-0 text-dark">
+                    Previous Uploads
+                  </p>
+                  <mat-divider></mat-divider>
+                }
                 <mat-divider></mat-divider>
                 <mat-list role="list">
                   @for(fileInfo of oldFileInfoArray.mutationFile; track
@@ -456,6 +459,16 @@
                       {{ fileInfo.fileName }}
                       }
                     </span>
+                    <span class="d-flex align-items-center">
+                      <button
+                      mat-icon-button
+                      class="mt-1"
+                      (click)="
+                        onWindowPopupOpenForFiles('mutationFile', fileInfo.fileName)
+                      "
+                    >
+                      <mat-icon>open_in_new</mat-icon>
+                    </button>
                     @if(!viewMode()) {
                     <button
                       mat-icon-button
@@ -472,6 +485,7 @@
                       }}</mat-icon>
                     </button>
                     }
+                    </span>
                   </div>
                   }
                 </mat-list>
@@ -562,9 +576,12 @@
               (oldFileInfoArray.conversionFile &&
               oldFileInfoArray.conversionFile.length) {
               <mat-card appearance="outlined" class="text-secondary">
-                <p class="text-center small-text mb-0 text-dark">
-                  Previous Uploads
-                </p>
+                @if(!viewMode()) {
+                  <p class="text-center small-text mb-0 text-dark">
+                    Previous Uploads
+                  </p>
+                  <mat-divider></mat-divider>
+                }
                 <mat-divider></mat-divider>
                 <mat-list role="list">
                   @for(fileInfo of oldFileInfoArray.conversionFile; track
@@ -580,6 +597,16 @@
                       {{ fileInfo.fileName }}
                       }
                     </span>
+                    <span class="d-flex align-items-center">
+                      <button
+                      mat-icon-button
+                      class="mt-1"
+                      (click)="
+                        onWindowPopupOpenForFiles('conversionFile', fileInfo.fileName)
+                      "
+                    >
+                      <mat-icon>open_in_new</mat-icon>
+                    </button>
                     @if(!viewMode()) {
                     <button
                       mat-icon-button
@@ -596,6 +623,7 @@
                       }}</mat-icon>
                     </button>
                     }
+                    </span>
                   </div>
                   }
                 </mat-list>
@@ -702,9 +730,12 @@
               (oldFileInfoArray.documentFile &&
               oldFileInfoArray.documentFile.length) {
               <mat-card appearance="outlined" class="text-secondary">
-                <p class="text-center small-text mb-0 text-dark">
-                  Previous Uploads
-                </p>
+                @if(!viewMode()) {
+                  <p class="text-center small-text mb-0 text-dark">
+                    Previous Uploads
+                  </p>
+                  <mat-divider></mat-divider>
+                }
                 <mat-divider></mat-divider>
                 <mat-list role="list">
                   @for(fileInfo of oldFileInfoArray.documentFile; track
@@ -720,6 +751,16 @@
                       {{ fileInfo.fileName }}
                       }
                     </span>
+                    <span class="d-flex align-items-center">
+                      <button
+                      mat-icon-button
+                      class="mt-1"
+                      (click)="
+                        onWindowPopupOpenForFiles('documentFile', fileInfo.fileName)
+                      "
+                    >
+                      <mat-icon>open_in_new</mat-icon>
+                    </button>
                     @if(!viewMode()) {
                     <button
                       mat-icon-button
@@ -736,6 +777,7 @@
                       }}</mat-icon>
                     </button>
                     }
+                  </span>
                   </div>
                   }
                 </mat-list>
@@ -858,9 +900,12 @@
               (oldFileInfoArray.hcdocumentFile &&
               oldFileInfoArray.hcdocumentFile.length) {
               <mat-card appearance="outlined" class="text-secondary">
-                <p class="text-center small-text mb-0 text-dark">
-                  Previous Uploads
-                </p>
+                @if(!viewMode()) {
+                  <p class="text-center small-text mb-0 text-dark">
+                    Previous Uploads
+                  </p>
+                  <mat-divider></mat-divider>
+                }
                 <mat-divider></mat-divider>
                 <mat-list role="list">
                   @for(fileInfo of oldFileInfoArray.hcdocumentFile; track
@@ -876,6 +921,16 @@
                       {{ fileInfo.fileName }}
                       }
                     </span>
+                    <span class="d-flex align-items-center">
+                      <button
+                      mat-icon-button
+                      class="mt-1"
+                      (click)="
+                        onWindowPopupOpenForFiles('hcdocumentFile', fileInfo.fileName)
+                      "
+                    >
+                      <mat-icon>open_in_new</mat-icon>
+                    </button>
                     @if(!viewMode()) {
                     <button
                       mat-icon-button
@@ -892,6 +947,7 @@
                       }}</mat-icon>
                     </button>
                     }
+                  </span>
                   </div>
                   }
                 </mat-list>
