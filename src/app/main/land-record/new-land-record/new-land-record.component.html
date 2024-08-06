@@ -1109,9 +1109,9 @@
                   <mat-card class="px-2 py-1" appearance="outlined">
                     <p class="text-center my-2">Attach Supporting Documents</p>
                     <mat-card appearance="outlined" class="mt-2">
-                      @if(fileInfoArray.docFile && fileInfoArray.docFile.length){
+                      @if(fileInfoArray.docFile && fileInfoArray.mortDocFile.length){
                       <mat-list role="list">
-                        @for(fileInfo of fileInfoArray.docFile; track
+                        @for(fileInfo of fileInfoArray.mortDocFile; track
                         $index+'hcd-'+fileInfo) {
                         <div
                           class="d-flex justify-content-between align-items-center mb-1"
@@ -1123,7 +1123,7 @@
                           <button
                             mat-icon-button
                             class="mt-1"
-                            (click)="removeFiles('docFile', $index)"
+                            (click)="removeFiles('mortDocFile', $index)"
                             [disabled]="disableFileRemoval()"
                           >
                             <mat-icon>do_not_disturb_on</mat-icon>
