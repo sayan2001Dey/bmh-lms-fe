@@ -34,14 +34,14 @@ export class LoginComponent {
   private router: Router = inject(Router);
 
   loginForm: FormGroup = this.fb.group({
-    email: ['', [Validators.email, Validators.required]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    username: ['', [Validators.required, Validators.minLength(3)]],
+    password: ['', [Validators.required, Validators.minLength(8)]],
   });
 
   onSubmit(): void {
     if (this.loginForm.valid)
       this.authService.login(
-        this.loginForm.value.email,
+        this.loginForm.value.username,
         this.loginForm.value.password
       );
   }

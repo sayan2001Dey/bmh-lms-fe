@@ -3,9 +3,9 @@
   <mat-card class="login-card border m-1 px-4 pt-5 pb-4">
     <span class="h3 text-center mb-5">Login to continue</span>
       <mat-form-field appearance="outline">
-        <mat-label>Email</mat-label>
-        <input matInput type="email" formControlName="email" placeholder="abc@xyz.com" />
-        <mat-icon matSuffix>email</mat-icon>
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" placeholder="username" />
+        <mat-icon matSuffix>person</mat-icon>
         <!-- <mat-hint>Hint</mat-hint> -->
       </mat-form-field>
 
@@ -17,9 +17,6 @@
       </mat-form-field>
 
       <button mat-flat-button type="submit">Log in</button>
-
-
-      <button mat-button type="button" class="mt-2" routerLink="/register">Not registered? Register</button>
     </mat-card>
   </form>
 </main>

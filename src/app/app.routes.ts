@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { NewLandRecordComponent } from './main/land-record/new-land-record/new-land-record.component';
 import { LoginComponent } from './auth/login/login.component';
-import { RegisterComponent } from './auth/register/register.component';
 import { authGuard, loginGuard } from './auth/auth.guard';
 import { ListLandRecordComponent } from './main/land-record/list-land-record/list-land-record.component';
 import { LandRecordComponent } from './main/land-record/land-record.component';
@@ -49,12 +48,6 @@ export const routes: Routes = [
     path: 'login',
     component: LoginComponent,
     data: { title: 'Login | LMS' },
-    canActivate: [loginGuard]
-  },
-  {
-    path: 'register',
-    component: RegisterComponent,
-    data: { title: 'Register | LMS' },
     canActivate: [loginGuard]
   },
   {

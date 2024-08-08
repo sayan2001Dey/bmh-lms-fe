@@ -5,8 +5,7 @@ import { RouterOutlet } from '@angular/router';
   selector: 'app-land-record',
   standalone: true,
   imports: [RouterOutlet],
-  templateUrl: './land-record.component.html',
-  styleUrl: './land-record.component.scss'
+  template: '<router-outlet></router-outlet>'
 })
 export class LandRecordComponent {
 

@@ -28,7 +28,7 @@ import {
 import { State } from '../../../model/state.model';
 import { statesCollection } from '../../../data/states.collection';
 import { LandRecordsService } from '../../land-records.service';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 
 @Component({
