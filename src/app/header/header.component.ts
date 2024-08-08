@@ -1,7 +1,6 @@
-import { Component, OnInit, WritableSignal, inject, signal } from '@angular/core';
-import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { Component, WritableSignal, inject, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { filter } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 
 @Component({
@@ -11,7 +10,7 @@ import { AuthService } from '../auth/auth.service';
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
   currentUrl: WritableSignal<string> = signal('');
   loggedIn: WritableSignal<boolean> = inject(AuthService).isAuthenticated;
   authService: AuthService = inject(AuthService);
@@ -20,13 +19,5 @@ export class HeaderComponent implements OnInit {
 
   onLogout() {
     this.authService.logout();
-  }
-
-  ngOnInit(): void {
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe(() => {
-        this.currentUrl.set(this.router.url);
-      });
   }
 }

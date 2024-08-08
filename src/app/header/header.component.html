@@ -1,5 +1,10 @@
 <header class="border-bottom">
-  <nav class="container w-100 d-flex justify-content-between p-3">
+  <nav
+    [class]="
+      'container w-100 d-flex p-3 ' +
+      (loggedIn() ? 'justify-content-between' : 'justify-content-around')
+    "
+  >
     <h3
       class="my-auto py-auto"
       style="color: green; cursor: pointer"
@@ -7,10 +12,10 @@
     >
       LMS
     </h3>
+    @if(loggedIn()) {
     <div>
-      @if(loggedIn()) {
-        <button mat-flat-button class="mx-1" (click)="onLogout()">Logout</button>
-      }
+      <button mat-flat-button class="mx-1" (click)="onLogout()">Logout</button>
     </div>
+    }
   </nav>
 </header>
