@@ -11,14 +11,14 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly uri: string = 'http://127.0.0.1:8081/api/';
+  private readonly uri: string = 'http://127.0.0.1:8081/api/auth/';
   private http: HttpClient = inject(HttpClient);
   private router: Router = inject(Router);
 
   private authenticated: WritableSignal<boolean> = signal(false);
 
   get isAuthenticated() {
-    if(localStorage.getItem("login")) {
+    if(localStorage.getItem("token")) {
       this.authenticated.set(true);
     }
     return this.authenticated;
@@ -27,20 +27,10 @@ export class AuthService {
   login(username: string, password: string): void {
     this.http
       .post(this.uri + 'login', { username, password })
-      .subscribe((data) => {
-        console.log(data);
-        localStorage.setItem('login', 'true');
+      .subscribe((data: any) => {
+        if(data) Object.keys(data).forEach((key) => localStorage.setItem(key, data[key]));
         this.isAuthenticated.set(true);
         this.router.navigateByUrl('/land-record');
-      });
-  }
-
-  register(name: string, email: string, password: string): void {
-    this.http
-      .post(this.uri + 'register', { name, email, password })
-      .subscribe((data) => {
-        console.log(data);
-        this.router.navigateByUrl('/login');
       });
   }
 
@@ -50,7 +40,7 @@ export class AuthService {
     this.router.navigateByUrl('/login');
   }
 
-  getToken() {
+  getToken(): string | null {
     return localStorage.getItem('token');
   }
 }
