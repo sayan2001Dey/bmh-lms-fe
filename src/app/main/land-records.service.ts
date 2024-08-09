@@ -102,11 +102,7 @@ export class LandRecordsService {
    * @param {string} fileName - The name of the file.
    * @return {Observable<any>} An observable that emits the response from the server.
    */
-  deleteFile(
-    id: string,
-    fieldName: string,
-    fileName: string
-  ): Observable<any> {
+  deleteFile(id: string, fieldName: string, fileName: string): Observable<any> {
     return this.http.delete(
       this.uri +
         '/attachments/' +
@@ -163,5 +159,14 @@ export class LandRecordsService {
       }
     }
     return new Observable();
+  }
+
+  getFile(fieldName: string, fileName: string): Observable<any> {
+    return this.http.get(
+      this.uri + '/attachments/' + fieldName + '/' + fileName,
+      {
+        responseType: 'blob',
+      }
+    );
   }
 }

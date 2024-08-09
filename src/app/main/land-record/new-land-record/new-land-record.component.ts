@@ -59,6 +59,7 @@ export class NewLandRecordComponent implements OnInit {
   private landRecordsService = inject(LandRecordsService);
   states: WritableSignal<State[]> = signal(statesCollection);
   cities: WritableSignal<string[]> = signal([]);
+  sysIsBusy: WritableSignal<boolean> = signal(false);
   newLandRecordForm: FormGroup;
   mortgagedDetails: FormGroup;
   partlySoldDetails: FormGroup;
@@ -462,15 +463,20 @@ export class NewLandRecordComponent implements OnInit {
    * @return {void} This function does not return anything.
    */
   onWindowPopupOpenForFiles(fieldName: string, fileName: string): void {
-    window.open(
-      this.landRecordsService.uri +
-        '/attachments/' +
-        fieldName +
-        '/' +
-        fileName,
-      'FileViewer',
-      'width=1000, height=700, left=24, top=24, scrollbars, resizable'
-    );
+    this.sysIsBusy.set(true);
+    this.landRecordsService.getFile(fieldName, fileName).subscribe(
+      (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(
+          url,
+          'FileViewer',
+          'width=1000, height=700, left=24, top=24, scrollbars, resizable'
+        );
+        window.URL.revokeObjectURL(url);
+      }
+    ).add(() => {
+      this.sysIsBusy.set(false);
+    });
   }
 
   ngOnInit(): void {
