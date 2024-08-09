@@ -414,9 +414,7 @@ export class NewLandRecordComponent implements OnInit {
    * @returns void
    */
   onDeleteMortgaged(idx: number): void {
-    if (idx > -1) {
-      this.mortgagedData.set(this.mortgagedData().splice(idx + 1, 1));
-    }
+    this.mortgagedData.set(this.mortgagedData().filter((_, i) => i != idx));
   }
 
   /**
@@ -426,6 +424,7 @@ export class NewLandRecordComponent implements OnInit {
    * @return {void} This function does not return anything.
    */
   onEditMortgaged(idx: number): void {
+    //TODO: Add logic to edit mortgaged data
     if (idx > -1) {
       this.mortgagedDetails.patchValue(this.mortgagedData()[idx]);
       this.mortgagedData.set(this.mortgagedData().splice(idx + 1, 1));
@@ -439,9 +438,7 @@ export class NewLandRecordComponent implements OnInit {
    * @return {void} No return value.
    */
   onDeletePartlySold(idx: number): void {
-    if (idx > -1) {
-      this.partlySoldData.set(this.partlySoldData().splice(idx + 1, 1));
-    }
+    this.partlySoldData.set(this.partlySoldData().filter((_, i) => i != idx));
   }
 
   /**

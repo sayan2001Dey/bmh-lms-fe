@@ -1201,13 +1201,13 @@
               <ng-container matColumnDef="actions">
                 <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
                 <mat-cell *matCellDef="let i = index">
-                  <button
+                  <!-- <button
                     mat-icon-button
                     (click)="onEditMortgaged(i)"
                     [disabled]="viewMode()"
                   >
                     <mat-icon>edit</mat-icon>
-                  </button>
+                  </button> -->
                   <button
                     mat-icon-button
                     (click)="onDeleteMortgaged(i)"
@@ -1340,13 +1340,13 @@
             <ng-container matColumnDef="actions">
               <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
               <mat-cell *matCellDef="let i = index">
-                <button
+                <!-- <button
                   mat-icon-button
                   (click)="onEditPartlySold(i)"
                   [disabled]="viewMode()"
                 >
                   <mat-icon>edit</mat-icon>
-                </button>
+                </button> -->
                 <button
                   mat-icon-button
                   (click)="onDeletePartlySold(i)"
