@@ -491,7 +491,8 @@ export class NewLandRecordComponent implements OnInit {
    * @return {string} The formatted date string in 'YYYY-MM-DD' format.
    */
   formatDateForBackend(dateString: string): string {
-    return new Date(dateString).toLocaleDateString().split('/').reverse().join('-');
+    const date = new Date(dateString);
+    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
   }
 
   /**
