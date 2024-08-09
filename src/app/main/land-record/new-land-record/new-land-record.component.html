@@ -1,3 +1,5 @@
+<!-- TODO: fix date picker for real :) -->
+
 <main class="container w-100">
   <section class="my-5 d-flex">
     <button
@@ -168,7 +170,8 @@
               formControlName="deedDate"
               [matDatepicker]="datePicker1"
               placeholder="DD/MM/YYYY"
-              [readonly]="viewMode()"
+              (focus)="datePicker1.open()"
+              readonly
             />
             <mat-datepicker-toggle
               matSuffix
@@ -865,7 +868,8 @@
                 formControlName="dueDate"
                 [matDatepicker]="datePicker2"
                 placeholder="DD/MM/YYYY"
-                [readonly]="viewMode()"
+                (focus)="datePicker2.open()"
+                readonly
               />
               <mat-datepicker-toggle
                 matSuffix
@@ -1028,7 +1032,8 @@
               matInput
               formControlName="ledueDate"
               [matDatepicker]="datePicker3"
-              [readonly]="viewMode()"
+              (focus)="datePicker3.open()"
+              readonly
             />
             <mat-datepicker-toggle
               matSuffix
@@ -1094,9 +1099,10 @@
                   <input
                     matInput
                     formControlName="mortDate"
-                    [readonly]="viewMode()"
                     [matDatepicker]="datePicker4"
                     placeholder="DD/MM/YYYY"
+                    (focus)="datePicker4.open()"
+                    readonly
                   />
                   <mat-datepicker-toggle
                     matSuffix
@@ -1174,7 +1180,7 @@
             </form>
           }
 
-          @if(mortgagedData().length) { 
+          @if(mortgagedData().length) {
             @if (!viewMode()) {
               <mat-divider></mat-divider>
             }
@@ -1250,7 +1256,7 @@
             </mat-card>
           </div>
           <mat-divider></mat-divider>
-          
+
           @if (!viewMode()) {
             <br />
             <form [formGroup]="partlySoldDetails" (ngSubmit)="onAddPartlySold()">
@@ -1269,9 +1275,10 @@
                   <input
                     matInput
                     formControlName="date"
-                    [readonly]="viewMode()"
                     [matDatepicker]="datePicker5"
                     placeholder="DD/MM/YYYY"
+                    (focus)="datePicker5.open()"
+                    readonly
                   />
                   <mat-datepicker-toggle
                     matSuffix

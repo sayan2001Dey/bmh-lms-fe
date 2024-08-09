@@ -31,6 +31,14 @@ import { LandRecordsService } from '../../land-records.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 
+interface MortgageData {
+  mortId?: string;
+  party: string;
+  mortDate: string;
+  docFile?: string[];
+  docFileRAW?: File;
+}
+
 @Component({
   selector: 'app-new-land-record',
   standalone: true,
@@ -67,15 +75,7 @@ export class NewLandRecordComponent implements OnInit {
   updateMode: WritableSignal<boolean> = signal(false);
   disableFileRemoval: WritableSignal<boolean> = signal(false);
   viewMode: WritableSignal<boolean> = signal(false);
-  mortgagedData: WritableSignal<
-    {
-      mortId?: string;
-      party: string;
-      mortDate: string;
-      docFile?: string[];
-      docFileRAW?: File;
-    }[]
-  > = signal([]);
+  mortgagedData: WritableSignal<MortgageData[]> = signal([]);
   partlySoldData: WritableSignal<
     {
       partId?: string;
@@ -240,6 +240,10 @@ export class NewLandRecordComponent implements OnInit {
    */
   get preparedForm(): Object {
     const data = this.newLandRecordForm.value;
+
+    data.deedDate = this.formatDateForBackend(data.deedDate);
+    data.dueDate = this.formatDateForBackend(data.dueDate);
+    data.ledueDate = this.formatDateForBackend(data.ledueDate);
 
     if (data.mortgaged || data.mortgaged === 'true')
       data.mortgagedData = this.mortgagedData();
@@ -464,8 +468,9 @@ export class NewLandRecordComponent implements OnInit {
    */
   onWindowPopupOpenForFiles(fieldName: string, fileName: string): void {
     this.sysIsBusy.set(true);
-    this.landRecordsService.getFile(fieldName, fileName).subscribe(
-      (blob) => {
+    this.landRecordsService
+      .getFile(fieldName, fileName)
+      .subscribe((blob) => {
         const url = window.URL.createObjectURL(blob);
         window.open(
           url,
@@ -473,10 +478,30 @@ export class NewLandRecordComponent implements OnInit {
           'width=1000, height=700, left=24, top=24, scrollbars, resizable'
         );
         window.URL.revokeObjectURL(url);
-      }
-    ).add(() => {
-      this.sysIsBusy.set(false);
-    });
+      })
+      .add(() => {
+        this.sysIsBusy.set(false);
+      });
+  }
+
+  /**
+   * Formats a given date string into a format suitable for backend processing.
+   *
+   * @param {string} dateString - The date string to be formatted.
+   * @return {string} The formatted date string in 'YYYY-MM-DD' format.
+   */
+  formatDateForBackend(dateString: string): string {
+    return new Date(dateString).toLocaleDateString().split('/').reverse().join('-');
+  }
+
+  /**
+   * Converts a date string into an ISO string format.
+   *
+   * @param {string} dateString - The date string to be converted.
+   * @return {string} The ISO string representation of the input date string.
+   */
+  getDateFromString(dateString: string): string {
+    return new Date(dateString).toISOString();
   }
 
   ngOnInit(): void {
@@ -491,6 +516,11 @@ export class NewLandRecordComponent implements OnInit {
             this.mortgagedData.set(data['mortgagedData']);
             this.partlySoldData.set(data['partlySoldData']);
             this.newLandRecordForm.patchValue(data);
+            this.newLandRecordForm.patchValue({
+              deedDate: this.getDateFromString(data['deedDate']),
+              dueDate: this.getDateFromString(data['dueDate']),
+              ledueDate: this.getDateFromString(data['ledueDate']),
+            });
             if (data.scanCopyFile) {
               data.scanCopyFile.forEach((fileName: string) => {
                 this.oldFileInfoArray.scanCopyFile.push({
