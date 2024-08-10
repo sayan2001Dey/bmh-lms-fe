@@ -1090,101 +1090,16 @@
         @if(form['mortgaged'].value) {
         <mat-card appearance="outlined" class="mx-1 p-2 mb-2">
           @if (!viewMode()) {
-            <form [formGroup]="mortgagedDetails" (ngSubmit)="onAddMortgaged()">
-              <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-                <mat-form-field appearance="outline" class="mb-auto">
-                  <mat-label>To Whom</mat-label>
-                  <input
-                    matInput
-                    formControlName="party"
-                    [readonly]="viewMode()"
-                  />
-                </mat-form-field>
-
-                <mat-form-field appearance="outline" class="mb-auto">
-                  <mat-label>Mortgage Date</mat-label>
-                  <input
-                    matInput
-                    formControlName="mortDate"
-                    [matDatepicker]="datePicker4"
-                    placeholder="DD/MM/YYYY"
-                    (focus)="datePicker4.open()"
-                    readonly
-                  />
-                  <mat-datepicker-toggle
-                    matSuffix
-                    [for]="datePicker4"
-                  ></mat-datepicker-toggle>
-                  <mat-datepicker #datePicker4></mat-datepicker>
-                </mat-form-field>
-
-                <div>
-                  <mat-card class="px-2 py-1" appearance="outlined">
-                    <p class="text-center my-2">Attach Supporting Documents</p>
-                    <mat-card appearance="outlined" class="mt-2">
-                      @if(fileInfoArray.docFile && fileInfoArray.mortDocFile.length){
-                      <mat-list role="list">
-                        @for(fileInfo of fileInfoArray.mortDocFile; track
-                        $index+'hcd-'+fileInfo) {
-                        <div
-                          class="d-flex justify-content-between align-items-center mb-1"
-                        >
-                          <span class="pt-2 text-truncate px-2"
-                            ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
-                          >
-                          @if(!viewMode()) {
-                          <button
-                            mat-icon-button
-                            class="mt-1"
-                            (click)="removeFiles('mortDocFile', $index)"
-                            [disabled]="disableFileRemoval()"
-                          >
-                            <mat-icon>do_not_disturb_on</mat-icon>
-                          </button>
-                          }
-                        </div>
-                        }
-                      </mat-list>
-                      } @else {
-                      <div class="drag-n-drop-box">
-                        <p class="text-center small-text mt-3">
-                          DRAG AND DROP HERE
-                        </p>
-                      </div>
-                      }
-                    </mat-card>
-                    <button
-                      type="button"
-                      mat-stroked-button
-                      class="mt-2 mb-1"
-                      (click)="docFileAttachments.click()"
-                    >
-                      <mat-icon>upload</mat-icon> Upload Files
-                    </button>
-                    <input
-                      type="file"
-                      accept=".pdf, image/jpeg, image/png"
-                      class="d-none"
-                      (change)="onClickUploadFiles($event, 'docFile')"
-                      multiple
-                      #docFileAttachments
-                      [disabled]="viewMode()"
-                    />
-                  </mat-card>
-                </div>
-              </div>
-              <div>
-                <button
-                  mat-stroked-button
-                  type="submit"
-                  class="my-2 me-auto"
-                  [disabled]="viewMode()"
-                >
-                  <mat-icon>add</mat-icon>
-                  Add
-                </button>
-              </div>
-            </form>
+            <div>
+              <button
+                mat-stroked-button
+                class="my-2 me-auto"
+                (click)="onAddMortgaged()"                
+              >
+                <mat-icon>add</mat-icon>
+                Add
+              </button>
+            </div>
           }
 
           @if(mortgagedData().length) {
@@ -1206,9 +1121,14 @@
                 <mat-cell *matCellDef="let row"> {{ row.party }} </mat-cell>
               </ng-container>
 
-              <ng-container matColumnDef="mortDate">
+              <ng-container matColumnDef="mortQty">
+                <mat-header-cell *matHeaderCellDef>Mortgaged Qty.</mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{ row.mortQty }} </mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="mortDateStr">
                 <mat-header-cell *matHeaderCellDef>Mortgage Date</mat-header-cell>
-                <mat-cell *matCellDef="let row"> {{ row.mortDate }} </mat-cell>
+                <mat-cell *matCellDef="let row"> {{ row.mortDateStr }} </mat-cell>
               </ng-container>
 
               <ng-container matColumnDef="actions">

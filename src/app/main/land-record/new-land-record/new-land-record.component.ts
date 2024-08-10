@@ -32,6 +32,8 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MortgageData } from '../../../model/mortgage-data.model';
 import { partlySoldData } from '../../../model/partly-sold-data.model';
+import { DialogMortgageFormComponent } from '../../modal/mortgage-form/mortgage-form.dialog';
+import { Dialog } from '@angular/cdk/dialog';
 
 @Component({
   selector: 'app-new-land-record',
@@ -59,11 +61,11 @@ import { partlySoldData } from '../../../model/partly-sold-data.model';
 export class NewLandRecordComponent implements OnInit {
   private route: ActivatedRoute = inject(ActivatedRoute);
   private landRecordsService = inject(LandRecordsService);
+  private dialog: Dialog = inject(Dialog);
   states: WritableSignal<State[]> = signal(statesCollection);
   cities: WritableSignal<string[]> = signal([]);
   sysIsBusy: WritableSignal<boolean> = signal(false);
   newLandRecordForm: FormGroup;
-  mortgagedDetails: FormGroup;
   partlySoldDetails: FormGroup;
   id: string = '';
   updateMode: WritableSignal<boolean> = signal(false);
@@ -74,7 +76,8 @@ export class NewLandRecordComponent implements OnInit {
   mortgagedDisplayedColumns: string[] = [
     'slno',
     'party',
-    'mortDate',
+    'mortQty',
+    'mortDateStr',
     'actions',
   ];
   partlySoldDisplayedColumns: string[] = [
@@ -123,10 +126,6 @@ export class NewLandRecordComponent implements OnInit {
       mortgaged: [false, Validators.required],
       partlySold: [false, Validators.required],
     });
-    this.mortgagedDetails = fb.group({
-      party: ['', Validators.required],
-      mortDate: ['', Validators.required],
-    });
     this.partlySoldDetails = fb.group({
       sale: ['', Validators.required],
       date: ['', Validators.required],
@@ -134,10 +133,6 @@ export class NewLandRecordComponent implements OnInit {
       deedLink: ['', Validators.required],
     });
     this.onAddSeller();
-  }
-
-  get mortgageDetailsForm() {
-    return this.mortgagedDetails.controls;
   }
 
   get partlySoldDetailsForm() {
@@ -281,7 +276,6 @@ export class NewLandRecordComponent implements OnInit {
     conversionFile: [],
     documentFile: [],
     hcdocumentFile: [],
-    mortDocFile: [],
   };
 
   fileObj: any = {
@@ -290,7 +284,6 @@ export class NewLandRecordComponent implements OnInit {
     conversionFileRAW: [],
     documentFileRAW: [],
     hcdocumentFileRAW: [],
-    mortDocFileRAW: [],
   };
 
   oldFileInfoArray: any = {
@@ -299,7 +292,6 @@ export class NewLandRecordComponent implements OnInit {
     conversionFile: [],
     documentFile: [],
     hcdocumentFile: [],
-    mortDocFile: [],
   };
 
   /**
@@ -367,18 +359,25 @@ export class NewLandRecordComponent implements OnInit {
    * @returns void
    */
   onAddMortgaged(): void {
-    if (this.mortgagedDetails.valid) {
-      const newMortgagedRecord = {
-        party: this.mortgagedDetails.value.party,
-        mortDate: this.mortgagedDetails.value.mortDate.toLocaleDateString(),
-        mortDocFile: this.fileInfoArray.mortDocFile,
-        mortDocFileRAW: this.fileObj.mortDocFileRAW,
-      };
-      this.mortgagedData.set([...this.mortgagedData(), newMortgagedRecord]);
-      this.mortgagedDetails.reset();
-      this.fileInfoArray.mortDocFile = [];
-      this.fileObj.mortDocFileRAW = [];
-    }
+    const dialogRef = this.dialog.open<MortgageData>(
+      DialogMortgageFormComponent,
+      {
+        maxWidth: '25rem',
+        backdropClass: 'light-blur-backdrop',
+      }
+    );
+
+    dialogRef.closed.subscribe((res: MortgageData | undefined) => {
+      if (res)
+        this.mortgagedData.set([
+          ...this.mortgagedData(),
+          {
+            ...res,
+            mortDate: this.formatDateForBackend(res.mortDate),
+            mortDateStr: new Date(res.mortDate).toLocaleDateString(),
+          },
+        ]);
+    });
   }
 
   /**
@@ -417,10 +416,6 @@ export class NewLandRecordComponent implements OnInit {
    */
   onEditMortgaged(idx: number): void {
     //TODO: Add logic to edit mortgaged data
-    if (idx > -1) {
-      this.mortgagedDetails.patchValue(this.mortgagedData()[idx]);
-      this.mortgagedData.set(this.mortgagedData().splice(idx + 1, 1));
-    }
   }
 
   /**
@@ -501,7 +496,14 @@ export class NewLandRecordComponent implements OnInit {
           this.id = data['id'];
           this.landRecordsService.getLandRecord(this.id).subscribe((data) => {
             console.log(data);
-            this.mortgagedData.set(data['mortgagedData']);
+            this.mortgagedData.set(
+              data['mortgagedData'].map((data: MortgageData): MortgageData => {
+                return {
+                  ...data,
+                  mortDateStr: new Date(data.mortDate).toLocaleDateString(),
+                };
+              })
+            );
             this.partlySoldData.set(data['partlySoldData']);
             this.newLandRecordForm.patchValue(data);
             this.newLandRecordForm.patchValue({

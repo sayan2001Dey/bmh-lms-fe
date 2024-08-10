@@ -1,0 +1,67 @@
+<mat-card appearance="outlined" class="p-3">
+  <div class="close-btn">
+    <button mat-icon-button (click)="onCancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <section class="mx-3 my-4">
+    <span class="h2 text-center">Mortgage Details</span>
+  </section>
+  <section>
+    <form [formGroup]="mortgagedDetails" (ngSubmit)="onSubmit()">
+      <div class="d-flex flex-column">
+        <mat-form-field appearance="outline" class="mb-auto">
+          <mat-label>To Whom</mat-label>
+          <input matInput formControlName="party" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="mb-auto">
+          <mat-label>Mortgage Qty.</mat-label>
+          <input type="number" matInput formControlName="mortQty" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="mb-auto">
+          <mat-label>Mortgage Date</mat-label>
+          <input
+            matInput
+            formControlName="mortDate"
+            [matDatepicker]="datePicker4"
+            placeholder="DD/MM/YYYY"
+            (focus)="datePicker4.open()"
+            readonly
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="datePicker4"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #datePicker4></mat-datepicker>
+        </mat-form-field>
+
+        <div>
+          <button
+            type="button"
+            mat-stroked-button
+            class="mt-2 mb-1"
+            (click)="docFileAttachments.click()"
+          >
+            <mat-icon>upload</mat-icon> Upload Files
+          </button>
+          <input
+            type="file"
+            accept=".pdf, image/jpeg, image/png"
+            class="d-none"
+            (change)="onClickUploadFile($event, 'docFile')"
+            multiple
+            #docFileAttachments
+          />
+        </div>
+      </div>
+      <div>
+        <button mat-stroked-button type="submit" class="my-2 me-auto">
+          <mat-icon>add</mat-icon>
+          Add
+        </button>
+      </div>
+    </form>
+  </section>
+</mat-card>
