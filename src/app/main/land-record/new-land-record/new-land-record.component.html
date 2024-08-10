@@ -86,6 +86,17 @@
               matInput
             />
           </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Pincode</mat-label>
+            <input
+              type="number"
+              formControlName="pincode"
+              [readonly]="viewMode()"
+              matInput
+            />
+          </mat-form-field>
+
         </div>
 
         <div class="row m-1">

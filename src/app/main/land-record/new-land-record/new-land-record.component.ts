@@ -108,6 +108,7 @@ export class NewLandRecordComponent implements OnInit {
       mouza: ['', Validators.required],
       block: ['', Validators.required],
       jlno: ['', Validators.required],
+      pincode: ['', Validators.required],
       buyerOwner: ['', Validators.required],
       sellers: this.fb.array([]),
       deedName: ['Main Deed', Validators.required],
