@@ -30,14 +30,8 @@ import { statesCollection } from '../../../data/states.collection';
 import { LandRecordsService } from '../../land-records.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
-
-interface MortgageData {
-  mortId?: string;
-  party: string;
-  mortDate: string;
-  docFile?: string[];
-  docFileRAW?: File;
-}
+import { MortgageData } from '../../../model/mortgage-data.model';
+import { partlySoldData } from '../../../model/partly-sold-data.model';
 
 @Component({
   selector: 'app-new-land-record',
@@ -76,15 +70,7 @@ export class NewLandRecordComponent implements OnInit {
   disableFileRemoval: WritableSignal<boolean> = signal(false);
   viewMode: WritableSignal<boolean> = signal(false);
   mortgagedData: WritableSignal<MortgageData[]> = signal([]);
-  partlySoldData: WritableSignal<
-    {
-      partId?: string;
-      sale: string;
-      date: string;
-      qty: string;
-      deedLink: string;
-    }[]
-  > = signal([]);
+  partlySoldData: WritableSignal<partlySoldData[]> = signal([]);
   mortgagedDisplayedColumns: string[] = [
     'slno',
     'party',
