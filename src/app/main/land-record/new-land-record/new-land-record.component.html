@@ -434,6 +434,16 @@
                   >Unvested</mat-radio-button
                 >
               </mat-radio-group>
+           
+              <mat-form-field>
+                <mat-label>Land Type</mat-label>
+                <mat-select disableRipple formControlName="landType">
+                  <mat-option value="Sali">Sali</mat-option>
+                  <mat-option value="Bastu">Bastu</mat-option>
+                  <mat-option value="Pukur">Pukur</mat-option>
+                </mat-select>
+              </mat-form-field>
+        
             </mat-card>
           </div>
         </div>
@@ -729,6 +739,126 @@
                 formControlName="govtRec"
               />
             </mat-form-field>
+
+            <div class="pb-2">
+              <mat-card class="px-2 py-1" appearance="outlined">
+                <p class="text-center my-2">Parcha Documents</p>
+  
+                @if((fileInfoArray.parchaFile &&
+                fileInfoArray.parchaFile.length) ||
+                (oldFileInfoArray.parchaFile &&
+                oldFileInfoArray.parchaFile.length)) 
+                { @if
+                (oldFileInfoArray.parchaFile &&
+                oldFileInfoArray.parchaFile.length) {
+                <mat-card appearance="outlined" class="text-secondary">
+                  @if(!viewMode()) {
+                    <p class="text-center small-text mb-0 text-dark">
+                      Previous Uploads
+                    </p>
+                    <mat-divider></mat-divider>
+                  }
+                  <mat-list role="list">
+                    @for(fileInfo of oldFileInfoArray.parchaFile; track
+                    $index+'hcd-'+fileInfo.fileName) {
+                    <div
+                      class="d-flex justify-content-between align-items-center mb-1"
+                    >
+                      <span class="pt-2 text-truncate px-2"
+                        ><b class="text-dark">{{ $index + 1 }}. </b>
+                        @if(fileInfo.markedForDeletion) {
+                        <del>{{ fileInfo.fileName }}</del>
+                        } @else {
+                        {{ fileInfo.fileName }}
+                        }
+                      </span>
+                      <span class="d-flex align-items-center">
+                        <button
+                        mat-icon-button
+                        class="mt-1"
+                        (click)="
+                          onWindowPopupOpenForFiles('parchaFile', fileInfo.fileName)
+                        "
+                      >
+                        <mat-icon>open_in_new</mat-icon>
+                      </button>
+                      @if(!viewMode()) {
+                      <button
+                        mat-icon-button
+                        class="mt-1"
+                        (click)="
+                          removeFromPreviousUploads('parchaFile', $index)
+                        "
+                        [disabled]="disableFileRemoval()"
+                      >
+                        <mat-icon>{{
+                          fileInfo.markedForDeletion
+                            ? "undo"
+                            : "do_not_disturb_on"
+                        }}</mat-icon>
+                      </button>
+                      }
+                    </span>
+                    </div>
+                    }
+                  </mat-list>
+                </mat-card>
+                } @if (fileInfoArray.parchaFile &&
+                fileInfoArray.parchaFile.length){
+                <mat-card appearance="outlined" class="mt-2">
+                  <p class="text-center small-text mb-0">New Uploads</p>
+                  <mat-divider></mat-divider>
+                  <mat-list role="list">
+                    @for(fileInfo of fileInfoArray.parchaFile; track
+                    $index+'hcd-'+fileInfo) {
+                    <div
+                      class="d-flex justify-content-between align-items-center mb-1"
+                    >
+                      <span class="pt-2 text-truncate px-2"
+                        ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
+                      >
+                      @if(!viewMode()) {
+                      <button
+                        mat-icon-button
+                        class="mt-1"
+                        (click)="removeFiles('parchaFile', $index)"
+                        [disabled]="disableFileRemoval()"
+                      >
+                        <mat-icon>do_not_disturb_on</mat-icon>
+                      </button>
+                      }
+                    </div>
+                    }
+                  </mat-list>
+                </mat-card>
+                } } @else {
+                <mat-card appearance="outlined">
+                  <div class="drag-n-drop-box">
+                    <p class="text-center small-text mt-3">DRAG AND DROP HERE</p>
+                  </div>
+                </mat-card>
+                }
+  
+                <button
+                  type="button"
+                  mat-stroked-button
+                  class="mt-2 mb-1"
+                  (click)="parchaFileAttachments.click()"
+                  [disabled]="viewMode()"
+                >
+                  <mat-icon>upload</mat-icon> Upload Files
+                </button>
+                <input
+                  type="file"
+                  accept=".pdf, image/jpeg, image/png"
+                  class="d-none"
+                  (change)="onClickUploadFiles($event, 'parchaFile')"
+                  multiple
+                  #parchaFileAttachments
+                />
+              </mat-card>
+            </div>
+
           </div>
 
           <div class="pb-2">
@@ -855,7 +985,7 @@
               <textarea
                 matInput
                 [readonly]="viewMode()"
-                formControlName="locationAndPropRemarks"
+                formControlName="remarks"
                 placeholder="Remarks..."
               ></textarea>
             </mat-form-field>
@@ -870,7 +1000,13 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Due Date</mat-label>
+              <mat-label>Property Tax</mat-label>
+              <input type="number" matInput formControlName="tax" [readonly]="viewMode()"/>
+            </mat-form-field>
+    
+
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Last Updated Date</mat-label>
               <input
                 matInput
                 formControlName="dueDate"
@@ -1034,7 +1170,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Due Date</mat-label>
+            <mat-label>Appeal Due Date</mat-label>
             <input
               matInput
               formControlName="ledueDate"
@@ -1049,6 +1185,24 @@
             ></mat-datepicker-toggle>
             <mat-datepicker #datePicker3></mat-datepicker>
           </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Appeal Last Date</mat-label>
+            <input
+              matInput
+              formControlName="lelastDate"
+              [matDatepicker]="datePicker4"
+              (focus)="datePicker4.open()"
+              readonly
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="datePicker4"
+              [disabled]="viewMode()"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #datePicker4></mat-datepicker>
+          </mat-form-field>
+
         </div>
 
         <h6 class="font-regular mb-3">History/ Chain Tree</h6>

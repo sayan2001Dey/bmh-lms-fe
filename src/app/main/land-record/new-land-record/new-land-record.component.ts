@@ -35,6 +35,7 @@ import { partlySoldData } from '../../../model/partly-sold-data.model';
 import { DialogMortgageFormComponent } from '../../modal/mortgage-form/mortgage-form.dialog';
 import { Dialog } from '@angular/cdk/dialog';
 
+
 @Component({
   selector: 'app-new-land-record',
   standalone: true,
@@ -54,6 +55,7 @@ import { Dialog } from '@angular/cdk/dialog';
     MatSlideToggleModule,
     MatTableModule,
     RouterLink,
+    ReactiveFormsModule,
   ],
   templateUrl: './new-land-record.component.html',
   styleUrl: './new-land-record.component.scss',
@@ -73,6 +75,8 @@ export class NewLandRecordComponent implements OnInit {
   viewMode: WritableSignal<boolean> = signal(false);
   mortgagedData: WritableSignal<MortgageData[]> = signal([]);
   partlySoldData: WritableSignal<partlySoldData[]> = signal([]);
+  
+  
   mortgagedDisplayedColumns: string[] = [
     'slno',
     'party',
@@ -113,15 +117,18 @@ export class NewLandRecordComponent implements OnInit {
       mutedQty: ['', Validators.required],
       unMutedQty: ['', Validators.required],
       landStatus: ['Vested', Validators.required],
+      landType: ['', Validators.required],
       conversionLandStus: ['Converted', Validators.required],
       deedLoc: ['', Validators.required],
       photoLoc: ['', Validators.required],
       govtRec: ['', Validators.required],
-      locationAndPropRemarks: [''],
+      remarks: [''],
       khazanaStatus: ['', Validators.required],
+      tax: ['', Validators.required],
       dueDate: ['', Validators.required],
       legalMatters: ['', Validators.required],
       ledueDate: ['', Validators.required],
+      lelastDate: ['', Validators.required],
       historyChain: ['', Validators.required],
       mortgaged: [false, Validators.required],
       partlySold: [false, Validators.required],
@@ -150,6 +157,8 @@ export class NewLandRecordComponent implements OnInit {
   get sellerFormControls() {
     return this.sellerForms.controls as FormControl[];
   }
+
+  
 
   /**
    * Calculates the purchased quantity or returns 0 if the value is not a number.
@@ -226,6 +235,7 @@ export class NewLandRecordComponent implements OnInit {
     data.deedDate = this.formatDateForBackend(data.deedDate);
     data.dueDate = this.formatDateForBackend(data.dueDate);
     data.ledueDate = this.formatDateForBackend(data.ledueDate);
+    data.lelastDate = this.formatDateForBackend(data.lelastDate);
 
     if (data.mortgaged || data.mortgaged === 'true')
       data.mortgagedData = this.mortgagedData();
@@ -276,6 +286,7 @@ export class NewLandRecordComponent implements OnInit {
     conversionFile: [],
     documentFile: [],
     hcdocumentFile: [],
+    parchaFile: [],
   };
 
   fileObj: any = {
@@ -284,6 +295,7 @@ export class NewLandRecordComponent implements OnInit {
     conversionFileRAW: [],
     documentFileRAW: [],
     hcdocumentFileRAW: [],
+    parchaFileRAW: [],
   };
 
   oldFileInfoArray: any = {
@@ -292,6 +304,7 @@ export class NewLandRecordComponent implements OnInit {
     conversionFile: [],
     documentFile: [],
     hcdocumentFile: [],
+    parchaFile: [],
   };
 
   /**
@@ -510,6 +523,7 @@ export class NewLandRecordComponent implements OnInit {
               deedDate: this.getDateFromString(data['deedDate']),
               dueDate: this.getDateFromString(data['dueDate']),
               ledueDate: this.getDateFromString(data['ledueDate']),
+              lelastDate: this.getDateFromString(data['lelastDate']),
             });
             if (data.scanCopyFile) {
               data.scanCopyFile.forEach((fileName: string) => {
@@ -551,6 +565,14 @@ export class NewLandRecordComponent implements OnInit {
                 });
               });
             }
+            if (data.parchaFile) {
+              data.parchaFile.forEach((fileName: string) => {
+                this.oldFileInfoArray.parchaFile.push({
+                  fileName,
+                  markedForDeletion: false,
+                });
+              });
+            }
           });
         });
       }
@@ -563,6 +585,7 @@ export class NewLandRecordComponent implements OnInit {
         this.newLandRecordForm.controls['conversionLandStus'].disable();
         this.newLandRecordForm.controls['mortgaged'].disable();
         this.newLandRecordForm.controls['partlySold'].disable();
+        this.newLandRecordForm.controls['landType'].disable(); 
       }
     });
   }
