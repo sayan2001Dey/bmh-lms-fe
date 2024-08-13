@@ -29,6 +29,8 @@ export class LandRecordsService {
       .subscribe((data: string) => {
         console.log(data);
         this.uploadMultipleNewFiles(fileInfoArrayObj, fileObj, data);
+        //TODO: SEE THIS
+        // this.uploadMortgagedFile(data, );
         this.router.navigateByUrl('/land-record');
       });
   }
@@ -115,6 +117,7 @@ export class LandRecordsService {
   }
 
   /**
+   * #TODO: REWORK
    * Uploads multiple new files based on fileInfoArrayObj and fileObj for a specific ID.
    *
    * @param {any} fileInfoArrayObj - Object containing file information arrays.
@@ -129,36 +132,54 @@ export class LandRecordsService {
   ): Observable<any> {
     for (const key of Object.keys(fileInfoArrayObj)) {
       for (let index = 0; index < fileObj[key + 'RAW'].length; index++) {
-        const fileNameSplitArray = fileInfoArrayObj[key][index].split('.');
-        const file = fileNameSplitArray.reduce(
-          (acc: string, curVal: string, idx: number) => {
-            if (idx < fileNameSplitArray.length - 1)
-              acc += (idx ? '.' : '') + curVal;
-            return acc;
-          },
-          ''
-        );
-        const ext = fileNameSplitArray[fileNameSplitArray.length - 1];
-        const fileUploadUri =
-          this.uri +
-          '/attachments/' +
-          key +
-          '?id=' +
-          id +
-          '&file=' +
-          file +
-          '&ext=' +
-          ext;
-        this.http
-          .post(fileUploadUri, fileObj[key + 'RAW'][index], {
-            responseType: 'text',
-          })
+          this.uploadFile(id, key, fileInfoArrayObj[key][index], fileObj[key + 'RAW'][index])
           .subscribe((data) => {
             console.log(data);
           });
       }
     }
     return new Observable();
+  }
+
+  /**
+   * Uploads a single file based on the provided file information and ID.
+   *
+   * @param {string} recId - The Record ID associated with the file.
+   * @param {string} fieldName - The name of the field to which the file belongs.
+   * @param {string} fileName - The name of the file to be uploaded.
+   * @param {File} fileRAW - The raw file data to be uploaded.
+   * @return {Observable<string>} An observable for the file upload process.
+   */
+  uploadFile(
+    recId: string,
+    fieldName: string,
+    fileName: string,
+    fileRAW: File
+  ): Observable<string> {
+    const fileNameSplitArray = fileName.split('.');
+    const file = fileNameSplitArray.reduce(
+      (acc: string, curVal: string, idx: number) => {
+        if (idx < fileNameSplitArray.length - 1)
+          acc += (idx ? '.' : '') + curVal;
+        return acc;
+      },
+      ''
+    );
+    const ext = fileNameSplitArray[fileNameSplitArray.length - 1];
+    const fileUploadUri =
+      this.uri +
+      '/attachments/' +
+      fieldName +
+      '?id=' +
+      recId +
+      '&file=' +
+      file +
+      '&ext=' +
+      ext;
+    return this.http
+      .post(fileUploadUri, fileRAW, {
+        responseType: 'text',
+      })
   }
 
   getFile(fieldName: string, fileName: string): Observable<any> {
