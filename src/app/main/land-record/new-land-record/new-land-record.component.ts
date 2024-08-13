@@ -31,7 +31,7 @@ import { LandRecordsService } from '../../land-records.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MortgageData } from '../../../model/mortgage-data.model';
-import { partlySoldData } from '../../../model/partly-sold-data.model';
+import { PartlySoldData } from '../../../model/partly-sold-data.model';
 import { DialogMortgageFormComponent } from '../../modal/mortgage-form/mortgage-form.dialog';
 import { Dialog } from '@angular/cdk/dialog';
 
@@ -73,7 +73,7 @@ export class NewLandRecordComponent implements OnInit {
   disableFileRemoval: WritableSignal<boolean> = signal(false);
   viewMode: WritableSignal<boolean> = signal(false);
   mortgagedData: WritableSignal<MortgageData[]> = signal([]);
-  partlySoldData: WritableSignal<partlySoldData[]> = signal([]);
+  partlySoldData: WritableSignal<PartlySoldData[]> = signal([]);
 
   mortgagedDisplayedColumns: string[] = [
     'slno',

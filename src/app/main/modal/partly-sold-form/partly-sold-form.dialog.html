@@ -1,0 +1,53 @@
+<mat-card appearance="outlined" class="p-3">
+  <div class="close-btn">
+    <button mat-icon-button (click)="onCancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <section class="mx-3 my-4">
+    <span class="h2 text-center">Mortgage Details</span>
+  </section>
+  <section>
+    <form [formGroup]="partlySoldDetails" (ngSubmit)="onSubmit()">
+      <div class="d-flex flex-column">
+        <mat-form-field appearance="outline">
+          <mat-label>Sold to Whom</mat-label>
+          <input matInput formControlName="sale" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Date of Sale</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            [matDatepicker]="datePicker5"
+            placeholder="DD/MM/YYYY"
+            (focus)="datePicker5.open()"
+            readonly
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="datePicker5"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #datePicker5></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Qty.</mat-label>
+          <input matInput formControlName="qty" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Deed to be Linked</mat-label>
+          <input matInput formControlName="deedLink" />
+        </mat-form-field>
+      </div>
+
+      <div>
+        <button mat-stroked-button type="submit" class="my-2 me-auto">
+          <mat-icon>{{ data ? "edit" : "add" }}</mat-icon>
+          {{ data ? "Save" : "Add" }}
+        </button>
+      </div>
+    </form>
+  </section>
+</mat-card>

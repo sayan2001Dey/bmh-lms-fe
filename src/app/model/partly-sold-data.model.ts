@@ -1,7 +1,8 @@
-export interface partlySoldData {
+export interface PartlySoldData {
   partId?: string;
   sale: string;
   date: string;
-  qty: string;
+  dateStr?: string;
+  qty: number;
   deedLink: string;
 }
