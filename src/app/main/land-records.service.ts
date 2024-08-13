@@ -83,7 +83,7 @@ export class LandRecordsService {
           }
         );
       }
-      this.router.navigateByUrl('/land-record');
+      this.router.navigateByUrl('/land-record/view/' + id);
     });
   }
 

@@ -35,7 +35,6 @@ import { partlySoldData } from '../../../model/partly-sold-data.model';
 import { DialogMortgageFormComponent } from '../../modal/mortgage-form/mortgage-form.dialog';
 import { Dialog } from '@angular/cdk/dialog';
 
-
 @Component({
   selector: 'app-new-land-record',
   standalone: true,
@@ -75,8 +74,7 @@ export class NewLandRecordComponent implements OnInit {
   viewMode: WritableSignal<boolean> = signal(false);
   mortgagedData: WritableSignal<MortgageData[]> = signal([]);
   partlySoldData: WritableSignal<partlySoldData[]> = signal([]);
-  
-  
+
   mortgagedDisplayedColumns: string[] = [
     'slno',
     'party',
@@ -157,8 +155,6 @@ export class NewLandRecordComponent implements OnInit {
   get sellerFormControls() {
     return this.sellerForms.controls as FormControl[];
   }
-
-  
 
   /**
    * Calculates the purchased quantity or returns 0 if the value is not a number.
@@ -377,8 +373,14 @@ export class NewLandRecordComponent implements OnInit {
       {
         maxWidth: '25rem',
         backdropClass: 'light-blur-backdrop',
+        disableClose: true,
       }
     );
+
+    dialogRef.backdropClick.subscribe(() => {
+      if (window.confirm('⚠ ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'))
+        dialogRef.close();
+    });
 
     dialogRef.closed.subscribe((res: MortgageData | undefined) => {
       if (res)
@@ -428,7 +430,31 @@ export class NewLandRecordComponent implements OnInit {
    * @return {void} This function does not return anything.
    */
   onEditMortgaged(idx: number): void {
-    //TODO: Add logic to edit mortgaged data
+    const dialogRef = this.dialog.open<MortgageData>(
+      DialogMortgageFormComponent,
+      {
+        maxWidth: '25rem',
+        backdropClass: 'light-blur-backdrop',
+        disableClose: true,
+        data: this.mortgagedData()[idx],
+      }
+    );
+
+    dialogRef.backdropClick.subscribe(() => {
+      if (window.confirm('⚠ ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'))
+        dialogRef.close();
+    });
+
+    dialogRef.closed.subscribe((res: MortgageData | undefined) => {
+      const newMortgagedData: MortgageData[] = this.mortgagedData();
+      if (res)
+        newMortgagedData[idx] = {
+          ...res,
+          mortDate: this.formatDateForBackend(res.mortDate),
+          mortDateStr: new Date(res.mortDate).toLocaleDateString(),
+        };
+      this.mortgagedData.set([...newMortgagedData]);
+    });
   }
 
   /**
@@ -585,7 +611,7 @@ export class NewLandRecordComponent implements OnInit {
         this.newLandRecordForm.controls['conversionLandStus'].disable();
         this.newLandRecordForm.controls['mortgaged'].disable();
         this.newLandRecordForm.controls['partlySold'].disable();
-        this.newLandRecordForm.controls['landType'].disable(); 
+        this.newLandRecordForm.controls['landType'].disable();
       }
     });
   }

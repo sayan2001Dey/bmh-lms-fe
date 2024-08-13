@@ -4,6 +4,7 @@ export interface MortgageData {
   mortDate: string;
   mortDateStr?: string;
   mortQty: number;
-  docFile?: string;
-  docFileRAW?: File;
+  mortDocFile?: string;
+  fileRAW?: File;
+  newFile? : boolean;
 }

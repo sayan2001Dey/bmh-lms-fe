@@ -37,29 +37,52 @@
           <mat-datepicker #datePicker4></mat-datepicker>
         </mat-form-field>
 
-        <div>
+        <mat-card appearance="outlined">
+          <p class="text-center pt-3 mx-2">{{fileRAW().name || 'No File'}}</p>
+          @if (fileRAW().name && !newFile()) {
+          <button
+            mat-button
+            type="button"
+            class="m-1"
+            (click)="
+              onWindowPopupOpenForMortFile(fileRAW().name)
+              "
+          >
+            <mat-icon>open_in_new</mat-icon>
+            Open File
+          </button>
+          } @else if(resetFileBtn() && newFile()) {
+          <button
+            mat-button
+            type="button"
+            class="m-1"
+            (click)="setOldFile()"
+          >
+            <mat-icon>restore_page</mat-icon>
+            Reset File Changes
+          </button>
+          }
           <button
             type="button"
             mat-stroked-button
-            class="mt-2 mb-1"
+            class="m-1"
             (click)="docFileAttachments.click()"
           >
-            <mat-icon>upload</mat-icon> Upload Files
+            <mat-icon>upload</mat-icon> {{ fileRAW().name && fileRAW().name!='' ? "Replace" : "Upload New"}} File
           </button>
           <input
             type="file"
             accept=".pdf, image/jpeg, image/png"
             class="d-none"
-            (change)="onClickUploadFile($event, 'docFile')"
-            multiple
+            (change)="onClickUploadFile($event)"
             #docFileAttachments
           />
-        </div>
+        </mat-card>
       </div>
       <div>
         <button mat-stroked-button type="submit" class="my-2 me-auto">
-          <mat-icon>add</mat-icon>
-          Add
+          <mat-icon>{{ data ? "edit" : "add" }}</mat-icon>
+          {{ data ? "Save" : "Add" }}
         </button>
       </div>
     </form>
