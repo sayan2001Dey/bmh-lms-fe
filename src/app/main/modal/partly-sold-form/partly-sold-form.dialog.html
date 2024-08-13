@@ -5,8 +5,17 @@
     </button>
   </div>
   <section class="mx-3 my-4">
-    <span class="h2 text-center">Mortgage Details</span>
+    <span class="h2 text-center">Partly Sold Details</span>
   </section>
+  
+  <section class="mx-1 mb-2 d-flex">
+    <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
+      <div>Purchased Qty: {{ 0 }}</div>
+      <div>Sold Qty: {{ 0 }}</div>
+      <div>Existing Qty: {{ 0 }}</div>
+    </mat-card>
+  </section>
+
   <section>
     <form [formGroup]="partlySoldDetails" (ngSubmit)="onSubmit()">
       <div class="d-flex flex-column">

@@ -34,6 +34,7 @@ import { MortgageData } from '../../../model/mortgage-data.model';
 import { PartlySoldData } from '../../../model/partly-sold-data.model';
 import { DialogMortgageFormComponent } from '../../modal/mortgage-form/mortgage-form.dialog';
 import { Dialog } from '@angular/cdk/dialog';
+import { DialogPartlySoldFormComponent } from '../../modal/partly-sold-form/partly-sold-form.dialog';
 
 @Component({
   selector: 'app-new-land-record',
@@ -67,7 +68,6 @@ export class NewLandRecordComponent implements OnInit {
   cities: WritableSignal<string[]> = signal([]);
   sysIsBusy: WritableSignal<boolean> = signal(false);
   newLandRecordForm: FormGroup;
-  partlySoldDetails: FormGroup;
   id: string = '';
   updateMode: WritableSignal<boolean> = signal(false);
   disableFileRemoval: WritableSignal<boolean> = signal(false);
@@ -85,7 +85,7 @@ export class NewLandRecordComponent implements OnInit {
   partlySoldDisplayedColumns: string[] = [
     'slno',
     'sale',
-    'date',
+    'dateStr',
     'qty',
     'deedLink',
     'actions',
@@ -131,17 +131,7 @@ export class NewLandRecordComponent implements OnInit {
       mortgaged: [false, Validators.required],
       partlySold: [false, Validators.required],
     });
-    this.partlySoldDetails = fb.group({
-      sale: ['', Validators.required],
-      date: ['', Validators.required],
-      qty: ['', Validators.required],
-      deedLink: ['', Validators.required],
-    });
     this.onAddSeller();
-  }
-
-  get partlySoldDetailsForm() {
-    return this.partlySoldDetails.controls;
   }
 
   get form() {
@@ -171,7 +161,7 @@ export class NewLandRecordComponent implements OnInit {
    * @return {number} The remaining quantity after subtracting the quantity sold from the purchased quantity.
    */
   get remainingQty(): number {
-    return this.purQty - this.soldQty;
+    return this.purQty - this.soldQty - this.mortgagedQty;
   }
 
   /**
@@ -181,11 +171,20 @@ export class NewLandRecordComponent implements OnInit {
    * @return {number} The total quantity sold.
    */
   get soldQty(): number {
-    return (
-      this.partlySoldData().reduce((accumulator: number, current: any) => {
-        return accumulator + (parseFloat(current.qty) || 0);
-      }, 0) + (parseFloat(this.partlySoldDetailsForm['qty'].value) || 0)
-    );
+    return this.partlySoldData().reduce((accumulator: number, current: any) => {
+      return accumulator + (parseFloat(current.qty) || 0);
+    }, 0);
+  }
+
+  /**
+   * Calculates the total mortgaged quantity by summing up the mortgaged quantities of all mortgaged data.
+   *
+   * @return {number} The total mortgaged quantity.
+   */
+  get mortgagedQty(): number {
+    return this.mortgagedData().reduce((accumulator: number, current: any) => {
+      return accumulator + (parseFloat(current.mortQty) || 0);
+    }, 0);
   }
 
   /**
@@ -378,7 +377,11 @@ export class NewLandRecordComponent implements OnInit {
     );
 
     dialogRef.backdropClick.subscribe(() => {
-      if (window.confirm('⚠ ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'))
+      if (
+        window.confirm(
+          '⚠ ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
+        )
+      )
         dialogRef.close();
     });
 
@@ -401,16 +404,35 @@ export class NewLandRecordComponent implements OnInit {
    * @return {void} This function does not return anything.
    */
   onAddPartlySold(): void {
-    if (this.partlySoldDetails.valid) {
-      const newPartlySoldRecord = {
-        sale: this.partlySoldDetails.value.sale,
-        date: this.partlySoldDetails.value.date.toLocaleDateString(),
-        qty: this.partlySoldDetails.value.qty,
-        deedLink: this.partlySoldDetails.value.deedLink,
-      };
-      this.partlySoldData.set([...this.partlySoldData(), newPartlySoldRecord]);
-      this.partlySoldDetails.reset();
-    }
+    const dialogRef = this.dialog.open<PartlySoldData>(
+      DialogPartlySoldFormComponent,
+      {
+        maxWidth: '25rem',
+        backdropClass: 'light-blur-backdrop',
+        disableClose: true,
+      }
+    );
+
+    dialogRef.backdropClick.subscribe(() => {
+      if (
+        window.confirm(
+          '⚠ ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
+        )
+      )
+        dialogRef.close();
+    });
+
+    dialogRef.closed.subscribe((res: PartlySoldData | undefined) => {
+      if (res)
+        this.partlySoldData.set([
+          ...this.partlySoldData(),
+          {
+            ...res,
+            date: this.formatDateForBackend(res.date),
+            dateStr: new Date(res.date).toLocaleDateString(),
+          },
+        ]);
+    });
   }
 
   /**
@@ -441,7 +463,11 @@ export class NewLandRecordComponent implements OnInit {
     );
 
     dialogRef.backdropClick.subscribe(() => {
-      if (window.confirm('⚠ ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'))
+      if (
+        window.confirm(
+          '⚠ ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
+        )
+      )
         dialogRef.close();
     });
 
@@ -474,10 +500,35 @@ export class NewLandRecordComponent implements OnInit {
    * @return {void} This function does not return anything.
    */
   onEditPartlySold(idx: number): void {
-    if (idx > -1) {
-      this.partlySoldDetails.patchValue(this.partlySoldData()[idx]);
-      this.partlySoldData.set(this.partlySoldData().splice(idx + 1, 1));
-    }
+    const dialogRef = this.dialog.open<PartlySoldData>(
+      DialogPartlySoldFormComponent,
+      {
+        maxWidth: '25rem',
+        backdropClass: 'light-blur-backdrop',
+        disableClose: true,
+        data: this.partlySoldData()[idx],
+      }
+    );
+
+    dialogRef.backdropClick.subscribe(() => {
+      if (
+        window.confirm(
+          '⚠ ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
+        )
+      )
+        dialogRef.close();
+    });
+
+    dialogRef.closed.subscribe((res: PartlySoldData | undefined) => {
+      const newPartlySoldData: PartlySoldData[] = this.partlySoldData();
+      if (res)
+        newPartlySoldData[idx] = {
+          ...res,
+          date: this.formatDateForBackend(res.date),
+          dateStr: new Date(res.date).toLocaleDateString(),
+        };
+      this.partlySoldData.set([...newPartlySoldData]);
+    });
   }
 
   /**
@@ -543,7 +594,16 @@ export class NewLandRecordComponent implements OnInit {
                 };
               })
             );
-            this.partlySoldData.set(data['partlySoldData']);
+            this.partlySoldData.set(
+              data['partlySoldData'].map(
+                (data: PartlySoldData): PartlySoldData => {
+                  return {
+                    ...data,
+                    dateStr: new Date(data.date).toLocaleDateString(),
+                  };
+                }
+              )
+            );
             this.newLandRecordForm.patchValue(data);
             this.newLandRecordForm.patchValue({
               deedDate: this.getDateFromString(data['deedDate']),

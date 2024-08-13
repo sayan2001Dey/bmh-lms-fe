@@ -20,6 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { PartlySoldData } from '../../../model/partly-sold-data.model';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'dialog-partly-sold-form',
@@ -33,6 +34,7 @@ import { PartlySoldData } from '../../../model/partly-sold-data.model';
     MatIconButton,
     ReactiveFormsModule,
     MatDatepickerModule,
+    MatDividerModule,
   ],
   templateUrl: './partly-sold-form.dialog.html',
   styleUrl: './partly-sold-form.dialog.scss',
@@ -52,7 +54,6 @@ export class DialogPartlySoldFormComponent implements OnInit {
     @Inject(DIALOG_DATA)
     public data: PartlySoldData = { sale: '', date: '', qty: 0.0, deedLink: '' }
   ) {}
-
 
   /**
    * Submits the partly sold details if they are valid and the sold quantity is not zero.
