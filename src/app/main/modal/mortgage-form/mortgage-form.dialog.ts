@@ -108,7 +108,7 @@ export class DialogMortgageFormComponent {
   }
 
   setOldFile(): void {
-    if (this.data.mortDocFile && this.data.mortDocFile !== '') {
+    if (this.data.mortDocFile && this.data.mortDocFile !== '' && !this.data.newFile) {
       this.fileRAW.set(new File([], this.data.mortDocFile));
       this.resetFileBtn.set(true);
       this.newFile.set(false);
