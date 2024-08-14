@@ -50,12 +50,45 @@ export class DialogMortgageFormComponent {
   newFile: WritableSignal<boolean> = signal(false);
   sysIsBusy: WritableSignal<boolean> = signal(false);
   resetFileBtn: WritableSignal<boolean> = signal(false);
+  data: MortgageData;
+  readonly remainingOldQty: number;
+  readonly purQty: number;
 
   constructor(
     public dialogRef: DialogRef<string>,
     @Inject(DIALOG_DATA)
-    public data: MortgageData = { party: '', mortDate: '', mortQty: 0.0 }
-  ) {}
+    public input: {
+      data: MortgageData;
+      remainingQty: number;
+      purQty: number;
+    } = {
+      data: { party: '', mortDate: '', mortQty: 0.0 },
+      remainingQty: 0,
+      purQty: 0,
+    }
+  ) {
+    this.data = input.data;
+    this.remainingOldQty = input.remainingQty;
+    this.purQty = input.purQty;
+  }
+
+  /**
+   * Calculates the remaining quantity by subtracting the mortgaged quantity from the remaining old quantity.
+   *
+   * @return {number} The remaining quantity after subtracting the mortgaged quantity.
+   */
+  get remainingQty(): number {
+    return this.remainingOldQty - this.mortgagedDetails.value.mortQty;
+  }
+
+  /**
+   * Gets the mortgage quantity from the mortgaged details form.
+   *
+   * @return {number} The mortgage quantity.
+   */
+  get mortgageQty(): number {
+    return this.mortgagedDetails.value.mortQty;
+  }
 
   /**
    * Handles the file upload event by setting the selected file and updating the newFile flag.
@@ -107,8 +140,17 @@ export class DialogMortgageFormComponent {
       });
   }
 
+  /**
+   * Sets the old file based on the mortgage document file data.
+   *
+   * @return {void} This function does not return anything.
+   */
   setOldFile(): void {
-    if (this.data.mortDocFile && this.data.mortDocFile !== '' && !this.data.newFile) {
+    if (
+      this.data.mortDocFile &&
+      this.data.mortDocFile !== '' &&
+      !this.data.newFile
+    ) {
       this.fileRAW.set(new File([], this.data.mortDocFile));
       this.resetFileBtn.set(true);
       this.newFile.set(false);
@@ -151,7 +193,7 @@ export class DialogMortgageFormComponent {
       ...this.data,
       mortDate: new Date(this.data.mortDate),
     });
-    if(this.data.newFile && this.data.fileRAW) {
+    if (this.data.newFile && this.data.fileRAW) {
       this.newFile.set(true);
       this.fileRAW.set(this.data.fileRAW);
     }

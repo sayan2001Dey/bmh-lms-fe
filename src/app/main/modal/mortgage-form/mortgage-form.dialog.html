@@ -7,6 +7,15 @@
   <section class="mx-3 my-4">
     <span class="h2 text-center">Mortgage Details</span>
   </section>
+  
+  <section class="mx-1 mb-2 d-flex">
+    <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
+      <div>Purchased Qty: {{ purQty }}</div>
+      <div>Mortgaged Qty: {{ mortgageQty }}</div>
+      <div>Remaining Qty: {{ remainingQty }}</div>
+    </mat-card>
+  </section>
+
   <section>
     <form [formGroup]="mortgagedDetails" (ngSubmit)="onSubmit()">
       <div class="d-flex flex-column">

@@ -379,6 +379,10 @@ export class NewLandRecordComponent implements OnInit {
         maxWidth: '25rem',
         backdropClass: 'light-blur-backdrop',
         disableClose: true,
+        data: {
+          remainingQty: this.remainingQty,
+          purQty: this.purQty,
+        }
       }
     );
 
@@ -416,6 +420,10 @@ export class NewLandRecordComponent implements OnInit {
         maxWidth: '25rem',
         backdropClass: 'light-blur-backdrop',
         disableClose: true,
+        data: {
+          remainingQty: this.remainingQty,
+          purQty: this.purQty,
+        },
       }
     );
 

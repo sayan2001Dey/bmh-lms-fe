@@ -48,12 +48,45 @@ export class DialogPartlySoldFormComponent implements OnInit {
     qty: ['', Validators.required],
     deedLink: ['', Validators.required],
   });
+  data: PartlySoldData;
+  readonly remainingOldQty: number;
+  readonly purQty: number;
 
   constructor(
     public dialogRef: DialogRef<string>,
     @Inject(DIALOG_DATA)
-    public data: PartlySoldData = { sale: '', date: '', qty: 0.0, deedLink: '' }
-  ) {}
+    public input: {
+      data: PartlySoldData;
+      remainingQty: number;
+      purQty: number;
+    } = {
+      data: { sale: '', date: '', qty: 0.0, deedLink: '' },
+      remainingQty: 0,
+      purQty: 0,
+    }
+  ) {
+    this.data = input.data;
+    this.remainingOldQty = input.remainingQty;
+    this.purQty = input.purQty;
+  }
+
+  /**
+   * Calculates the remaining quantity by subtracting the quantity sold from the remaining old quantity.
+   *
+   * @return {number} The remaining quantity after subtracting the quantity sold.
+   */
+  get remainingQty(): number {
+    return this.remainingOldQty - this.partlySoldDetails.value.qty;
+  }
+
+  /**
+   * Gets the quantity sold from the partly sold details form.
+   *
+   * @return {number} The quantity sold.
+   */
+  get soldQty(): number {
+    return this.partlySoldDetails.value.qty;
+  }
 
   /**
    * Submits the partly sold details if they are valid and the sold quantity is not zero.
