@@ -602,6 +602,10 @@ export class NewLandRecordComponent implements OnInit {
       this.updateMode.set(data[0].path == 'update');
       this.viewMode.set(data[0].path == 'view');
       if (this.updateMode() || this.viewMode()) {
+        if(this.viewMode()){
+          this.partlySoldDisplayedColumns.pop();
+          this.mortgagedDisplayedColumns.pop();
+        }
         this.route.params.subscribe((data) => {
           this.id = data['id'];
           this.landRecordsService.getLandRecord(this.id).subscribe((data) => {
