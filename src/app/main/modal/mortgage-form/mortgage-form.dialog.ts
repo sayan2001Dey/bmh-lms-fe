@@ -151,6 +151,10 @@ export class DialogMortgageFormComponent {
       ...this.data,
       mortDate: new Date(this.data.mortDate),
     });
+    if(this.data.newFile && this.data.fileRAW) {
+      this.newFile.set(true);
+      this.fileRAW.set(this.data.fileRAW);
+    }
     this.setOldFile();
   }
 }
