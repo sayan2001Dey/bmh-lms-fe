@@ -251,6 +251,12 @@ export class NewLandRecordComponent implements OnInit {
    * @return {void} This function does not return anything.
    */
   onSubmit(): void {
+    if (this.remainingQty < 0) {
+      alert(
+        '⛔ ERROR: CAN NOT SUBMIT\n\nRemaining asset quantity cannot be less than zero.'
+      );
+      return;
+    }
     if (this.newLandRecordForm.valid) {
       if (this.updateMode()) {
         this.landRecordsService.updateLandRecord(
@@ -379,7 +385,7 @@ export class NewLandRecordComponent implements OnInit {
     dialogRef.backdropClick.subscribe(() => {
       if (
         window.confirm(
-          '⚠ ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
+          '⚠  CAUTION: ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
         )
       )
         dialogRef.close();
@@ -416,7 +422,7 @@ export class NewLandRecordComponent implements OnInit {
     dialogRef.backdropClick.subscribe(() => {
       if (
         window.confirm(
-          '⚠ ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
+          '⚠ CAUTION: ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
         )
       )
         dialogRef.close();
@@ -458,14 +464,18 @@ export class NewLandRecordComponent implements OnInit {
         maxWidth: '25rem',
         backdropClass: 'light-blur-backdrop',
         disableClose: true,
-        data: this.mortgagedData()[idx],
+        data: {
+          data: this.mortgagedData()[idx],
+          remainingQty: this.remainingQty,
+          purQty: this.purQty,
+        },
       }
     );
 
     dialogRef.backdropClick.subscribe(() => {
       if (
         window.confirm(
-          '⚠ ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
+          '⚠ CAUTION: ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
         )
       )
         dialogRef.close();
@@ -506,14 +516,18 @@ export class NewLandRecordComponent implements OnInit {
         maxWidth: '25rem',
         backdropClass: 'light-blur-backdrop',
         disableClose: true,
-        data: this.partlySoldData()[idx],
+        data: {
+          data: this.partlySoldData()[idx],
+          remainingQty: this.remainingQty,
+          purQty: this.purQty,
+        },
       }
     );
 
     dialogRef.backdropClick.subscribe(() => {
       if (
         window.confirm(
-          '⚠ ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
+          '⚠ CAUTION: ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
         )
       )
         dialogRef.close();
