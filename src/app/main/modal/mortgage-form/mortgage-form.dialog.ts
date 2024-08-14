@@ -67,18 +67,12 @@ export class DialogMortgageFormComponent {
       purQty: 0,
     }
   ) {
-    this.data = input.data;
-    this.remainingOldQty = input.remainingQty;
+    // prettier-ignore
+    this.data = input.data ? input.data : { party: '', mortDate: '', mortQty: 0.0 };
+    // excludes old qty from remaining for correct calculation
+    console.log(input);
+    this.remainingOldQty = 1 * input.remainingQty + 1 * this.data.mortQty;
     this.purQty = input.purQty;
-  }
-
-  /**
-   * Calculates the remaining quantity by subtracting the mortgaged quantity from the remaining old quantity.
-   *
-   * @return {number} The remaining quantity after subtracting the mortgaged quantity.
-   */
-  get remainingQty(): number {
-    return this.remainingOldQty - this.mortgagedDetails.value.mortQty;
   }
 
   /**
@@ -87,7 +81,16 @@ export class DialogMortgageFormComponent {
    * @return {number} The mortgage quantity.
    */
   get mortgageQty(): number {
-    return this.mortgagedDetails.value.mortQty;
+    return parseFloat(this.mortgagedDetails.value.mortQty) || 0.0;
+  }
+
+  /**
+   * Calculates the remaining quantity by subtracting the mortgaged quantity from the remaining old quantity.
+   *
+   * @return {number} The remaining quantity after subtracting the mortgaged quantity.
+   */
+  get remainingQty(): number {
+    return this.remainingOldQty - this.mortgageQty;
   }
 
   /**
@@ -164,10 +167,15 @@ export class DialogMortgageFormComponent {
    */
   onSubmit(): void {
     if (!this.mortgagedDetails.valid) {
+      alert('⛔ ERROR: CAN NOT SUBMIT\n\nInvalid form data. Please check and try again');
       return;
     }
-    if (this.mortgagedDetails.value.mortQty === 0) {
-      alert('Mortgaged quantity cannot be zero');
+    if(this.remainingQty < 0) {
+      alert('⛔ ERROR: CAN NOT SUBMIT\n\nQuantity cannot be greater than remaining quantity');
+      return;
+    }
+    if (this.mortgageQty === 0) {
+      alert('⛔ ERROR: CAN NOT SUBMIT\n\nMortgaged quantity cannot be zero');
       return;
     }
     this.dialogRef.close({

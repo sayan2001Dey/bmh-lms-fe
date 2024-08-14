@@ -161,7 +161,7 @@ export class NewLandRecordComponent implements OnInit {
    * @return {number} The remaining quantity after subtracting the quantity sold from the purchased quantity.
    */
   get remainingQty(): number {
-    return this.purQty - this.soldQty - this.mortgagedQty;
+    return this.purQty - this.partlySoldQty - this.mortgagedQty;
   }
 
   /**
@@ -170,7 +170,7 @@ export class NewLandRecordComponent implements OnInit {
    *
    * @return {number} The total quantity sold.
    */
-  get soldQty(): number {
+  get partlySoldQty(): number {
     return this.partlySoldData().reduce((accumulator: number, current: any) => {
       return accumulator + (parseFloat(current.qty) || 0);
     }, 0);
@@ -274,11 +274,9 @@ export class NewLandRecordComponent implements OnInit {
         );
       }
     } else {
-      console.log('Invalid form data');
-      alert('Invalid form data');
+      alert('⛔ ERROR: CAN NOT SUBMIT\n\nInvalid form data. Please check and try again');
     }
     console.log(this.newLandRecordForm);
-    console.log(this.newLandRecordForm.value);
   }
 
   fileInfoArray: any = {

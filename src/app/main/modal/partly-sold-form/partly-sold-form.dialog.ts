@@ -59,24 +59,13 @@ export class DialogPartlySoldFormComponent implements OnInit {
       data: PartlySoldData;
       remainingQty: number;
       purQty: number;
-    } = {
-      data: { sale: '', date: '', qty: 0.0, deedLink: '' },
-      remainingQty: 0,
-      purQty: 0,
     }
   ) {
-    this.data = input.data;
-    this.remainingOldQty = input.remainingQty;
+    // prettier-ignore
+    this.data = input.data ? input.data : { sale: '', date: '', qty: 0.0, deedLink: '' };
+    // excludes old qty from remaining for correct calculation
+    this.remainingOldQty = 1 * input.remainingQty + 1 * this.data.qty;
     this.purQty = input.purQty;
-  }
-
-  /**
-   * Calculates the remaining quantity by subtracting the quantity sold from the remaining old quantity.
-   *
-   * @return {number} The remaining quantity after subtracting the quantity sold.
-   */
-  get remainingQty(): number {
-    return this.remainingOldQty - this.partlySoldDetails.value.qty;
   }
 
   /**
@@ -85,7 +74,16 @@ export class DialogPartlySoldFormComponent implements OnInit {
    * @return {number} The quantity sold.
    */
   get soldQty(): number {
-    return this.partlySoldDetails.value.qty;
+    return parseFloat(this.partlySoldDetails.value.qty) || 0.0;
+  }
+
+  /**
+   * Calculates the remaining quantity by subtracting the quantity sold from the remaining old quantity.
+   *
+   * @return {number} The remaining quantity after subtracting the quantity sold.
+   */
+  get remainingQty(): number {
+    return this.remainingOldQty - this.soldQty;
   }
 
   /**
@@ -95,10 +93,15 @@ export class DialogPartlySoldFormComponent implements OnInit {
    */
   onSubmit(): void {
     if (!this.partlySoldDetails.valid) {
+      alert('⛔ ERROR: CAN NOT SUBMIT\n\nInvalid form data. Please check and try again');
       return;
     }
-    if (this.partlySoldDetails.value.qty === 0) {
-      alert('Sold quantity cannot be zero');
+    if(this.remainingQty < 0) {
+      alert('⛔ ERROR: CAN NOT SUBMIT\n\nQuantity cannot be greater than remaining quantity');
+      return;
+    }
+    if (this.soldQty === 0) {
+      alert('⛔ ERROR: CAN NOT SUBMIT\n\nSold quantity cannot be zero');
       return;
     }
     this.dialogRef.close({
