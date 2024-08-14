@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { MortgageData } from '../model/mortgage-data.model';
 
 @Injectable({
   providedIn: 'root',
@@ -20,18 +21,29 @@ export class LandRecordsService {
    * @return {void} This function does not return anything.
    */
   public newLandRecord(
-    formValues: {},
+    formValues: any,
     fileObj: any,
     fileInfoArrayObj: any
   ): void {
     this.http
-      .post(this.uri, formValues, { responseType: 'text' })
-      .subscribe((data: string) => {
+      .post(this.uri, formValues)
+      .subscribe((data: any) => {
         console.log(data);
-        this.uploadMultipleNewFiles(fileInfoArrayObj, fileObj, data);
-        //TODO: SEE THIS
-        // this.uploadMortgagedFile(data, );
-        this.router.navigateByUrl('/land-record');
+        this.uploadMultipleNewFiles(fileInfoArrayObj, fileObj, data.recId);
+        for(const mort of formValues.mortgagedData) {
+          let newMortId: string =
+            (data.mortgagedData as Array<MortgageData>).find((newMort) => {
+              return (
+                newMort.mortDate === mort.mortDate &&
+                newMort.mortQty === mort.mortQty &&
+                newMort.party === mort.party
+              );
+            })?.mortId || '';
+          this.uploadMortgagedFile(data.recId, mort.fileRAW, newMortId).subscribe(
+            (data) => console.log(data)
+          );
+        }
+        this.router.navigateByUrl('/land-record/view/' + data.recId);
       });
   }
 
@@ -72,7 +84,7 @@ export class LandRecordsService {
     oldFileInfoArray: any
   ): void {
     const url = this.uri + '/' + id;
-    this.http.patch(url, updatedData).subscribe((data) => {
+    this.http.patch(url, updatedData).subscribe((data: any) => {
       console.log(data);
       this.uploadMultipleNewFiles(fileInfoArrayObj, fileObj, id);
       for (const key of Object.keys(oldFileInfoArray)) {
@@ -85,6 +97,34 @@ export class LandRecordsService {
           }
         );
       }
+      for (const mort of updatedData.mortgagedData) {
+        if (mort.mortId) {
+          if (mort.newFile) {
+            this.deleteFile(id, 'mortDocFile', mort.mortDocFile)
+              .subscribe((data) => console.log(data))
+              .add(() =>
+                this.uploadMortgagedFile(
+                  id,
+                  mort.fileRAW,
+                  mort.mortId
+                ).subscribe((data) => console.log(data))
+              );
+          }
+        } else {
+          let newMortId: string =
+            (data.mortgagedData as Array<MortgageData>).find((newMort) => {
+              return (
+                newMort.mortDate === mort.mortDate &&
+                newMort.mortQty === mort.mortQty &&
+                newMort.party === mort.party
+              );
+            })?.mortId || '';
+          this.uploadMortgagedFile(id, mort.fileRAW, newMortId).subscribe(
+            (data) => console.log(data)
+          );
+        }
+      }
+
       this.router.navigateByUrl('/land-record/view/' + id);
     });
   }
@@ -132,13 +172,34 @@ export class LandRecordsService {
   ): Observable<any> {
     for (const key of Object.keys(fileInfoArrayObj)) {
       for (let index = 0; index < fileObj[key + 'RAW'].length; index++) {
-          this.uploadFile(id, key, fileInfoArrayObj[key][index], fileObj[key + 'RAW'][index])
-          .subscribe((data) => {
-            console.log(data);
-          });
+        this.uploadFile(
+          id,
+          key,
+          fileInfoArrayObj[key][index],
+          fileObj[key + 'RAW'][index]
+        ).subscribe((data) => {
+          console.log(data);
+        });
       }
     }
     return new Observable();
+  }
+
+  /**
+   * Uploads a mortgaged file based on the provided record ID and mortgage data.
+   *
+   * @param {string} recId - The Record ID associated with the mortgaged file.
+   * @param {File} fileRAW - The raw file data to be uploaded.
+   * @param {string} mortId - The mortgage ID associated with the mortgaged file.
+   * @return {Observable<string>} An observable for the file upload process.
+   */
+  uploadMortgagedFile(
+    recId: string,
+    fileRAW: File,
+    mortId: string
+  ): Observable<string> {
+    if (!fileRAW) return new Observable();
+    return this.uploadFile(recId, 'mortDocFile', fileRAW.name, fileRAW, mortId);
   }
 
   /**
@@ -154,7 +215,8 @@ export class LandRecordsService {
     recId: string,
     fieldName: string,
     fileName: string,
-    fileRAW: File
+    fileRAW: File,
+    mortId: string = ''
   ): Observable<string> {
     const fileNameSplitArray = fileName.split('.');
     const file = fileNameSplitArray.reduce(
@@ -166,20 +228,14 @@ export class LandRecordsService {
       ''
     );
     const ext = fileNameSplitArray[fileNameSplitArray.length - 1];
-    const fileUploadUri =
-      this.uri +
-      '/attachments/' +
-      fieldName +
-      '?id=' +
-      recId +
-      '&file=' +
-      file +
-      '&ext=' +
-      ext;
-    return this.http
-      .post(fileUploadUri, fileRAW, {
-        responseType: 'text',
-      })
+    const fileUploadUri = `${
+      this.uri
+    }/attachments/${fieldName}?id=${recId}&file=${file}&ext=${ext}${
+      mortId.length ? `&mort=${mortId}` : ''
+    }`;
+    return this.http.post(fileUploadUri, fileRAW, {
+      responseType: 'text',
+    });
   }
 
   getFile(fieldName: string, fileName: string): Observable<any> {
