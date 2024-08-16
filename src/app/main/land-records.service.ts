@@ -220,6 +220,7 @@ export class LandRecordsService {
     fileRAW: File,
     mortId: string = ''
   ): Observable<string> {
+    if (!fileName) return new Observable();
     const fileNameSplitArray = fileName.split('.');
     const file = fileNameSplitArray.reduce(
       (acc: string, curVal: string, idx: number) => {
