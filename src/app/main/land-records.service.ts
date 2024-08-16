@@ -25,12 +25,11 @@ export class LandRecordsService {
     fileObj: any,
     fileInfoArrayObj: any
   ): void {
-    this.http
-      .post(this.uri, formValues)
-      .subscribe((data: any) => {
-        console.log(data);
-        this.uploadMultipleNewFiles(fileInfoArrayObj, fileObj, data.recId);
-        for(const mort of formValues.mortgagedData) {
+    this.http.post(this.uri, formValues).subscribe((data: any) => {
+      console.log(data);
+      this.uploadMultipleNewFiles(fileInfoArrayObj, fileObj, data.recId);
+      if (formValues.mortgaged)
+        for (const mort of formValues.mortgagedData) {
           let newMortId: string =
             (data.mortgagedData as Array<MortgageData>).find((newMort) => {
               return (
@@ -39,12 +38,14 @@ export class LandRecordsService {
                 newMort.party === mort.party
               );
             })?.mortId || '';
-          this.uploadMortgagedFile(data.recId, mort.fileRAW, newMortId).subscribe(
-            (data) => console.log(data)
-          );
+          this.uploadMortgagedFile(
+            data.recId,
+            mort.fileRAW,
+            newMortId
+          ).subscribe((data) => console.log(data));
         }
-        this.router.navigateByUrl('/land-record/view/' + data.recId);
-      });
+      this.router.navigateByUrl('/land-record/view/' + data.recId);
+    });
   }
 
   /**
@@ -97,33 +98,34 @@ export class LandRecordsService {
           }
         );
       }
-      for (const mort of updatedData.mortgagedData) {
-        if (mort.mortId) {
-          if (mort.newFile) {
-            this.deleteFile(id, 'mortDocFile', mort.mortDocFile)
-              .subscribe((data) => console.log(data))
-              .add(() =>
-                this.uploadMortgagedFile(
-                  id,
-                  mort.fileRAW,
-                  mort.mortId
-                ).subscribe((data) => console.log(data))
-              );
+      if (updatedData.mortgaged)
+        for (const mort of updatedData.mortgagedData) {
+          if (mort.mortId) {
+            if (mort.newFile) {
+              this.deleteFile(id, 'mortDocFile', mort.mortDocFile)
+                .subscribe((data) => console.log(data))
+                .add(() =>
+                  this.uploadMortgagedFile(
+                    id,
+                    mort.fileRAW,
+                    mort.mortId
+                  ).subscribe((data) => console.log(data))
+                );
+            }
+          } else {
+            let newMortId: string =
+              (data.mortgagedData as Array<MortgageData>).find((newMort) => {
+                return (
+                  newMort.mortDate === mort.mortDate &&
+                  newMort.mortQty === mort.mortQty &&
+                  newMort.party === mort.party
+                );
+              })?.mortId || '';
+            this.uploadMortgagedFile(id, mort.fileRAW, newMortId).subscribe(
+              (data) => console.log(data)
+            );
           }
-        } else {
-          let newMortId: string =
-            (data.mortgagedData as Array<MortgageData>).find((newMort) => {
-              return (
-                newMort.mortDate === mort.mortDate &&
-                newMort.mortQty === mort.mortQty &&
-                newMort.party === mort.party
-              );
-            })?.mortId || '';
-          this.uploadMortgagedFile(id, mort.fileRAW, newMortId).subscribe(
-            (data) => console.log(data)
-          );
         }
-      }
 
       this.router.navigateByUrl('/land-record/view/' + id);
     });
