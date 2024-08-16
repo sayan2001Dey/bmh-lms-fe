@@ -205,8 +205,8 @@ export class NewLandRecordComponent implements OnInit {
    *
    * @return {void} No return value.
    */
-  onAddSeller(): void {
-    this.sellerForms.push(this.fb.control('', Validators.required));
+  onAddSeller(value: string = ''): void {
+    this.sellerForms.push(this.fb.control(value, Validators.required));
   }
 
   /**
@@ -610,6 +610,7 @@ export class NewLandRecordComponent implements OnInit {
           this.id = data['id'];
           this.landRecordsService.getLandRecord(this.id).subscribe((data) => {
             console.log(data);
+            this.newLandRecordForm.patchValue(data);
             this.mortgagedData.set(
               data['mortgagedData'].map((data: MortgageData): MortgageData => {
                 return {
@@ -628,12 +629,16 @@ export class NewLandRecordComponent implements OnInit {
                 }
               )
             );
-            this.newLandRecordForm.patchValue(data);
             this.newLandRecordForm.patchValue({
               deedDate: this.getDateFromString(data['deedDate']),
               dueDate: this.getDateFromString(data['dueDate']),
               ledueDate: this.getDateFromString(data['ledueDate']),
               lelastDate: this.getDateFromString(data['lelastDate']),
+            });
+            //seller ?
+            this.sellerFormControls.pop();
+            data.sellers.forEach((seller: string) => {
+              this.onAddSeller(seller);
             });
             if (data.scanCopyFile) {
               data.scanCopyFile.forEach((fileName: string) => {
