@@ -16,12 +16,18 @@ export class AuthService {
   private router: Router = inject(Router);
 
   private authenticated: WritableSignal<boolean> = signal(false);
+  private readonly name: WritableSignal<string> = signal('--');
 
   get isAuthenticated() {
     if(localStorage.getItem("token")) {
       this.authenticated.set(true);
     }
     return this.authenticated;
+  }
+
+  get getName() {
+    this.name.set(localStorage.getItem("name") || '--');
+    return this.name;
   }
 
   login(username: string, password: string): void {

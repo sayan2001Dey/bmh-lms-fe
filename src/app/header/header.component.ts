@@ -2,20 +2,26 @@ import { Component, WritableSignal, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../auth/auth.service';
+import { MatIconModule } from '@angular/material/icon';
+import { MatRippleModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, MatButtonModule],
+  imports: [RouterLink, MatButtonModule, MatIconModule, MatRippleModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
-  currentUrl: WritableSignal<string> = signal('');
-  loggedIn: WritableSignal<boolean> = inject(AuthService).isAuthenticated;
+  // currentUrl: WritableSignal<string> = signal('');
   authService: AuthService = inject(AuthService);
-
+  loggedIn: WritableSignal<boolean> = this.authService.isAuthenticated;
+  name: WritableSignal<string> = this.authService.getName;
   constructor(private router: Router) {}
+
+  get menuEnabled() {
+    return this.loggedIn();
+  }
 
   onLogout() {
     this.authService.logout();

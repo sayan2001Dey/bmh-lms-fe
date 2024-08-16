@@ -5,16 +5,42 @@
       (loggedIn() ? 'justify-content-between' : 'justify-content-around')
     "
   >
-    <h3
-      class="my-auto py-auto"
-      style="color: green; cursor: pointer"
-      routerLink="/home"
-    >
-      LMS
-    </h3>
+    <div class="d-flex align-items-center">
+      @if(menuEnabled) { 
+        <button mat-icon-button class="me-2">
+          <mat-icon class="mb-2">apps</mat-icon>
+        </button>
+      }
+      <h3
+        class="my-auto py-auto"
+        style="color: green; cursor: pointer"
+        routerLink="/home"
+      >
+        LMS
+      </h3>
+    </div>
     @if(loggedIn()) {
-    <div>
-      <button mat-flat-button class="mx-1" (click)="onLogout()">Logout</button>
+    <div class="d-flex justify-content-center align-items-center">
+      <!-- <button mat-stroked-button>Goto</button> -->
+
+      <div class="top-bar-items ml-5">
+        <span class="user-image">
+          <mat-icon class="user-icon">person</mat-icon>
+        </span>
+
+        <span class="right-box">
+          <div class="name">{{ name() }}</div>
+          <div
+            mat-ripple
+            matRippleColor="#50a95056"
+            class="logout"
+            (click)="onLogout()"
+          >
+            <mat-icon class="logout-icon">logout</mat-icon>
+            <span>Logout</span>
+          </div>
+        </span>
+      </div>
     </div>
     }
   </nav>

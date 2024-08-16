@@ -1,0 +1,56 @@
+// reference: https://github.com/archismantripathi/ams-angular-web-client/blob/0f17f6e2cf87b20b8667b4e56004a76c8d87476a/src/app/main/topbar/topbar.component.scss
+
+.top-bar-items {
+  margin-top: -0.3rem;
+  margin-bottom: -0.3rem;
+  margin-left: 2rem;
+  display: flex;
+  position: relative;
+  right: 1rem;
+  border-radius: 10rem;
+  background-color: rgba(255, 255, 255, 0.4);
+  outline: auto;
+  outline-color: green;
+}
+
+.user-image {
+  background-color: rgba(1, 155, 60, 0.185);
+  margin: 0.7rem;
+  border-radius: 100%;
+  height: 2rem;
+  width: 2rem;
+  display: flex;
+}
+.user-icon {
+  color: #007200cc;
+  margin: auto;
+  transform: scale(1.2);
+}
+
+.right-box {
+  margin-top: 0.3rem;
+  margin-right: 0.7rem;
+  min-width: 100px;
+}
+
+.name {
+  margin-right: 1rem;
+  font-size: small;
+}
+
+.logout {
+  border-radius: 10rem;
+  color: green;
+  font-size: small;
+  display: flex;
+  justify-content: center;
+  width: 5rem;
+  position: relative;
+  right: 0.6rem;
+  span {
+    margin-top: 0.07rem;
+  }
+}
+.logout-icon {
+  transform: scale(0.7);
+}
