@@ -1,3 +1,11 @@
+.drawer-container {
+  background-color: transparent;
+}
+
+.side-nav {
+  max-width: min(16rem, 50%);
+}
+
 .content {
   overflow-block: clip;
 }

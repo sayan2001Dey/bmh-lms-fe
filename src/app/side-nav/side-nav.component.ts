@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, signal, WritableSignal } from '@angular/core';
 
 @Component({
   selector: 'app-side-nav',
@@ -8,5 +8,5 @@ import { Component } from '@angular/core';
   styleUrl: './side-nav.component.scss'
 })
 export class SideNavComponent {
-
+  @Input() navState: WritableSignal<boolean> = signal(true);
 }

@@ -1,9 +1,14 @@
-<!-- <mat-drawer-container autosize> -->
-  <main class="h-100 d-flex flex-column">
-    <app-header [navState]="navState"></app-header>
-    <section class="flex-grow-1 overflow-auto content">
-      <router-outlet />
-    </section>
-    <app-footer></app-footer>
-  </main>
-<!-- </mat-drawer-container> -->
+<main class="w-100 h-100 d-flex flex-column">
+  <app-header [navState]="navState"></app-header>
+  <mat-drawer-container class="flex-grow-1 drawer-container" autosize>
+    <mat-drawer [opened]="navState()" class="side-nav border-end" mode="side">
+      <app-side-nav [navState]="navState"></app-side-nav>
+    </mat-drawer>
+    <div class="border-top">
+      <section class="content">
+        <router-outlet />
+      </section>
+    </div>
+  </mat-drawer-container>
+  <app-footer></app-footer>
+</main>
