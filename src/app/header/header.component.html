@@ -7,7 +7,7 @@
   >
     <div class="d-flex align-items-center">
       @if(menuEnabled) { 
-        <button mat-icon-button class="me-2">
+        <button mat-icon-button class="me-2" (click)="onToggleNav()">
           <mat-icon class="mb-2 text-green">apps</mat-icon>
         </button>
       }

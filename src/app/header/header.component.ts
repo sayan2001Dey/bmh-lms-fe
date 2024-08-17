@@ -1,4 +1,4 @@
-import { Component, WritableSignal, inject, signal } from '@angular/core';
+import { Component, Input, OnInit, WritableSignal, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../auth/auth.service';
@@ -12,18 +12,25 @@ import { MatRippleModule } from '@angular/material/core';
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
-export class HeaderComponent {
-  // currentUrl: WritableSignal<string> = signal('');
-  authService: AuthService = inject(AuthService);
-  loggedIn: WritableSignal<boolean> = this.authService.isAuthenticated;
-  name: WritableSignal<string> = this.authService.getName;
+export class HeaderComponent implements OnInit {
+  @Input() navState: WritableSignal<boolean> = signal(true);
+  readonly authService: AuthService = inject(AuthService);
+  readonly loggedIn: WritableSignal<boolean> = this.authService.isAuthenticated;
+  readonly name: WritableSignal<string> = this.authService.getName;
   constructor(private router: Router) {}
 
   get menuEnabled() {
     return this.loggedIn();
   }
 
+  onToggleNav() {
+    this.navState.update((state) => !state);
+  }
+
   onLogout() {
     this.authService.logout();
+  }
+
+  ngOnInit(): void {
   }
 }

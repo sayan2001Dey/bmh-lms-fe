@@ -1,7 +1,9 @@
-<main class="w-100 h-100 d-flex flex-column">
-  <app-header></app-header>
-  <section class="flex-grow-1 overflow-auto content">
-    <router-outlet/>
-  </section>
-  <app-footer></app-footer>
-</main>
+<!-- <mat-drawer-container autosize> -->
+  <main class="h-100 d-flex flex-column">
+    <app-header [navState]="navState"></app-header>
+    <section class="flex-grow-1 overflow-auto content">
+      <router-outlet />
+    </section>
+    <app-footer></app-footer>
+  </main>
+<!-- </mat-drawer-container> -->
