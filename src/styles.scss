@@ -55,6 +55,10 @@ body {
   color: #006900;
 }
 
+.bg-transparent {
+  background-color: transparent;
+}
+
 .light-blur-backdrop {
   backdrop-filter: blur(5px);
   background-color: rgba(255, 255, 255, 0.64);

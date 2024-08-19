@@ -1,8 +1,8 @@
 <main class="w-100 h-100 d-flex flex-column">
-  <app-header [navState]="navState"></app-header>
-  <mat-drawer-container class="flex-grow-1 drawer-container" autosize>
-    <mat-drawer [opened]="navState()" class="side-nav border-end" mode="side">
-      <app-side-nav [navState]="navState"></app-side-nav>
+  <app-header [navState]="navState" />
+  <mat-drawer-container class="flex-grow-1 bg-transparent" autosize>
+    <mat-drawer [opened]="navState()" class="side-nav border-end bg-transparent" mode="side">
+      <app-side-nav [navState]="navState" />
     </mat-drawer>
     <div class="border-top">
       <section class="content">
@@ -10,5 +10,5 @@
       </section>
     </div>
   </mat-drawer-container>
-  <app-footer></app-footer>
+  <app-footer />
 </main>
