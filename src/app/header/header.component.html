@@ -1,15 +1,16 @@
-<header>
+<header class="border-bottom">
   <nav
     [class]="
-      'container w-100 d-flex p-3 ' +
+      'w-100 d-flex p-3 ' +
       (loggedIn() ? 'justify-content-between' : 'justify-content-around')
     "
   >
-    <div class="d-flex align-items-center">
+    <section class="d-flex align-items-center">
       @if(menuEnabled) { 
-        <button mat-icon-button class="me-2" (click)="onToggleNav()">
-          <mat-icon class="mb-2 text-green">apps</mat-icon>
+        <button mat-icon-button class="me-md-5" (click)="onToggleNav()">
+          <mat-icon [class]="'menu-icon mb-2 text-green'">keyboard_double_arrow_right</mat-icon>
         </button>
+        <!-- TODO: here` -->
       }
       <h3
         class="my-auto py-auto"
@@ -18,12 +19,12 @@
       >
         LMS
       </h3>
-    </div>
+    </section>
     @if(loggedIn()) {
-    <div class="d-flex justify-content-center align-items-center">
+    <section class="d-flex justify-content-center align-items-center">
       <!-- <button mat-stroked-button>Goto</button> -->
 
-      <div class="top-bar-items ml-5">
+      <div class="top-bar-items ml-5 d-none d-sm-flex">
         <span class="user-image">
           <mat-icon class="user-icon">person</mat-icon>
         </span>
@@ -41,7 +42,12 @@
           </div>
         </span>
       </div>
-    </div>
+
+      <button mat-button type="button" class="d-sm-none">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </section>
     }
   </nav>
 </header>

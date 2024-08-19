@@ -1,14 +1,16 @@
 <main class="w-100 h-100 d-flex flex-column">
   <app-header [navState]="navState" />
   <mat-drawer-container class="flex-grow-1 bg-transparent" autosize>
-    <mat-drawer [opened]="navState()" class="side-nav border-end bg-transparent" mode="side">
+    <mat-drawer
+      [opened]="navState()"
+      class="side-nav border-end bg-transparent"
+      mode="side"
+    >
       <app-side-nav [navState]="navState" />
     </mat-drawer>
-    <div class="border-top">
-      <section class="content">
-        <router-outlet />
-      </section>
-    </div>
+    <section class="content h-100">
+      <router-outlet />
+    </section>
   </mat-drawer-container>
   <app-footer />
 </main>

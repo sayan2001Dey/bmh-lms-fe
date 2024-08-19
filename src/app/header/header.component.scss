@@ -1,5 +1,3 @@
-// reference: https://github.com/archismantripathi/ams-angular-web-client/blob/0f17f6e2cf87b20b8667b4e56004a76c8d87476a/src/app/main/topbar/topbar.component.scss
-
 .top-bar-items {
   margin-top: -0.3rem;
   margin-bottom: -0.3rem;
@@ -54,3 +52,9 @@
 .logout-icon {
   transform: scale(0.7);
 }
+
+.menu-icon {
+  transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+  // transform: rotate(180deg);
+}
+//TODO: FIX-ME:
