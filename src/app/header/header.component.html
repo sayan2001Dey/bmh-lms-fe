@@ -7,10 +7,9 @@
   >
     <section class="d-flex align-items-center">
       @if(menuEnabled) { 
-        <button mat-icon-button class="me-md-5" (click)="onToggleNav()">
-          <mat-icon [class]="'menu-icon mb-2 text-green'">keyboard_double_arrow_right</mat-icon>
+        <button mat-icon-button [class]="'me-md-5 menu-btn' + (navState() ? '' : ' menu-btn-collapse')" (click)="onToggleNav()">
+          <mat-icon class="mb-2 text-green">keyboard_double_arrow_left</mat-icon>
         </button>
-        <!-- TODO: here` -->
       }
       <h3
         class="my-auto py-auto"

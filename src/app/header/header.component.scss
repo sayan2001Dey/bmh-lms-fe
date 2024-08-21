@@ -53,8 +53,10 @@
   transform: scale(0.7);
 }
 
-.menu-icon {
+.menu-btn {
   transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
-  // transform: rotate(180deg);
 }
-//TODO: FIX-ME:
+
+.menu-btn-collapse {
+  transform: rotate(180deg);
+}
