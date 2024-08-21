@@ -7,11 +7,12 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
   private readonly uri: string = 'http://127.0.0.1:8081/api/auth/';
-  private http: HttpClient = inject(HttpClient);
-  private router: Router = inject(Router);
+  private readonly http: HttpClient = inject(HttpClient);
+  private readonly router: Router = inject(Router);
 
-  private authenticated: WritableSignal<boolean> = signal(false);
+  private readonly authenticated: WritableSignal<boolean> = signal(false);
   private readonly name: WritableSignal<string> = signal('--');
+  private readonly admin: WritableSignal<boolean> = signal(false);
 
   get isAuthenticated() {
     if (localStorage.getItem('token')) {
@@ -23,6 +24,13 @@ export class AuthService {
   get getName() {
     this.name.set(localStorage.getItem('name') || '--');
     return this.name;
+  }
+
+  get isAdmin() {
+    if (localStorage.getItem('admin') === "true" || false ) {
+      this.admin.set(true);
+    }
+    return this.admin;
   }
 
   login(username: string, password: string): void {

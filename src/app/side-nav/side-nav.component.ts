@@ -1,7 +1,8 @@
-import { Component, Input, signal, WritableSignal } from '@angular/core';
+import { Component, inject, Input, signal, WritableSignal } from '@angular/core';
 import { MatRippleModule } from '@angular/material/core';
 import { MatListModule } from '@angular/material/list';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-side-nav',
@@ -12,6 +13,5 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class SideNavComponent {
   @Input() navState: WritableSignal<boolean> = signal(true);
-
-
+  isAdmin: WritableSignal<boolean> = inject(AuthService).isAdmin;
 }

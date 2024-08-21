@@ -1,5 +1,11 @@
 import { inject } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivateFn, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
+import {
+  ActivatedRouteSnapshot,
+  CanActivateFn,
+  RouterStateSnapshot,
+  UrlTree,
+  Router,
+} from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 
@@ -27,4 +33,17 @@ export const loginGuard: CanActivateFn = (
   return inject(AuthService).isAuthenticated()
     ? inject(Router).createUrlTree(['/home'])
     : true;
-}
+};
+
+export const adminGuard: CanActivateFn = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+):
+  | Observable<boolean | UrlTree>
+  | Promise<boolean | UrlTree>
+  | boolean
+  | UrlTree => {
+  return inject(AuthService).isAdmin()
+    ? true
+    : inject(Router).createUrlTree(['/home']);
+};
