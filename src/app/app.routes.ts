@@ -1,9 +1,10 @@
 import { Routes } from '@angular/router';
-import { NewLandRecordComponent } from './main/land-record/new-land-record/new-land-record.component';
 import { LoginComponent } from './auth/login/login.component';
 import { authGuard, loginGuard } from './auth/auth.guard';
-import { ListLandRecordComponent } from './main/land-record/list-land-record/list-land-record.component';
 import { LandRecordComponent } from './main/land-record/land-record.component';
+import { MasterComponent } from './main/master/master.component';
+import { masterRoutes } from './main/master/master.routes';
+import { landRecordRoutes } from './main/land-record/land-record.routes';
 
 export const routes: Routes = [
   {
@@ -20,35 +21,20 @@ export const routes: Routes = [
     component: LandRecordComponent,
     data: { title: 'Land Record | LMS' },
     canActivate: [authGuard],
-    children: [
-      {
-        path: '',
-        pathMatch: 'full',
-        component: ListLandRecordComponent,
-        data: { title: 'Land Records | LMS' },
-      },
-      {
-        path: 'new',
-        component: NewLandRecordComponent,
-        data: { title: 'New Land Record | LMS' },
-      },
-      {
-        path: 'update/:id',
-        component: NewLandRecordComponent,
-        data: { title: 'Update Land Record | LMS' },
-      },
-      {
-        path: 'view/:id',
-        component: NewLandRecordComponent,
-        data: { title: 'View Land Record | LMS' },
-      }
-    ],
+    children: landRecordRoutes,
+  },
+  {
+    path: 'master',
+    component: MasterComponent,
+    data: { title: 'Master | LMS' },
+    canActivate: [authGuard],
+    children: masterRoutes,
   },
   {
     path: 'login',
     component: LoginComponent,
     data: { title: 'Login | LMS' },
-    canActivate: [loginGuard]
+    canActivate: [loginGuard],
   },
   {
     path: '**',
