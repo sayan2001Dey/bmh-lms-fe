@@ -29,8 +29,6 @@ export class AppComponent implements OnInit {
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   readonly navState: WritableSignal<boolean> = signal(true);
 
-  title = 'bmh-lms-fe';
-
   ngOnInit(): void {
     this.router.events
       .pipe(

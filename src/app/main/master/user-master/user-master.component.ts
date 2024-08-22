@@ -12,6 +12,8 @@ import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { UserMasterService } from './user-master.service';
 import { Dialog } from '@angular/cdk/dialog';
+import { DialogUserComponent } from './modal/user/user.dialog';
+import { User } from '../../../model/user.model';
 
 @Component({
   selector: 'app-user-master',
@@ -32,23 +34,54 @@ export class UserMasterComponent implements OnInit {
   private readonly route: ActivatedRoute = inject(ActivatedRoute);
   private readonly dialog: Dialog = inject(Dialog);
   userList: WritableSignal<any[]> = signal([]);
+  displayedColumns: WritableSignal<string[]> = signal([
+    'slno',
+    'name',
+    'username',
+    'admin',
+    'action',
+  ]);
 
-  onNewUser(): void {}
+  onNewUser(): void {
+    const dialogRef = this.dialog.open<User>(DialogUserComponent, {
+      maxWidth: '25rem',
+      backdropClass: 'light-blur-backdrop',
+      disableClose: true,
+    });
 
-  onUpdateUser(): void {}
+    dialogRef.backdropClick.subscribe(() => {
+      if (
+        window.confirm(
+          '⚠ CAUTION: ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
+        )
+      )
+        dialogRef.close();
+    });
+
+    dialogRef.closed.subscribe((data: User | undefined) => {
+      if (data) {
+        console.log(data);
+      }
+    })
+  }
+
+  onUpdateUser(username: string): void {}
+
+  onDeleteUser(username: string) {
+    throw new Error('Method not implemented.');
+  }
 
   ngOnInit() {
     console.log(this.route.children);
     if (this.route.children[0])
       this.route.children[0].url.subscribe((data) => {
-        console.log(data);
         if (data[0].path == 'new') {
-          console.log('new');
+          this.onNewUser();
         } else if (data[0].path == 'update') {
           console.log('update');
           this.route.children[0].params.subscribe((data) => {
             console.log(data['id']);
-          })
+          });
         }
       });
     this.userMasterService.getUserList().subscribe((data) => {
