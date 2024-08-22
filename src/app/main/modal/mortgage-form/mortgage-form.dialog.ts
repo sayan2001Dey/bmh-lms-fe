@@ -19,7 +19,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MortgageData } from '../../../model/mortgage-data.model';
 import { MatCardModule } from '@angular/material/card';
-import { LandRecordsService } from '../../land-records.service';
+import { LandRecordsService } from '../../land-record/land-records.service';
 
 @Component({
   selector: 'dialog-mortgage-form',

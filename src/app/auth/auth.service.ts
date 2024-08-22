@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, WritableSignal, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { apiUrl } from '../config/api.config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly uri: string = 'http://127.0.0.1:8081/api/auth/';
+  private readonly uri: string = apiUrl + 'auth/';
   private readonly http: HttpClient = inject(HttpClient);
   private readonly router: Router = inject(Router);
 

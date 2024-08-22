@@ -1,7 +1,7 @@
 import { Component, WritableSignal, inject, signal } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
-import { LandRecordsService } from '../../land-records.service';
+import { LandRecordsService } from '../land-records.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';

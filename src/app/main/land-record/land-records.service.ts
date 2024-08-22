@@ -2,13 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { MortgageData } from '../model/mortgage-data.model';
+import { MortgageData } from '../../model/mortgage-data.model';
+import { apiUrl } from '../../config/api.config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LandRecordsService {
-  public readonly uri: string = 'http://127.0.0.1:8081/api/landrecord';
+  public readonly uri: string = apiUrl + 'landrecord';
   private http: HttpClient = inject(HttpClient);
   private router: Router = inject(Router);
 

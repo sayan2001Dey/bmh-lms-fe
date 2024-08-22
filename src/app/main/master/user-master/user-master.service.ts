@@ -1,8 +1,16 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { apiUrl } from '../../../config/api.config';
+import { HttpClient } from '@angular/common/http';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class UserMasterService {
+  public readonly url: string = apiUrl + 'user';
+
+  private readonly http: HttpClient = inject(HttpClient);
+
   /**
    * Creates a new user.
    *
@@ -19,7 +27,7 @@ export class UserMasterService {
    * @return {Observable<any>} An observable containing the list of users.
    */
   getUserList(): Observable<any> {
-    return new Observable();
+    return this.http.get(this.url);
   }
 
   /**
