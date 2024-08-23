@@ -22,7 +22,6 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatDividerModule } from '@angular/material/divider';
 import { UserMasterService } from '../../user-master.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'dialog-user',
@@ -53,11 +52,11 @@ export class DialogUserComponent implements OnInit {
   readonly updateMode: WritableSignal<boolean> = signal(!!this.data);
 
   userForm: FormGroup<any> = this.fb.group({
-    name: ['', Validators.required, Validators.minLength(3)],
-    username: ['', Validators.required, Validators.minLength(3)],
-    password: ['', Validators.required, Validators.minLength(8)],
-    confirmPassword: ['', Validators.required, Validators.minLength(8)],
-    admin: [false, Validators.required],
+    name: [''],
+    username: [''],
+    password: [''],
+    confirmPassword: [''],
+    admin: [false],
   });
 
   /**
@@ -79,17 +78,39 @@ export class DialogUserComponent implements OnInit {
     }
 
     this.sysIsBusy.set(true);
-    if (this.updateMode()) {
+    if (this.updateMode() && this.data) {
+      this.userMasterService
+        .updateUser(this.data, this.userForm.value)
+        .subscribe({
+          next: () => {
+            this.sysIsBusy.set(false);
+            this.dialogRef.close();
+          },
+          error: (err: HttpErrorResponse) => {
+            if (err.status === 0) this.serverUnreachable.set(true);
+            else if (err.status === 404)
+              alert(
+                '⛔ ERROR: CAN NOT SUBMIT\n\nUser not found. Press OK to exit.'
+              );
+            else
+              alert(
+                '⛔ ERROR: CAN NOT SUBMIT\n\nFailed to update user. Please try again.'
+              );
+            this.sysIsBusy.set(false);
+          },
+        });
     } else {
       this.userMasterService.newUser(this.userForm.value).subscribe({
         next: () => {
           this.sysIsBusy.set(false);
           this.dialogRef.close();
         },
-        error: () => {
-          alert(
-            '⛔ ERROR: CAN NOT SUBMIT\n\nFailed to create user. Please try again.'
-          );
+        error: (err: HttpErrorResponse) => {
+          if (err.status === 0) this.serverUnreachable.set(true);
+          else
+            alert(
+              '⛔ ERROR: CAN NOT SUBMIT\n\nFailed to create user. Please try again.'
+            );
           this.sysIsBusy.set(false);
         },
       });
@@ -116,10 +137,15 @@ export class DialogUserComponent implements OnInit {
       },
       error: (err: HttpErrorResponse) => {
         if (err.status === 404) {
+          alert(
+            '⛔ ERROR: CAN NOT GET USER DATA\n\nUser not found.\n\nPress OK to exit.'
+          );
           this.dialogRef.close();
-        } else {
-          this.serverUnreachable.set(true);
-        }
+        } else if (err.status === 0) this.serverUnreachable.set(true);
+        else
+          alert(
+            '⛔ ERROR: CAN NOT GET USER DATA\n\nUnknown error.\n\nFailed to get user data. Please try again.'
+          );
         this.sysIsBusy.set(false);
       },
     });
