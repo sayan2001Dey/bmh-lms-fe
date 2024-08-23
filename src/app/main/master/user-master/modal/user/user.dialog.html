@@ -5,7 +5,7 @@
     </button>
   </div>
   <section class="mx-3 my-4">
-    <span class="h2 text-center">Add/Update User</span>
+    <span class="h2 text-center">User Details</span>
   </section>
 
   <section>
@@ -35,10 +35,22 @@
           />
         </mat-form-field>
 
-        <mat-card appearance="outlined">
+        <mat-form-field appearance="outline">
+          <mat-label>Confirm Password</mat-label>
+          <input
+            matInput
+            type="password"
+            formControlName="confirmPassword"
+            required
+          />
+        </mat-form-field>
+
+        <mat-card appearance="outlined" class="px-2">
+          <span class="body text-center mt-1">Admin Access</span>
+          <mat-divider></mat-divider>
           <mat-radio-group formControlName="admin" class="m-auto">
-            <mat-radio-button value="true">Yes</mat-radio-button>
-            <mat-radio-button value="false" class="m-2">No</mat-radio-button>
+            <mat-radio-button [value]="true">Yes</mat-radio-button>
+            <mat-radio-button [value]="false" class="m-2">No</mat-radio-button>
           </mat-radio-group>
         </mat-card>
       </div>

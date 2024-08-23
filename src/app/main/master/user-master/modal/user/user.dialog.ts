@@ -20,12 +20,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { User } from '../../../../../model/user.model';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'dialog-user',
   standalone: true,
   imports: [
     MatCardModule,
+    MatDividerModule,
     MatFormFieldModule,
     MatRadioModule,
     MatInputModule,
@@ -40,27 +42,12 @@ import { MatRadioModule } from '@angular/material/radio';
 export class DialogUserComponent implements OnInit {
   fb: FormBuilder = inject(FormBuilder);
   sysIsBusy: WritableSignal<boolean> = signal(false);
-  userForm: FormGroup = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(3)]],
-    username: ['', [Validators.required, Validators.minLength(3)]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
-    admin: [false, [Validators.required]],
-  });
-  data: User;
-  readonly isUpdate: boolean;
-
-  constructor(
-    public dialogRef: DialogRef<string>,
-    @Inject(DIALOG_DATA)
-    public input: {
-      data?: User;
-    }
-  ) {
-    this.data = input.data
-      ? { ...input.data }
-      : { name: '', username: '', password: '', admin: false };
-    this.isUpdate = !!input.data;
-  }
+  userForm: FormGroup<any> = this.fb.group({
+    name: ['', Validators.required],
+    username: ['', Validators.required],
+    password: ['', Validators.required],
+    admin: [false, Validators.required],
+  })
 
   /**
    * Submits the user if they are valid and the sold quantity is not zero.
@@ -74,10 +61,10 @@ export class DialogUserComponent implements OnInit {
       );
       return;
     }
-    this.dialogRef.close({
-      ...this.data,
-      ...this.userForm.value,
-    });
+    // this.dialogRef.close({
+    //   // ...this.data,
+    //   ...this.userForm.value,
+    // });
   }
 
   /**
@@ -86,13 +73,15 @@ export class DialogUserComponent implements OnInit {
    *  @return {void} No return value.
    */
   onCancel() {
-    this.dialogRef.close();
+    // this.dialogRef.close();
   }
 
   ngOnInit(): void {
-    if (this.data)
+    // if (this.data)
       this.userForm.patchValue({
-        ...this.data,
+        // ...this.data,
       });
   }
 }
+
+
