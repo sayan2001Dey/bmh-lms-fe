@@ -21,6 +21,8 @@ import { User } from '../../../../../model/user.model';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatDividerModule } from '@angular/material/divider';
 import { UserMasterService } from '../../user-master.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'dialog-user',
@@ -47,7 +49,8 @@ export class DialogUserComponent implements OnInit {
   data: string | undefined = inject(DIALOG_DATA);
 
   readonly sysIsBusy: WritableSignal<boolean> = signal(true);
-  readonly updateMode: WritableSignal<boolean> = signal(false);
+  readonly serverUnreachable: WritableSignal<boolean> = signal(false);
+  readonly updateMode: WritableSignal<boolean> = signal(!!this.data);
 
   userForm: FormGroup<any> = this.fb.group({
     name: ['', Validators.required, Validators.minLength(3)],
@@ -77,19 +80,20 @@ export class DialogUserComponent implements OnInit {
 
     this.sysIsBusy.set(true);
     if (this.updateMode()) {
+    } else {
+      this.userMasterService.newUser(this.userForm.value).subscribe({
+        next: () => {
+          this.sysIsBusy.set(false);
+          this.dialogRef.close();
+        },
+        error: () => {
+          alert(
+            '⛔ ERROR: CAN NOT SUBMIT\n\nFailed to create user. Please try again.'
+          );
+          this.sysIsBusy.set(false);
+        },
+      });
     }
-    this.userMasterService.newUser(this.userForm.value).subscribe({
-      next: () => {
-        this.sysIsBusy.set(false);
-        this.dialogRef.close();
-      },
-      error: () => {
-        alert(
-          '⛔ ERROR: CAN NOT SUBMIT\n\nFailed to create user. Please try again.'
-        );
-        this.sysIsBusy.set(false);
-      },
-    });
   }
 
   /**
@@ -103,7 +107,21 @@ export class DialogUserComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // if (this.data)
-      
+    if (!this.data) return;
+    this.sysIsBusy.set(true);
+    this.userMasterService.getUser(this.data).subscribe({
+      next: (data: User) => {
+        this.userForm.patchValue(data);
+        this.sysIsBusy.set(false);
+      },
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 404) {
+          this.dialogRef.close();
+        } else {
+          this.serverUnreachable.set(true);
+        }
+        this.sysIsBusy.set(false);
+      },
+    });
   }
 }

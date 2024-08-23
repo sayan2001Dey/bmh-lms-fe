@@ -9,11 +9,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { UserMasterService } from './user-master.service';
 import { Dialog } from '@angular/cdk/dialog';
 import { DialogUserComponent } from './modal/user/user.dialog';
 import { User } from '../../../model/user.model';
+import { sys } from 'typescript';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-user-master',
@@ -33,7 +35,10 @@ export class UserMasterComponent implements OnInit {
     inject(UserMasterService);
   private readonly route: ActivatedRoute = inject(ActivatedRoute);
   private readonly dialog: Dialog = inject(Dialog);
-  userList: WritableSignal<any[]> = signal([]);
+  private readonly router: Router = inject(Router);
+  readonly sysIsBusy: WritableSignal<boolean> = signal(true);
+  readonly serverUnreachable: WritableSignal<boolean> = signal(false);
+  userList: WritableSignal<User[]> = signal([]);
   displayedColumns: WritableSignal<string[]> = signal([
     'slno',
     'name',
@@ -42,12 +47,28 @@ export class UserMasterComponent implements OnInit {
     'action',
   ]);
 
-  onNewUser(): void {
-    const dialogRef = this.dialog.open<DialogUserComponent>(DialogUserComponent, {
-      maxWidth: '25rem',
-      backdropClass: 'light-blur-backdrop',
-      disableClose: true,
+  getUserList(): void {
+    this.userMasterService.getUserList().subscribe({
+      next: (data) => {
+        this.userList.set(data);
+        this.sysIsBusy.set(false);
+      },
+      error: () => {
+        this.sysIsBusy.set(false);
+        this.serverUnreachable.set(true);
+      },
     });
+  }
+
+  onNewUser(): void {
+    const dialogRef = this.dialog.open<DialogUserComponent>(
+      DialogUserComponent,
+      {
+        maxWidth: '25rem',
+        backdropClass: 'light-blur-backdrop',
+        disableClose: true,
+      }
+    );
 
     dialogRef.backdropClick.subscribe(() => {
       if (
@@ -59,20 +80,21 @@ export class UserMasterComponent implements OnInit {
     });
 
     dialogRef.closed.subscribe(() => {
-      this.userMasterService.getUserList().subscribe((data) => {
-        console.log(data);
-        this.userList.set(data);
-      });
+      this.router.navigate(['master', 'user']);
+      this.getUserList();
     });
   }
 
   onUpdateUser(username: string): void {
-    const dialogRef = this.dialog.open<DialogUserComponent>(DialogUserComponent, {
-      maxWidth: '25rem',
-      backdropClass: 'light-blur-backdrop',
-      disableClose: true,
-      data: username,
-    });
+    const dialogRef = this.dialog.open<DialogUserComponent>(
+      DialogUserComponent,
+      {
+        maxWidth: '25rem',
+        backdropClass: 'light-blur-backdrop',
+        disableClose: true,
+        data: username,
+      }
+    );
 
     dialogRef.backdropClick.subscribe(() => {
       if (
@@ -84,15 +106,30 @@ export class UserMasterComponent implements OnInit {
     });
 
     dialogRef.closed.subscribe(() => {
-      this.userMasterService.getUserList().subscribe((data) => {
-        console.log(data);
-        this.userList.set(data);
-      });
+      this.router.navigate(['master', 'user']);
+      this.getUserList();
     });
   }
 
   onDeleteUser(username: string) {
-    throw new Error('Method not implemented.');
+    if (
+      window.confirm(
+        '⚠ CAUTION: ACTION CANNOT BE UNDONE!\n\nDo you really want to delete this user?'
+      )
+    ) {
+      this.userMasterService.deleteUser(username).subscribe({
+        next: () => this.getUserList(),
+        error: (err: HttpErrorResponse) => {
+          if (err.status === 404) {
+            alert('⛔ ERROR: CAN NOT DELETE\n\nUser not found.');
+          } else {
+            alert(
+              '⛔ ERROR: CAN NOT DELETE\n\nFailed to delete user. Please try again.'
+            );
+          }
+        },
+      });
+    }
   }
 
   ngOnInit() {
@@ -108,9 +145,6 @@ export class UserMasterComponent implements OnInit {
           });
         }
       });
-    this.userMasterService.getUserList().subscribe((data) => {
-      console.log(data);
-      this.userList.set(data);
-    });
+    this.getUserList();
   }
 }
