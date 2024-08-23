@@ -18,19 +18,16 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Username</mat-label>
-          <input
-            matInput
-            formControlName="username"
-            required
-          />
+          <input matInput formControlName="username" required />
         </mat-form-field>
 
-        @if(!updateMode()){
+        @if(passwordVisible()){
         <mat-form-field appearance="outline">
           <mat-label>Password</mat-label>
-          <input matInput type="password" formControlName="password" required />
+          <input matInput [type]="passwordFieldType()" formControlName="password" required />
         </mat-form-field>
 
+        } @if(confirmPasswordVisible()){
         <mat-form-field appearance="outline">
           <mat-label>Confirm Password</mat-label>
           <input
@@ -41,6 +38,25 @@
           />
         </mat-form-field>
         }
+
+        <div>
+          @if(generatePasswordBtnVisible()){
+          <button type="button" (click)="onGeneratePassword()">
+            Generate Password
+          </button>
+          @if(passwordGenerated()){
+            <button type="button" (click)="onClickEditPassword()">Edit Password</button>
+          }
+          } @if(updateMode()){ @if(changePasswordBtnVisible()){
+          <button type="button" (click)="onClickEnablePasswordChange()">
+            Change Password
+          </button>
+          } @else {
+          <button type="button" (click)="onClickDisablePasswordChange()">
+            Don't Change Password
+          </button>
+          } }
+        </div>
 
         <mat-card appearance="outlined" class="px-2">
           <span class="body text-center mt-1">Admin Access</span>

@@ -54,6 +54,11 @@ export class DialogUserComponent implements OnInit {
   readonly updateMode: WritableSignal<boolean> = signal(!!this.data);
   readonly passwordVisible: WritableSignal<boolean> = signal(true);
   readonly confirmPasswordVisible: WritableSignal<boolean> = signal(true);
+  readonly generatePasswordBtnVisible: WritableSignal<boolean> = signal(true);
+  readonly changePasswordBtnVisible: WritableSignal<boolean> = signal(false);
+  readonly passwordFieldType: WritableSignal<'password' | 'text'> =
+    signal('password');
+  readonly passwordGenerated: WritableSignal<boolean> = signal(false);
 
   private readonly passwordMatchValidator: (
     control: AbstractControl
@@ -98,7 +103,10 @@ export class DialogUserComponent implements OnInit {
       return;
     }
 
-    if (this.userForm.value.password !== this.userForm.value.confirmPassword) {
+    if (
+      this.confirmPasswordVisible() &&
+      this.userForm.value.password !== this.userForm.value.confirmPassword
+    ) {
       alert('⛔ ERROR: CAN NOT SUBMIT\n\nPasswords do not match.');
       return;
     }
@@ -157,10 +165,11 @@ export class DialogUserComponent implements OnInit {
     this.updateMode.set(true);
     this.userForm.get('username')?.clearValidators();
     this.userForm.get('username')?.disable();
-    this.userForm.get('password')?.clearValidators();
-    this.userForm.get('confirmPassword')?.clearValidators();
-    this.passwordVisible.set(false);
-    this.confirmPasswordVisible.set(false);
+
+    this.onClickDisablePasswordChange();
+
+    this.changePasswordBtnVisible.set(true);
+    this.generatePasswordBtnVisible.set(false);
   }
 
   generatePassword(length: number): string {
@@ -175,7 +184,8 @@ export class DialogUserComponent implements OnInit {
   }
 
   onGeneratePassword(): void {
-    this.userForm.get('password')?.get('type')?.setValue('text');
+    this.passwordFieldType.set('text');
+    this.passwordGenerated.set(true);
 
     this.userForm.get('password')?.setValue(this.generatePassword(8));
     this.userForm.get('confirmPassword')?.setValue('');
@@ -189,8 +199,13 @@ export class DialogUserComponent implements OnInit {
     this.confirmPasswordVisible.set(false);
   }
 
+  onClickEditPassword(): void {
+    this.passwordGenerated.set(false);
+    this.onClickEnablePasswordChange();
+  }
+
   onClickEnablePasswordChange(): void {
-    this.userForm.get('password')?.get('type')?.setValue('password');
+    this.passwordFieldType.set('password');
 
     this.userForm.get('password')?.setValidators(this.passwordValidators);
     this.userForm
@@ -202,6 +217,23 @@ export class DialogUserComponent implements OnInit {
 
     this.passwordVisible.set(true);
     this.confirmPasswordVisible.set(true);
+
+    this.changePasswordBtnVisible.set(false);
+    this.generatePasswordBtnVisible.set(true);
+  }
+
+  onClickDisablePasswordChange(): void {
+    this.userForm.get('password')?.setValue('');
+    this.userForm.get('confirmPassword')?.setValue('');
+
+    this.userForm.get('password')?.clearValidators();
+    this.userForm.get('confirmPassword')?.clearValidators();
+
+    this.passwordVisible.set(false);
+    this.confirmPasswordVisible.set(false);
+
+    this.changePasswordBtnVisible.set(true);
+    this.generatePasswordBtnVisible.set(false);
   }
 
   ngOnInit(): void {
