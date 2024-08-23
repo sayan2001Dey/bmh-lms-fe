@@ -7,9 +7,11 @@ import {
   WritableSignal,
 } from '@angular/core';
 import {
+  AbstractControl,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
+  ValidationErrors,
   Validators,
 } from '@angular/forms';
 import { MatButton, MatIconButton } from '@angular/material/button';
@@ -50,14 +52,38 @@ export class DialogUserComponent implements OnInit {
   readonly sysIsBusy: WritableSignal<boolean> = signal(true);
   readonly serverUnreachable: WritableSignal<boolean> = signal(false);
   readonly updateMode: WritableSignal<boolean> = signal(!!this.data);
+  readonly passwordVisible: WritableSignal<boolean> = signal(true);
+  readonly confirmPasswordVisible: WritableSignal<boolean> = signal(true);
+
+  private readonly passwordMatchValidator: (
+    control: AbstractControl
+  ) => ValidationErrors | null = (
+    control: AbstractControl
+  ): ValidationErrors | null => {
+    const password = control.get('password')?.value;
+    const confirmPassword = control.get('confirmPassword')?.value;
+    return password === confirmPassword ? null : { passwordsDontMatch: true };
+  };
+
+  private readonly passwordValidators: ((
+    control: AbstractControl<any, any>
+  ) => ValidationErrors | null)[] = [
+    Validators.required,
+    Validators.minLength(8),
+    this.passwordMatchValidator,
+  ];
 
   userForm: FormGroup<any> = this.fb.group({
-    name: [''],
-    username: [''],
-    password: [''],
-    confirmPassword: [''],
-    admin: [false],
+    name: ['', [Validators.required, Validators.minLength(3)]],
+    username: ['', [Validators.required, Validators.minLength(3)]],
+    password: ['', this.passwordValidators],
+    confirmPassword: ['', this.passwordValidators],
+    admin: [false, [Validators.required]],
   });
+
+  get formData(): User {
+    return this.userForm.value;
+  }
 
   /**
    * Submits the user if they are valid and the sold quantity is not zero.
@@ -78,9 +104,9 @@ export class DialogUserComponent implements OnInit {
     }
 
     this.sysIsBusy.set(true);
-    if (this.updateMode() && this.data) {
+    if (this.updateMode()) {
       this.userMasterService
-        .updateUser(this.data, this.userForm.value)
+        .updateUser(this.data || '', this.formData)
         .subscribe({
           next: () => {
             this.sysIsBusy.set(false);
@@ -100,7 +126,7 @@ export class DialogUserComponent implements OnInit {
           },
         });
     } else {
-      this.userMasterService.newUser(this.userForm.value).subscribe({
+      this.userMasterService.newUser(this.formData).subscribe({
         next: () => {
           this.sysIsBusy.set(false);
           this.dialogRef.close();
@@ -127,9 +153,61 @@ export class DialogUserComponent implements OnInit {
     this.sysIsBusy.set(false);
   }
 
+  updateModePrep(): void {
+    this.updateMode.set(true);
+    this.userForm.get('username')?.clearValidators();
+    this.userForm.get('username')?.disable();
+    this.userForm.get('password')?.clearValidators();
+    this.userForm.get('confirmPassword')?.clearValidators();
+    this.passwordVisible.set(false);
+    this.confirmPasswordVisible.set(false);
+  }
+
+  generatePassword(length: number): string {
+    let result = '';
+    const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
+
+  onGeneratePassword(): void {
+    this.userForm.get('password')?.get('type')?.setValue('text');
+
+    this.userForm.get('password')?.setValue(this.generatePassword(8));
+    this.userForm.get('confirmPassword')?.setValue('');
+
+    this.userForm.get('password')?.clearValidators();
+    this.userForm.get('confirmPassword')?.clearValidators();
+
+    this.userForm.get('password')?.disable();
+
+    this.passwordVisible.set(true);
+    this.confirmPasswordVisible.set(false);
+  }
+
+  onClickEnablePasswordChange(): void {
+    this.userForm.get('password')?.get('type')?.setValue('password');
+
+    this.userForm.get('password')?.setValidators(this.passwordValidators);
+    this.userForm
+      .get('confirmPassword')
+      ?.setValidators(this.passwordValidators);
+
+    this.userForm.get('password')?.enable();
+    this.userForm.get('confirmPassword')?.enable();
+
+    this.passwordVisible.set(true);
+    this.confirmPasswordVisible.set(true);
+  }
+
   ngOnInit(): void {
     if (!this.data) return;
     this.sysIsBusy.set(true);
+    this.updateModePrep();
     this.userMasterService.getUser(this.data).subscribe({
       next: (data: User) => {
         this.userForm.patchValue(data);
