@@ -1,7 +1,6 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import {
   Component,
-  Inject,
   inject,
   OnInit,
   signal,
@@ -21,6 +20,7 @@ import { MatInputModule } from '@angular/material/input';
 import { User } from '../../../../../model/user.model';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatDividerModule } from '@angular/material/divider';
+import { UserMasterService } from '../../user-master.service';
 
 @Component({
   selector: 'dialog-user',
@@ -40,14 +40,22 @@ import { MatDividerModule } from '@angular/material/divider';
   styleUrl: './user.dialog.scss',
 })
 export class DialogUserComponent implements OnInit {
-  fb: FormBuilder = inject(FormBuilder);
-  sysIsBusy: WritableSignal<boolean> = signal(false);
+  private readonly fb: FormBuilder = inject(FormBuilder);
+  readonly dialogRef: DialogRef = inject(DialogRef);
+  private readonly userMasterService: UserMasterService =
+    inject(UserMasterService);
+  data: string | undefined = inject(DIALOG_DATA);
+
+  readonly sysIsBusy: WritableSignal<boolean> = signal(true);
+  readonly updateMode: WritableSignal<boolean> = signal(false);
+
   userForm: FormGroup<any> = this.fb.group({
-    name: ['', Validators.required],
-    username: ['', Validators.required],
-    password: ['', Validators.required],
+    name: ['', Validators.required, Validators.minLength(3)],
+    username: ['', Validators.required, Validators.minLength(3)],
+    password: ['', Validators.required, Validators.minLength(8)],
+    confirmPassword: ['', Validators.required, Validators.minLength(8)],
     admin: [false, Validators.required],
-  })
+  });
 
   /**
    * Submits the user if they are valid and the sold quantity is not zero.
@@ -61,10 +69,27 @@ export class DialogUserComponent implements OnInit {
       );
       return;
     }
-    // this.dialogRef.close({
-    //   // ...this.data,
-    //   ...this.userForm.value,
-    // });
+
+    if (this.userForm.value.password !== this.userForm.value.confirmPassword) {
+      alert('⛔ ERROR: CAN NOT SUBMIT\n\nPasswords do not match.');
+      return;
+    }
+
+    this.sysIsBusy.set(true);
+    if (this.updateMode()) {
+    }
+    this.userMasterService.newUser(this.userForm.value).subscribe({
+      next: () => {
+        this.sysIsBusy.set(false);
+        this.dialogRef.close();
+      },
+      error: () => {
+        alert(
+          '⛔ ERROR: CAN NOT SUBMIT\n\nFailed to create user. Please try again.'
+        );
+        this.sysIsBusy.set(false);
+      },
+    });
   }
 
   /**
@@ -73,15 +98,12 @@ export class DialogUserComponent implements OnInit {
    *  @return {void} No return value.
    */
   onCancel() {
-    // this.dialogRef.close();
+    this.dialogRef.close();
+    this.sysIsBusy.set(false);
   }
 
   ngOnInit(): void {
     // if (this.data)
-      this.userForm.patchValue({
-        // ...this.data,
-      });
+      
   }
 }
-
-

@@ -43,7 +43,7 @@ export class UserMasterComponent implements OnInit {
   ]);
 
   onNewUser(): void {
-    const dialogRef = this.dialog.open<User>(DialogUserComponent, {
+    const dialogRef = this.dialog.open<DialogUserComponent>(DialogUserComponent, {
       maxWidth: '25rem',
       backdropClass: 'light-blur-backdrop',
       disableClose: true,
@@ -58,14 +58,38 @@ export class UserMasterComponent implements OnInit {
         dialogRef.close();
     });
 
-    dialogRef.closed.subscribe((data: User | undefined) => {
-      if (data) {
+    dialogRef.closed.subscribe(() => {
+      this.userMasterService.getUserList().subscribe((data) => {
         console.log(data);
-      }
-    })
+        this.userList.set(data);
+      });
+    });
   }
 
-  onUpdateUser(username: string): void {}
+  onUpdateUser(username: string): void {
+    const dialogRef = this.dialog.open<DialogUserComponent>(DialogUserComponent, {
+      maxWidth: '25rem',
+      backdropClass: 'light-blur-backdrop',
+      disableClose: true,
+      data: username,
+    });
+
+    dialogRef.backdropClick.subscribe(() => {
+      if (
+        window.confirm(
+          '⚠ CAUTION: ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
+        )
+      )
+        dialogRef.close();
+    });
+
+    dialogRef.closed.subscribe(() => {
+      this.userMasterService.getUserList().subscribe((data) => {
+        console.log(data);
+        this.userList.set(data);
+      });
+    });
+  }
 
   onDeleteUser(username: string) {
     throw new Error('Method not implemented.');
@@ -80,7 +104,7 @@ export class UserMasterComponent implements OnInit {
         } else if (data[0].path == 'update') {
           console.log('update');
           this.route.children[0].params.subscribe((data) => {
-            console.log(data['id']);
+            this.onUpdateUser(data['id']);
           });
         }
       });
