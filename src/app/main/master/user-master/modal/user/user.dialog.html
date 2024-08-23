@@ -24,7 +24,12 @@
         @if(passwordVisible()){
         <mat-form-field appearance="outline">
           <mat-label>Password</mat-label>
-          <input matInput [type]="passwordFieldType()" formControlName="password" required />
+          <input
+            matInput
+            [type]="passwordFieldType()"
+            formControlName="password"
+            required
+          />
         </mat-form-field>
 
         } @if(confirmPasswordVisible()){
@@ -38,21 +43,38 @@
           />
         </mat-form-field>
         }
-
+        <!-- TODO: UI -->
         <div>
           @if(generatePasswordBtnVisible()){
-          <button type="button" (click)="onGeneratePassword()">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="onGeneratePassword()"
+          >
             Generate Password
           </button>
           @if(passwordGenerated()){
-            <button type="button" (click)="onClickEditPassword()">Edit Password</button>
-          }
-          } @if(updateMode()){ @if(changePasswordBtnVisible()){
-          <button type="button" (click)="onClickEnablePasswordChange()">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="onClickEditPassword()"
+          >
+            Edit Password
+          </button>
+          } } @if(updateMode()){ @if(changePasswordBtnVisible()){
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="onClickEnablePasswordChange()"
+          >
             Change Password
           </button>
           } @else {
-          <button type="button" (click)="onClickDisablePasswordChange()">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="onClickDisablePasswordChange()"
+          >
             Don't Change Password
           </button>
           } }
