@@ -32,9 +32,9 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MortgageData } from '../../../model/mortgage-data.model';
 import { PartlySoldData } from '../../../model/partly-sold-data.model';
-import { DialogMortgageFormComponent } from '../../modal/mortgage-form/mortgage-form.dialog';
+import { DialogMortgageFormComponent } from '../modal/mortgage-form/mortgage-form.dialog';
 import { Dialog } from '@angular/cdk/dialog';
-import { DialogPartlySoldFormComponent } from '../../modal/partly-sold-form/partly-sold-form.dialog';
+import { DialogPartlySoldFormComponent } from '../modal/partly-sold-form/partly-sold-form.dialog';
 
 @Component({
   selector: 'app-new-land-record',

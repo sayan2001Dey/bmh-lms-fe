@@ -1,1 +1,55 @@
-<p>user works!</p>
+<mat-card appearance="outlined" class="p-3">
+  <div class="close-btn">
+    <button mat-icon-button (click)="onCancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <section class="mx-3 my-4">
+    <span class="h2 text-center">Add/Update User</span>
+  </section>
+
+  <section>
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+      <div class="d-flex flex-column">
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Username</mat-label>
+          <input
+            matInput
+            formControlName="username"
+            required
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            type="password"
+            formControlName="password"
+            required
+          />
+        </mat-form-field>
+
+        <mat-card appearance="outlined">
+          <mat-radio-group formControlName="admin" class="m-auto">
+            <mat-radio-button value="true">Yes</mat-radio-button>
+            <mat-radio-button value="false" class="m-2">No</mat-radio-button>
+          </mat-radio-group>
+        </mat-card>
+      </div>
+
+      <div>
+        <button mat-stroked-button type="submit" class="my-2 me-auto">
+          <mat-icon>{{ false ? "edit" : "add" }}</mat-icon>
+          {{ false ? "Save Changes" : "Add" }}
+        </button>
+      </div>
+    </form>
+  </section>
+</mat-card>
+
