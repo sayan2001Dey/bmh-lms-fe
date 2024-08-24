@@ -16,6 +16,7 @@ import { DialogUserComponent } from './modal/user/user.dialog';
 import { User } from '../../../model/user.model';
 import { sys } from 'typescript';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'app-user-master',
@@ -34,6 +35,8 @@ export class UserMasterComponent implements OnInit {
   private readonly userMasterService: UserMasterService =
     inject(UserMasterService);
   private readonly route: ActivatedRoute = inject(ActivatedRoute);
+  private readonly username: WritableSignal<string> =
+    inject(AuthService).getUsername;
   private readonly dialog: Dialog = inject(Dialog);
   private readonly router: Router = inject(Router);
   readonly sysIsBusy: WritableSignal<boolean> = signal(true);
@@ -50,7 +53,9 @@ export class UserMasterComponent implements OnInit {
   getUserList(): void {
     this.userMasterService.getUserList().subscribe({
       next: (data) => {
-        this.userList.set(data);
+        this.userList.set(
+          data.filter((user) => user.username !== this.username())
+        );
         this.sysIsBusy.set(false);
       },
       error: () => {

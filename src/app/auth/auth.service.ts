@@ -14,6 +14,7 @@ export class AuthService {
   private readonly authenticated: WritableSignal<boolean> = signal(false);
   private readonly name: WritableSignal<string> = signal('--');
   private readonly admin: WritableSignal<boolean> = signal(false);
+  private readonly username: WritableSignal<string> = signal('');
 
   get isAuthenticated() {
     if (localStorage.getItem('token')) {
@@ -34,6 +35,14 @@ export class AuthService {
     return this.admin;
   }
 
+  get getUsername() {
+    const username = localStorage.getItem('username');
+    this.username.set(username || '');
+    if(username == '')
+      this.logout();
+    return this.username;
+  }
+
   login(username: string, password: string): void {
     this.http
       .post(this.uri + 'login', { username, password })
@@ -43,6 +52,7 @@ export class AuthService {
             localStorage.setItem(key, data[key])
           );
         this.isAuthenticated.set(true);
+        this.admin.set(data.admin);
         if (data.name) this.name.set(data.name);
         this.router.navigateByUrl('/land-record');
       });

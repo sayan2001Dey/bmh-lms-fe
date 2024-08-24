@@ -31,8 +31,9 @@
             required
           />
         </mat-form-field>
-
-        } @if(confirmPasswordVisible()){
+        }
+        
+        @if(confirmPasswordVisible()){
         <mat-form-field appearance="outline">
           <mat-label>Confirm Password</mat-label>
           <input
@@ -43,44 +44,52 @@
           />
         </mat-form-field>
         }
-        <!-- TODO: UI -->
-        <div>
+
+        <div class="mb-1">
           @if(generatePasswordBtnVisible()){
           <button
             mat-stroked-button
             type="button"
+            class="mx-1 mb-2 mt-0"
             (click)="onGeneratePassword()"
           >
+            <mat-icon>vpn_key</mat-icon>
             Generate Password
           </button>
           @if(passwordGenerated()){
           <button
             mat-stroked-button
             type="button"
+            class="mx-1 mb-2 mt-0"
             (click)="onClickEditPassword()"
           >
+            <mat-icon>edit</mat-icon>
             Edit Password
           </button>
           } } @if(updateMode()){ @if(changePasswordBtnVisible()){
           <button
             mat-stroked-button
             type="button"
+            class="mx-1 mb-2 mt-0"
             (click)="onClickEnablePasswordChange()"
           >
+            <mat-icon>edit</mat-icon>
             Change Password
           </button>
           } @else {
           <button
             mat-stroked-button
             type="button"
+            class="mx-1 mb-2 mt-0"
             (click)="onClickDisablePasswordChange()"
           >
+            <mat-icon>close</mat-icon>
             Don't Change Password
           </button>
           } }
         </div>
 
-        <mat-card appearance="outlined" class="px-2">
+        <mat-card appearance="outlined" class="px-2 mt-2">
           <span class="body text-center mt-1">Admin Access</span>
           <mat-divider></mat-divider>
           <mat-radio-group formControlName="admin" class="m-auto">
