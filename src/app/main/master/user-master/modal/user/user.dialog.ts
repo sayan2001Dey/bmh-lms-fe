@@ -211,11 +211,11 @@ export class DialogUserComponent implements OnInit {
     this.passwordFieldType.set('text');
     this.passwordGenerated.set(true);
 
-    this.userForm.get('password')?.setValue(this.generatePassword(8));
-    this.userForm.get('confirmPassword')?.setValue('');
-
     this.userForm.get('password')?.clearValidators();
     this.userForm.get('confirmPassword')?.clearValidators();
+    
+    this.userForm.get('password')?.setValue(this.generatePassword(8));
+    this.userForm.get('confirmPassword')?.setValue('');
 
     this.userForm.get('password')?.disable();
 
