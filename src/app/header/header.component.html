@@ -24,8 +24,9 @@
       <!-- <button mat-stroked-button>Goto</button> -->
 
       <div class="top-bar-items ml-5 d-none d-sm-flex">
-        <span class="user-image">
+        <span mat-ripple matRippleColor="#50a95056" class="user-image" (click)="onEditProfile()">
           <mat-icon class="user-icon">person</mat-icon>
+          <mat-icon class="edit-icon">edit</mat-icon>
         </span>
 
         <span class="right-box">
@@ -42,10 +43,17 @@
         </span>
       </div>
 
-      <button mat-button type="button" class="d-sm-none">
-        <mat-icon>logout</mat-icon>
-        Logout
-      </button>
+      <div class="d-flex d-sm-none align-items-center">
+        <span mat-ripple matRippleColor="#50a95056" class="user-image" (click)="onEditProfile()">
+          <mat-icon class="user-icon">person</mat-icon>
+          <mat-icon class="edit-icon">edit</mat-icon>
+        </span>
+
+        <button mat-button type="button">
+          <mat-icon>logout</mat-icon>
+          Logout
+        </button>
+      </div>
     </section>
     }
   </nav>

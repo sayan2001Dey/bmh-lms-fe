@@ -18,11 +18,25 @@
   height: 2rem;
   width: 2rem;
   display: flex;
-}
-.user-icon {
-  color: #007200cc;
-  margin: auto;
-  transform: scale(1.2);
+  .user-icon {
+    color: #007200cc;
+    margin: auto;
+    transform: scale(1.1);
+  }
+  .edit-icon {
+    color: #007200cc;
+    margin: auto;
+    transform: scale(0.9);
+    display: none;
+  }
+  &:hover {
+    .user-icon {
+      display: none;
+    }
+    .edit-icon {
+      display: block;
+    }
+  }
 }
 
 .right-box {

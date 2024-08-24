@@ -31,9 +31,7 @@
             required
           />
         </mat-form-field>
-        }
-        
-        @if(confirmPasswordVisible()){
+        } @if(confirmPasswordVisible()){
         <mat-form-field appearance="outline">
           <mat-label>Confirm Password</mat-label>
           <input
@@ -46,7 +44,7 @@
         }
 
         <div class="mb-1">
-          @if(generatePasswordBtnVisible()){
+          @if(generatePasswordBtnVisible() || normieMode()){
           <button
             mat-stroked-button
             type="button"
@@ -66,7 +64,8 @@
             <mat-icon>edit</mat-icon>
             Edit Password
           </button>
-          } } @if(updateMode()){ @if(changePasswordBtnVisible()){
+          } } @if(updateMode() && !normieMode()){
+          @if(changePasswordBtnVisible()){
           <button
             mat-stroked-button
             type="button"

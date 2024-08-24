@@ -24,6 +24,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatDividerModule } from '@angular/material/divider';
 import { UserMasterService } from '../../user-master.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthService } from '../../../../../auth/auth.service';
 
 @Component({
   selector: 'dialog-user',
@@ -47,11 +48,15 @@ export class DialogUserComponent implements OnInit {
   readonly dialogRef: DialogRef = inject(DialogRef);
   private readonly userMasterService: UserMasterService =
     inject(UserMasterService);
+  private readonly authService: AuthService = inject(AuthService);
   data: string | undefined = inject(DIALOG_DATA);
 
   readonly sysIsBusy: WritableSignal<boolean> = signal(true);
   readonly serverUnreachable: WritableSignal<boolean> = signal(false);
   readonly updateMode: WritableSignal<boolean> = signal(!!this.data);
+  readonly normieMode: WritableSignal<boolean> = signal(
+    !this.authService.isAdmin()
+  );
   readonly passwordVisible: WritableSignal<boolean> = signal(true);
   readonly confirmPasswordVisible: WritableSignal<boolean> = signal(true);
   readonly generatePasswordBtnVisible: WritableSignal<boolean> = signal(true);
@@ -96,6 +101,25 @@ export class DialogUserComponent implements OnInit {
    * @return {void}
    */
   onSubmit(): void {
+    if (this.normieMode()) {
+      if (
+        this.confirmPasswordVisible() &&
+        this.userForm.value.password !== this.userForm.value.confirmPassword
+      ) {
+        alert('⛔ ERROR: CAN NOT SUBMIT\n\nPasswords do not match.');
+        return;
+      }
+      if(this.passwordGenerated()){
+        if(!confirm(
+          '⚠ CAUTION: PASSWORD WILL BE CHANGED AND YOU WILL BE LOGGED OUT!\n\nAre you sure?'
+        ))
+          return;
+      }
+      this.sysIsBusy.set(true);
+      //TODO: change password request after that logout too.
+      return;
+    }
+
     if (!this.userForm.valid) {
       alert(
         '⛔ ERROR: CAN NOT SUBMIT\n\nInvalid form data. Please check and try again'
@@ -223,11 +247,11 @@ export class DialogUserComponent implements OnInit {
   }
 
   onClickDisablePasswordChange(): void {
-    this.userForm.get('password')?.setValue('');
-    this.userForm.get('confirmPassword')?.setValue('');
-
     this.userForm.get('password')?.clearValidators();
     this.userForm.get('confirmPassword')?.clearValidators();
+
+    this.userForm.get('password')?.setValue('');
+    this.userForm.get('confirmPassword')?.setValue('');
 
     this.passwordVisible.set(false);
     this.confirmPasswordVisible.set(false);
@@ -240,6 +264,17 @@ export class DialogUserComponent implements OnInit {
     if (!this.data) return;
     this.sysIsBusy.set(true);
     this.updateModePrep();
+    if (this.data === this.authService.getUsername())
+      this.userForm.get('admin')?.disable();
+    if (this.normieMode()) {
+      this.userForm.get('name')?.disable();
+      this.userForm.get('name')?.setValue(this.authService.getName());
+      this.userForm.get('username')?.disable();
+      this.userForm.get('username')?.setValue(this.data);    
+      this.passwordVisible.set(true);
+      this.confirmPasswordVisible.set(true);
+      return;
+    }
     this.userMasterService.getUser(this.data).subscribe({
       next: (data: User) => {
         this.userForm.patchValue(data);
