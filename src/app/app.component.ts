@@ -15,14 +15,22 @@ import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { filter, map, mergeMap } from 'rxjs';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { SideNavComponent } from "./side-nav/side-nav.component";
+import { SideNavComponent } from './side-nav/side-nav.component';
+import { HistoryChainComponent } from './main/land-record/history-chain/history-chain.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
-  imports: [MatSidenavModule, RouterOutlet, HeaderComponent, FooterComponent, SideNavComponent],
+  imports: [
+    MatSidenavModule,
+    RouterOutlet,
+    HeaderComponent,
+    FooterComponent,
+    SideNavComponent,
+    HistoryChainComponent,
+  ],
 })
 export class AppComponent implements OnInit {
   private router: Router = inject(Router);
