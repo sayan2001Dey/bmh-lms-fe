@@ -1,0 +1,11 @@
+<div class="container d-flex flex-column">
+  @for (row of hcLayoutMatrix(); track 'row-'+$index) {
+  <div class="d-flex flex-nowrap align-items-center m-auto">
+    @for (col of row; track col) {
+    <div class="d-flex flex-nowrap align-items-center border my-3 mx-5 px-3 py-1">
+      {{hcData()[col].recId}}
+    </div>
+    }
+  </div>
+  }
+</div>

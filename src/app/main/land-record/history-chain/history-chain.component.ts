@@ -21,68 +21,58 @@ export class HistoryChainComponent implements OnInit {
     depth: 0,
     spread: 0,
   });
+  readonly hcData: WritableSignal<HistoryChainData[]> = signal([]);
+  readonly hcLayoutMatrix: WritableSignal<number[][]> = signal([]);
 
-  fx(
+  processTreeGraphRow(
     hcData: HistoryChainData[],
-    rootNode: HistoryChainData,
-    res: HistoryChain
-  ) {
-    if (rootNode.children.length === 0) return;
-
-    let depth = 1;
-    let spread = rootNode.children.length - 1;
-
-    rootNode.children.forEach((child) => {
-      let foundIdx = hcData.findIndex((data) => {
-        return data.recId === child;
-      });
-
-      const childObj = {
-        recId: hcData[foundIdx].recId,
-        parents: [],
-        children: [],
-        depth: 0,
-        spread: 0,
-      };
-
-      res.children.push(childObj);
-
-      this.fx(hcData, hcData[foundIdx], childObj);
-
-      const newDepth = childObj.depth + 1;
-
-      if (newDepth > depth) depth = newDepth;
-
-      if (childObj.spread > 0) spread += childObj.spread;
-
-      console.log('processedChild for ' + res.recId + ': ', hcData[foundIdx]);
+    rows: number[][],
+    rowNo: number
+  ): void {
+    const cols: number[] = [];
+    rows[rowNo].forEach((refIdx) => {
+      this.processTreeGraphCol(hcData, cols, refIdx);
     });
 
-    res.spread = spread;
-    res.depth = depth;
+    if (cols.length) {
+      rows.push(cols);
+      this.processTreeGraphRow(hcData, rows, rowNo + 1);
+    }
+  }
+
+  processTreeGraphCol(
+    hcData: HistoryChainData[],
+    cols: number[],
+    refIdx: number
+  ): void {
+    hcData[refIdx].children.forEach((child) => {
+      const childRefIdx = hcData.findIndex((d) => d.recId === child);
+      cols.push(childRefIdx);
+    });
+  }
+
+  prepTreeGraph(hcData: HistoryChainData[]): number[][] {
+    const rows: number[][] = [];
+    let cols: number[] = [];
+
+    hcData.forEach((d, idx) => {
+      if (!d.parents.length) {
+        cols.push(idx);
+      }
+    });
+    if (cols.length) rows.push(cols);
+
+    this.processTreeGraphRow(hcData, rows, 0);
+
+    return rows;
   }
 
   ngOnInit(): void {
-    const processedData: HistoryChain[] = [];
-
-    let tempNode: HistoryChain;
-
-    hcData.forEach((tmp) => {
-      if (!tmp.parents.length) {
-        tempNode = {
-          recId: tmp.recId,
-          parents: [],
-          children: [],
-          depth: 0,
-          spread: 0,
-        };
-        this.fx(hcData, tmp, tempNode);
-        processedData.push(tempNode);
-        return;
-      }
-    });
-
-    console.log('processedData', processedData);
-    console.log(this.treeGraphData());
+    const rows: number[][] = this.prepTreeGraph(hcData);
+    this.hcLayoutMatrix.set(rows);
+    this.hcData.set(hcData);
+    console.log(rows);
+    //TODO: Check output?
+    console.log()
   }
 }
