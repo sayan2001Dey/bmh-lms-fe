@@ -41,8 +41,11 @@ export class DialogCompanyEditorComponent {
 
   companyForm: FormGroup<any> = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
-    username: ['', [Validators.required, Validators.minLength(3)]],
-    admin: [false, [Validators.required]],
+    address: ['', [Validators.required, Validators.minLength(10)]],
+    pan: [
+      '',
+      [Validators.required, Validators.minLength(10), Validators.maxLength(10)],
+    ],
   });
 
   get formData(): Company {
@@ -52,7 +55,7 @@ export class DialogCompanyEditorComponent {
   onSubmit(): void {
     this.dialogRef.close();
   }
-  
+
   /**
    *  Closes the dialog.
    *

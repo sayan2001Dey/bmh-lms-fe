@@ -5,20 +5,26 @@
     </button>
   </div>
   <section class="mx-3 my-4">
-    <span class="h2 text-center">User Details</span>
+    <span class="h2 text-center">Company Details</span>
   </section>
 
   <section>
     <form [formGroup]="companyForm" (ngSubmit)="onSubmit()">
       <div class="d-flex flex-column">
         <mat-form-field appearance="outline">
-          <mat-label>Name</mat-label>
+          <mat-label>Company Name</mat-label>
           <input matInput formControlName="name" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Username</mat-label>
-          <input matInput formControlName="username" required />
+          <mat-label>Company Address</mat-label>
+          <textarea matInput
+           formControlName="address" rows="4" required></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Company PAN</mat-label>
+          <input matInput formControlName="pan" required />
         </mat-form-field>
       </div>
 
