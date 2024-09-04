@@ -1,8 +1,9 @@
 <main class="main">
-  <!-- <div class="side-nav-item" routerLink="/home" routerLinkActive="nav-active" mat-ripple>Home</div> -->
-  @if(isAdmin()) {
-    <div class="side-nav-item" routerLink="/master/user" routerLinkActive="nav-active" mat-ripple>User Master</div>
+  @for (navItem of navItems(); track $index) {
+  @if ((navItem.adminOnly && isAdmin()) || !navItem.adminOnly) {
+  <div class="side-nav-item" [routerLink]="navItem.link" routerLinkActive="nav-active" mat-ripple>
+    {{navItem.title}}
+  </div>
   }
-  <div class="side-nav-item" routerLink="/land-record" routerLinkActive="nav-active" mat-ripple>Land Record</div>
-  <!-- <div class="side-nav-item" routerLink="/report" routerLinkActive="nav-active" mat-ripple>Report</div> -->
+  }
 </main>
