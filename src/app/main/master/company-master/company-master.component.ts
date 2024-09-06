@@ -263,7 +263,8 @@ export class CompanyMasterComponent implements OnInit, OnDestroy {
       this.onListCompany();
     }
   }
-
+  // TODO: if we click on nav item while in new or update etc. i need to go back to list mode. but its not happening
+  // I think i need to make my own framework and ditch angular  huh!!!!!!!!!!!!
   ngOnDestroy(): void {
     this.sysIsBusy.set(false);
     this.serverUnreachable.set(false);
