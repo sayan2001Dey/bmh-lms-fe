@@ -1,5 +1,6 @@
 export interface Company {
-  name: string;
-  address: string;
-  pan: string;
+  companyId: string;
+  companyName: string;
+  companyAddress: string;
+  panNumber: string;
 }

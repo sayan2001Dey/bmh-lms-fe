@@ -62,6 +62,11 @@ export class UserMasterService {
     return this.http.delete(this.url + `/${username}`);
   }
 
+  /**
+   * This method is supposed to change the password of the user. It does not work yet.
+   *
+   * @return {Observable<any>} An observable that emits the result of the password change.
+   */
   changePassword(): Observable<any> {
     return new Observable();
   }

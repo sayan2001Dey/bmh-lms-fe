@@ -5,17 +5,17 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Mouza</mat-label>
-      <input formControlName="mouza" matInput />
+      <input  matInput />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Block</mat-label>
-      <input formControlName="block" matInput />
+      <input  matInput />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>JL No.</mat-label>
-      <input type="number" formControlName="jlno" matInput />
+      <input type="number"  matInput />
     </mat-form-field>
 
   </div>
@@ -26,385 +26,27 @@
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
     <mat-form-field appearance="outline">
       <mat-label>RS Dag No. (Old)</mat-label>
-      <input
-        formControlName="oldRsDag"
-        [readonly]="viewMode()"
-        matInput
-      />
+      <input  [readonly]="viewMode()" matInput />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>LR Dag No. (New)</mat-label>
-      <input
-        matInput
-        formControlName="newLrDag"
-        [readonly]="viewMode()"
-      />
+      <input matInput  [readonly]="viewMode()" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Khatian No. (Old)</mat-label>
-      <input
-        matInput
-        formControlName="oldKhatian"
-        [readonly]="viewMode()"
-      />
+      <input matInput  [readonly]="viewMode()" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Khatian No. (New)</mat-label>
-      <input
-        matInput
-        formControlName="newKhatian"
-        [readonly]="viewMode()"
-      />
+      <input matInput  [readonly]="viewMode()" />
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Khatian No. (Current)</mat-label>
-      <input
-        matInput
-        formControlName="currKhatian"
-        [readonly]="viewMode()"
-      />
+      <input matInput  [readonly]="viewMode()" />
     </mat-form-field>
-  </div>
-
-  <h6 class="font-regular my-3">Quantity Info</h6>
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-    <mat-form-field appearance="outline">
-      <mat-label>Total Qty</mat-label>
-      <input
-        type="number"
-        matInput
-        formControlName="totalQty"
-        [readonly]="viewMode()"
-      />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Purchased Qty</mat-label>
-      <input
-        type="number"
-        matInput
-        formControlName="purQty"
-        [readonly]="viewMode()"
-      />
-    </mat-form-field>
-
-    <div>
-      <mat-form-field class="w-100" appearance="outline">
-        <mat-label>Mutated Qty</mat-label>
-        <input
-          type="number"
-          matInput
-          formControlName="mutedQty"
-          [readonly]="viewMode()"
-        />
-      </mat-form-field>
-    </div>
-
-    <div>
-      <mat-form-field class="w-100" appearance="outline">
-        <mat-label>Un-mutated Qty</mat-label>
-        <input
-          type="number"
-          matInput
-          formControlName="unMutedQty"
-          [readonly]="viewMode()"
-        />
-      </mat-form-field>
-    </div>
-
-    <div class="mb-3">
-      <mat-card appearance="outlined" class="m-auto p-2">
-        <mat-radio-group
-          formControlName="landStatus"
-          aria-label="Select an option"
-          class="m-auto"
-        >
-          <mat-radio-button value="Vested">Vested</mat-radio-button>
-          <mat-radio-button value="Unvested" class="m-2"
-            >Unvested</mat-radio-button
-          >
-        </mat-radio-group>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Land Type</mat-label>
-          <mat-select formControlName="landType">
-            <mat-option value="Sali">Sali</mat-option>
-            <mat-option value="Bastu">Bastu</mat-option>
-            <mat-option value="Pukur">Pukur</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </mat-card>
-    </div>
-  </div>
-
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 mb-2">
-    <div class="pb-2">
-      <mat-card class="px-2 py-1" appearance="outlined">
-        <p class="text-center my-2">
-          Mutation Details/ Mutation Certificate Upload
-        </p>
-
-        @if((fileInfoArray.mutationFile &&
-        fileInfoArray.mutationFile.length) ||
-        (oldFileInfoArray.mutationFile &&
-        oldFileInfoArray.mutationFile.length)) { @if
-        (oldFileInfoArray.mutationFile &&
-        oldFileInfoArray.mutationFile.length) {
-        <mat-card appearance="outlined" class="text-secondary">
-          @if(!viewMode()) {
-          <p class="text-center small-text mb-0 text-dark">
-            Previous Uploads
-          </p>
-          <mat-divider></mat-divider>
-          }
-          <mat-list role="list">
-            @for(fileInfo of oldFileInfoArray.mutationFile; track
-            $index+'hcd-'+fileInfo.fileName) {
-            <div
-              class="d-flex justify-content-between align-items-center mb-1"
-            >
-              <span class="pt-2 text-truncate px-2"
-                ><b class="text-dark">{{ $index + 1 }}. </b>
-                @if(fileInfo.markedForDeletion) {
-                <del>{{ fileInfo.fileName }}</del>
-                } @else {
-                {{ fileInfo.fileName }}
-                }
-              </span>
-              <span class="d-flex align-items-center">
-                <button
-                  mat-icon-button
-                  class="mt-1"
-                  (click)="
-                    onWindowPopupOpenForFiles(
-                      'mutationFile',
-                      fileInfo.fileName
-                    )
-                  "
-                >
-                  <mat-icon>open_in_new</mat-icon>
-                </button>
-                @if(!viewMode()) {
-                <button
-                  mat-icon-button
-                  class="mt-1"
-                  (click)="
-                    removeFromPreviousUploads('mutationFile', $index)
-                  "
-                  [disabled]="disableFileRemoval()"
-                >
-                  <mat-icon>{{
-                    fileInfo.markedForDeletion
-                      ? "undo"
-                      : "do_not_disturb_on"
-                  }}</mat-icon>
-                </button>
-                }
-              </span>
-            </div>
-            }
-          </mat-list>
-        </mat-card>
-        } @if (fileInfoArray.mutationFile &&
-        fileInfoArray.mutationFile.length){
-        <mat-card appearance="outlined" class="mt-2">
-          <p class="text-center small-text mb-0">New Uploads</p>
-          <mat-divider></mat-divider>
-          <mat-list role="list">
-            @for(fileInfo of fileInfoArray.mutationFile; track
-            $index+'hcd-'+fileInfo) {
-            <div
-              class="d-flex justify-content-between align-items-center mb-1"
-            >
-              <span class="pt-2 text-truncate px-2"
-                ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
-              >
-              @if(!viewMode()) {
-              <button
-                mat-icon-button
-                class="mt-1"
-                (click)="removeFiles('mutationFile', $index)"
-                [disabled]="disableFileRemoval()"
-              >
-                <mat-icon>do_not_disturb_on</mat-icon>
-              </button>
-              }
-            </div>
-            }
-          </mat-list>
-        </mat-card>
-        } } @else {
-        <mat-card appearance="outlined">
-          <div class="drag-n-drop-box">
-            <p class="text-center small-text mt-3">DRAG AND DROP HERE</p>
-          </div>
-        </mat-card>
-        }
-
-        <button
-          type="button"
-          mat-stroked-button
-          class="mt-2 mb-1"
-          (click)="mutationAttachments.click()"
-          [disabled]="viewMode()"
-        >
-          <mat-icon>upload</mat-icon> Upload Files
-        </button>
-        <input
-          type="file"
-          accept=".pdf, image/jpeg, image/png"
-          class="d-none"
-          (change)="onClickUploadFiles($event, 'mutationFile')"
-          multiple
-          #mutationAttachments
-        />
-      </mat-card>
-    </div>
-
-    <div class="pb-2">
-      <mat-card class="px-2 py-1" appearance="outlined">
-        <div class="m-auto p-2">
-          <mat-radio-group
-            formControlName="conversionLandStus"
-            aria-label="Select an option"
-            class="m-auto"
-          >
-            <mat-radio-button value="Converted" class="m-1"
-              >Converted</mat-radio-button
-            >
-            <mat-radio-button value="Unconverted" class="m-1"
-              >Unconverted</mat-radio-button
-            >
-          </mat-radio-group>
-        </div>
-
-        <mat-divider />
-
-        <p class="text-center my-2">
-          Conversion Details/ Conversion Certificate Upload
-        </p>
-
-        @if((fileInfoArray.conversionFile &&
-        fileInfoArray.conversionFile.length) ||
-        (oldFileInfoArray.conversionFile &&
-        oldFileInfoArray.conversionFile.length)) { @if
-        (oldFileInfoArray.conversionFile &&
-        oldFileInfoArray.conversionFile.length) {
-        <mat-card appearance="outlined" class="text-secondary">
-          @if(!viewMode()) {
-          <p class="text-center small-text mb-0 text-dark">
-            Previous Uploads
-          </p>
-          <mat-divider></mat-divider>
-          }
-          <mat-list role="list">
-            @for(fileInfo of oldFileInfoArray.conversionFile; track
-            $index+'hcd-'+fileInfo.fileName) {
-            <div
-              class="d-flex justify-content-between align-items-center mb-1"
-            >
-              <span class="pt-2 text-truncate px-2"
-                ><b class="text-dark">{{ $index + 1 }}. </b>
-                @if(fileInfo.markedForDeletion) {
-                <del>{{ fileInfo.fileName }}</del>
-                } @else {
-                {{ fileInfo.fileName }}
-                }
-              </span>
-              <span class="d-flex align-items-center">
-                <button
-                  mat-icon-button
-                  class="mt-1"
-                  (click)="
-                    onWindowPopupOpenForFiles(
-                      'conversionFile',
-                      fileInfo.fileName
-                    )
-                  "
-                >
-                  <mat-icon>open_in_new</mat-icon>
-                </button>
-                @if(!viewMode()) {
-                <button
-                  mat-icon-button
-                  class="mt-1"
-                  (click)="
-                    removeFromPreviousUploads('conversionFile', $index)
-                  "
-                  [disabled]="disableFileRemoval()"
-                >
-                  <mat-icon>{{
-                    fileInfo.markedForDeletion
-                      ? "undo"
-                      : "do_not_disturb_on"
-                  }}</mat-icon>
-                </button>
-                }
-              </span>
-            </div>
-            }
-          </mat-list>
-        </mat-card>
-        } @if (fileInfoArray.conversionFile &&
-        fileInfoArray.conversionFile.length){
-        <mat-card appearance="outlined" class="mt-2">
-          <p class="text-center small-text mb-0">New Uploads</p>
-          <mat-divider></mat-divider>
-          <mat-list role="list">
-            @for(fileInfo of fileInfoArray.conversionFile; track
-            $index+'hcd-'+fileInfo) {
-            <div
-              class="d-flex justify-content-between align-items-center mb-1"
-            >
-              <span class="pt-2 text-truncate px-2"
-                ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
-              >
-              @if(!viewMode()) {
-              <button
-                mat-icon-button
-                class="mt-1"
-                (click)="removeFiles('conversionFile', $index)"
-                [disabled]="disableFileRemoval()"
-              >
-                <mat-icon>do_not_disturb_on</mat-icon>
-              </button>
-              }
-            </div>
-            }
-          </mat-list>
-        </mat-card>
-        } } @else {
-        <mat-card appearance="outlined">
-          <div class="drag-n-drop-box">
-            <p class="text-center small-text mt-3">DRAG AND DROP HERE</p>
-          </div>
-        </mat-card>
-        }
-
-        <button
-          type="button"
-          mat-stroked-button
-          class="mt-2 mb-1"
-          (click)="conversionAttachments.click()"
-          [disabled]="viewMode()"
-        >
-          <mat-icon>upload</mat-icon> Upload Files
-        </button>
-        <input
-          type="file"
-          accept=".pdf, image/jpeg, image/png"
-          class="d-none"
-          (change)="onClickUploadFiles($event, 'conversionFile')"
-          multiple
-          #conversionAttachments
-        />
-      </mat-card>
-    </div>
   </div>
 </section>
-
-

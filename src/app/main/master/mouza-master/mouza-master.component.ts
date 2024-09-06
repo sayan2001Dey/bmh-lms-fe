@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -26,12 +26,10 @@ import { MatTableModule } from '@angular/material/table';
    MatTableModule,
    MatCardModule,
    MatButton
-
   ],
   templateUrl: './mouza-master.component.html',
   styleUrl: './mouza-master.component.scss'
 })
 export class MouzaMasterComponent {
-
-
+  readonly viewMode: WritableSignal<boolean> = signal(false);
 }
