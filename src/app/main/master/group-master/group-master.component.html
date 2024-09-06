@@ -1,1 +1,74 @@
-<p>group-master works!</p>
+<main class="container py-1">
+  @if(false) {
+
+  } @else {
+  <section class="my-5 d-flex">
+    <button mat-icon-button class="my-sm-auto back-icon-button" routerLink="./" >
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="h1 my-auto">{{ false ? "Update" : false? "View" : "Add new" }} Group master</span>
+  </section>
+
+  <mat-card class="p-3 m-2 mb-4 border">
+    <form >
+      <section class="container mb-3">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+          <div>
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Group Name</mat-label>
+              <input matInput  />
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>State</mat-label>
+              <input matInput  />
+            </mat-form-field>
+          </div>
+
+          <div>
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>City/Area</mat-label>
+              <input matInput  required />
+            </mat-form-field>
+          </div>
+
+          <div>
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Pincode</mat-label>
+              <input matInput  required />
+
+            </mat-form-field>
+          </div>
+        </div>
+      </section>
+
+      <mat-divider class="mt-4"></mat-divider>
+
+      <section class="d-flex">
+        @if(true){
+        <button
+          mat-flat-button
+          type="submit"
+          class="btn-sp btn-sp-final mt-4 mb-3 me-2 ms-auto"
+
+        >
+          <mat-icon>{{ false ? "edit" : "save" }}save</mat-icon>
+          {{ false ? "Save Changes" : "Submit" }}
+        </button>
+        } @else {
+        <button
+          mat-stroked-button
+          type="submit"
+          class="btn-sp btn-sp-final mt-4 mb-3 me-2 ms-auto"
+
+        >
+          <mat-icon>arrow_forward</mat-icon>
+          Go to Update Page
+        </button>
+        }
+      </section>
+    </form>
+  </mat-card>
+  }
+</main>

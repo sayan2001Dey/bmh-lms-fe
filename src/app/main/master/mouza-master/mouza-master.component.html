@@ -1,7 +1,27 @@
+<section class="my-5 d-flex">
+  <button mat-icon-button class="my-sm-auto back-icon-button" >
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <span class="h1 my-auto">{{ false ? "Update" : false? "View" : "Add new" }} Mouza master</span>
+</section>
 <section class="container mb-3">
   <h5 class="font-weight-normal py-2">Area</h5>
 
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+
+    <mat-form-field appearance="outline">
+      <mat-label>Group Name</mat-label>
+      <mat-select
+        formControlName="city"
+        placeholder="Pick a Group"
+        required
+      >
+
+      </mat-select>
+
+
+    </mat-form-field>
+
 
     <mat-form-field appearance="outline">
       <mat-label>Mouza</mat-label>
