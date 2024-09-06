@@ -8,6 +8,11 @@ export const mouzaMasterRoutes: Routes = [
     data: { title: 'New Mouza Master | LMS' },
   },
   {
+    path: 'view/:id',
+    component: MouzaMasterComponent,
+    data: { title: 'View Mouza Master | LMS' },
+  },
+  {
     path: 'update/:id',
     component: MouzaMasterComponent,
     data: { title: 'Update Mouza Master | LMS' },

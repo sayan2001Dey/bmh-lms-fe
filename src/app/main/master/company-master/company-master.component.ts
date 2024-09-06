@@ -1,6 +1,9 @@
 import {
   Component,
+  effect,
+  EffectRef,
   inject,
+  OnDestroy,
   OnInit,
   signal,
   WritableSignal,
@@ -39,7 +42,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   templateUrl: './company-master.component.html',
   styleUrl: './company-master.component.scss',
 })
-export class CompanyMasterComponent implements OnInit {
+export class CompanyMasterComponent implements OnInit, OnDestroy {
   private readonly companyMasterService: CompanyMasterService =
     inject(CompanyMasterService);
   private route: ActivatedRoute = inject(ActivatedRoute);
@@ -47,7 +50,10 @@ export class CompanyMasterComponent implements OnInit {
   readonly companyList: WritableSignal<Company[]> = signal([]);
   readonly displayedColumns: WritableSignal<string[]> = signal([
     'slno',
-    'name',
+    'companyId',
+    'companyName',
+    'panNumber',
+    'companyAddress',
     'action',
   ]);
   readonly listMode: WritableSignal<boolean> = signal(true);
@@ -58,6 +64,16 @@ export class CompanyMasterComponent implements OnInit {
   private readonly fb: FormBuilder = inject(FormBuilder);
   readonly sysIsBusy: WritableSignal<boolean> = signal(true);
   readonly serverUnreachable: WritableSignal<boolean> = signal(false);
+
+  private readonly viewModeEffect: EffectRef = effect(() => {
+    if (this.viewMode()) {
+      this.companyForm.disable();
+    } else {
+      this.companyForm.enable();
+      this.companyForm.controls['companyId'].disable();
+    }
+  })
+
   companyForm: FormGroup<any> = this.fb.group({
     companyId: [''],
     companyName: ['', [Validators.required, Validators.minLength(3)]],
@@ -73,17 +89,47 @@ export class CompanyMasterComponent implements OnInit {
   }
 
   onSubmit() {
-    throw new Error('Method not implemented.');
-  }
-
-  onUpdateCompany(companyId: string) {
-    this.companyForm.reset();
-    this.updateMode.set(true);
-    this.listMode.set(false);
-    this.router.navigate(['master', 'company', 'update', companyId]);
-    this.companyForm.patchValue(
-      this.companyList().find((c) => c.companyId === companyId) || {}
-    );
+    if(this.companyForm.invalid)
+      return;
+    this.sysIsBusy.set(true);
+    if (this.updateMode()) {
+      //update master
+      this.companyMasterService
+        .updateCompany(this.id(), this.formData)
+        .subscribe({
+          next: (data) => {
+            this.companyList.set(
+              this.companyList().map((company) => {
+                if (company.companyId === this.id()) {
+                  return data;
+                }
+                return company;
+              })
+            );
+            this.onListCompany();
+          },
+          error: () => {
+            console.error('error bro error');
+          },
+          complete: () => {
+            this.sysIsBusy.set(false);
+          },
+        });
+    } else {
+      // new master
+      this.companyMasterService.newCompany(this.formData).subscribe({
+        next: (data) => {
+          this.companyList.set([data, ...this.companyList()]);
+          this.onListCompany();
+        },
+        error: () => {
+          console.error('error bro error');
+        },
+        complete: () => {
+          this.sysIsBusy.set(false);
+        },
+      });
+    }
   }
 
   setCompanyList(): void {
@@ -103,7 +149,66 @@ export class CompanyMasterComponent implements OnInit {
 
   onNewCompany(): void {
     this.router.navigate(['master', 'company', 'new']);
+    this.companyForm.reset();
     this.listMode.set(false);
+    this.updateMode.set(false);
+    this.viewMode.set(false);
+    this.id.set('');
+  }
+
+  onUpdateCompany(companyId: string) {
+    console.log('company id', companyId);
+    this.router.navigate(['master', 'company', 'update', companyId]);
+    this.updateMode.set(true);
+    this.viewMode.set(false);
+
+    this.companyFormPatchValueOptimized(companyId);
+    this.listMode.set(false);
+  }
+
+  onViewCompany(companyId: string): void {
+    this.router.navigate(['master', 'company', 'view', companyId]);
+    this.updateMode.set(false);
+    this.viewMode.set(true);
+
+    this.companyFormPatchValueOptimized(companyId);
+    this.listMode.set(false);
+  }
+
+  companyFormPatchValueOptimized(companyId: string): void {
+    this.companyForm.reset();
+    this.id.set(companyId);
+    this.sysIsBusy.set(true);
+
+    const company: Company | undefined = this.companyList().find(
+      (c) => c.companyId === companyId
+    );
+
+    if (company) {
+      this.companyForm.patchValue(company);
+    } else {
+      this.companyMasterService.getCompany(companyId).subscribe({
+        next: (data) => {
+          this.companyForm.patchValue(data);
+        },
+        error: () => {
+          this.serverUnreachable.set(true);
+        },
+        complete: () => {
+          this.sysIsBusy.set(false);
+        },
+      });
+    }
+
+    this.sysIsBusy.set(false);
+  }
+
+  onListCompany() {
+    this.router.navigate(['master', 'company']);
+    this.listMode.set(true);
+    this.updateMode.set(false);
+    this.viewMode.set(false);
+    this.id.set('');
   }
 
   onDeleteCompany(companyId: string) {
@@ -139,9 +244,32 @@ export class CompanyMasterComponent implements OnInit {
 
   ngOnInit(): void {
     this.setCompanyList();
-    this.route.url.subscribe((data) => {
-      this.updateMode.set(data[0].path == 'update');
-      this.viewMode.set(data[0].path == 'view');
-    });
+
+    if (this.route.children[0]) {
+      this.route.children[0].url.subscribe((data) => {
+        if (data[0].path) {
+          if (data[0].path === 'update') {
+            this.onUpdateCompany(data[1].path);
+          } else if (data[0].path === 'new') {
+            this.onNewCompany();
+          } else if (data[0].path === 'view') {
+            this.onViewCompany(data[1].path);
+          }
+        }
+      });
+    } else {
+      this.onListCompany();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.sysIsBusy.set(false);
+    this.serverUnreachable.set(false);
+    this.listMode.set(false);
+    this.updateMode.set(false);
+    this.viewMode.set(false);
+    this.id.set('');
+    this.companyForm.reset();
+    this.viewModeEffect.destroy();
   }
 }
