@@ -254,6 +254,8 @@ export class CompanyMasterComponent implements OnInit, OnDestroy {
             this.onNewCompany();
           } else if (data[0].path === 'view') {
             this.onViewCompany(data[1].path);
+          } else {
+            this.onListCompany();
           }
         }
       });

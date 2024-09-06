@@ -111,7 +111,7 @@
 
       <section class="d-flex">
         @if(!viewMode()){
-        <button mat-flat-button type="submit" class="btn-sp btn-sp-final mt-4 mb-3 me-2 ms-auto" (click)="onSubmit()">
+        <button mat-flat-button type="submit" class="btn-sp btn-sp-final mt-4 mb-3 me-2 ms-auto">
           <mat-icon>{{ updateMode() ? "edit" : "save" }}save</mat-icon>
           {{ updateMode() ? "Save Changes" : "Submit" }}
         </button>
