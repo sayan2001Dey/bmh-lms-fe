@@ -17,5 +17,5 @@ export const mouzaMasterRoutes: Routes = [
     component: MouzaMasterComponent,
     data: { title: 'Update Mouza Master | LMS' },
   },
-  { path: '**', redirectTo: './', pathMatch: 'full' },
+  { path: '**', redirectTo: './' },
 ];
