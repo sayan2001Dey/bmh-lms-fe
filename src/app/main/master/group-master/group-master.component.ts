@@ -4,6 +4,8 @@ import {
   effect,
   EffectRef,
   inject,
+  OnDestroy,
+  OnInit,
   signal,
   WritableSignal,
 } from '@angular/core';
@@ -45,7 +47,7 @@ import { statesCollection } from '../../../data/states.collection';
   templateUrl: './group-master.component.html',
   styleUrl: './group-master.component.scss',
 })
-export class GroupMasterComponent {
+export class GroupMasterComponent implements OnInit, OnDestroy {
   private readonly groupMasterService: GroupMasterService =
     inject(GroupMasterService);
   private route: ActivatedRoute = inject(ActivatedRoute);

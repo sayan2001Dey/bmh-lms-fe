@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from "@angular/common/http";
-import { Component, EffectRef, WritableSignal, effect, inject, signal } from "@angular/core";
+import { Component, EffectRef, OnDestroy, OnInit, WritableSignal, effect, inject, signal } from "@angular/core";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
@@ -31,7 +31,7 @@ import { MouzaMasterService } from "./mouza-master.service";
   templateUrl: './mouza-master.component.html',
   styleUrl: './mouza-master.component.scss',
 })
-export class MouzaMasterComponent {
+export class MouzaMasterComponent implements OnInit, OnDestroy {
   private readonly mouzaMasterService: MouzaMasterService =
     inject(MouzaMasterService);
   private route: ActivatedRoute = inject(ActivatedRoute);
