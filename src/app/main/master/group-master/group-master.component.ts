@@ -103,6 +103,19 @@ export class GroupMasterComponent implements OnInit, OnDestroy {
     return this.groupForm.value;
   }
 
+  /**
+   * Returns the name of the given state code from statesCollection.
+   * If the code is not found, the given code is returned as is.
+   * @param stateCode the state code to find the name for
+   * @returns the name of the given state code or the code itself if not found
+   */
+  getStateName(stateCode: string): string {
+    return (
+      statesCollection.find((state) => state.code === stateCode)?.name ||
+      stateCode
+    );
+  }
+
   onSubmit() {
     if (this.groupForm.invalid) return;
     this.sysIsBusy.set(true);

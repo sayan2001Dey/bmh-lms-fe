@@ -1,17 +1,34 @@
-import { HttpErrorResponse } from "@angular/common/http";
-import { Component, EffectRef, OnDestroy, OnInit, WritableSignal, effect, inject, signal } from "@angular/core";
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { MatButtonModule } from "@angular/material/button";
-import { MatCardModule } from "@angular/material/card";
-import { MatDividerModule } from "@angular/material/divider";
-import { MatIconModule } from "@angular/material/icon";
-import { MatInputModule } from "@angular/material/input";
-import { MatSelectModule } from "@angular/material/select";
-import { MatTableModule } from "@angular/material/table";
-import { ActivatedRoute, Router, RouterLink } from "@angular/router";
-import { Mouza } from "../../../model/mouza.model";
-import { MouzaMasterService } from "./mouza-master.service";
-
+import { HttpErrorResponse } from '@angular/common/http';
+import {
+  Component,
+  EffectRef,
+  OnDestroy,
+  OnInit,
+  WritableSignal,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Mouza } from '../../../model/mouza.model';
+import { Group } from '../../../model/group.model';
+import { MouzaMasterService } from './mouza-master.service';
+import { GroupMasterService } from '../group-master/group-master.service';
+import { statesCollection } from '../../../data/states.collection';
 
 @Component({
   selector: 'app-mouza-master',
@@ -34,9 +51,19 @@ import { MouzaMasterService } from "./mouza-master.service";
 export class MouzaMasterComponent implements OnInit, OnDestroy {
   private readonly mouzaMasterService: MouzaMasterService =
     inject(MouzaMasterService);
+  private readonly groupMasterService: GroupMasterService =
+    inject(GroupMasterService);
   private route: ActivatedRoute = inject(ActivatedRoute);
   private readonly router: Router = inject(Router);
   readonly mouzaList: WritableSignal<Mouza[]> = signal([]);
+  readonly groupList: WritableSignal<Group[]> = signal([]);
+  readonly selectedGroup: WritableSignal<Group> = signal({
+    groupId: '',
+    groupName: '',
+    state: '',
+    city: '',
+    pincode: NaN,
+  });
   readonly displayedColumns: WritableSignal<string[]> = signal([
     'slno',
     'mouzaId',
@@ -61,50 +88,68 @@ export class MouzaMasterComponent implements OnInit, OnDestroy {
       this.mouzaForm.enable();
       this.mouzaForm.controls['mouzaId'].disable();
     }
-  })
+  });
 
-  //TODO: form 
+  //TODO: form
   mouzaForm: FormGroup<any> = this.fb.group({
     mouzaId: [''],
-    mouzaName: ['', [Validators.required, Validators.minLength(3)]],
-    mouzaAddress: ['', [Validators.required, Validators.minLength(10)]],
-    panNumber: [
-      '',
-      [Validators.required, Validators.minLength(10), Validators.maxLength(10)],
-    ],
+    groupId: ['', Validators.required],
+    mouza: ['', Validators.required],
+    block: ['', Validators.required],
+    JLno: ['', Validators.required],
+    oldRsDag: ['', Validators.required],
+    newLrDag: ['', Validators.required],
+    oldKhatian: ['', Validators.required],
+    newKhatian: ['', Validators.required],
+    currKhatian: ['', Validators.required],
   });
+
+  get form(): {
+    [key: string]: AbstractControl<any, any>;
+  } {
+    return this.mouzaForm.controls;
+  }
 
   get formData(): Mouza {
     return this.mouzaForm.value;
   }
 
+  /**
+   * Returns the name of the given state code from statesCollection.
+   * If the code is not found, the given code is returned as is.
+   * @param stateCode the state code to find the name for
+   * @returns the name of the given state code or the code itself if not found
+   */
+  getStateName(stateCode: string): string {
+    return statesCollection.find(
+      (state) => state.code === stateCode
+    )?.name || stateCode;
+  }
+
   onSubmit() {
-    if(this.mouzaForm.invalid)
-      return;
+    if (this.mouzaForm.invalid) return;
     this.sysIsBusy.set(true);
     if (this.updateMode()) {
       //update master
-      this.mouzaMasterService
-        .updateMouza(this.id(), this.formData)
-        .subscribe({
-          next: (data) => {
-            this.mouzaList.set(
-              this.mouzaList().map((mouza) => {
-                if (mouza.mouzaId === this.id()) {
-                  return data;
-                }
-                return mouza;
-              })
-            );
-            this.onListMouza();
-          },
-          error: () => {
-            console.error('error bro error');
-          },
-          complete: () => {
-            this.sysIsBusy.set(false);
-          },
-        });
+      this.mouzaMasterService.updateMouza(this.id(), this.formData).subscribe({
+        next: (data) => {
+          this.mouzaList.set(
+            this.mouzaList().map((mouza) => {
+              if (mouza.mouzaId === this.id()) {
+                return data;
+              }
+              return mouza;
+            })
+          );
+          this.onListMouza();
+        },
+        error: () => {
+          console.error('error bro error');
+        },
+        complete: () => {
+          this.sysIsBusy.set(false);
+        },
+      });
     } else {
       // new master
       this.mouzaMasterService.newMouza(this.formData).subscribe({
@@ -120,6 +165,21 @@ export class MouzaMasterComponent implements OnInit, OnDestroy {
         },
       });
     }
+  }
+
+  setGroupList(): void {
+    this.sysIsBusy.set(true);
+    this.groupMasterService.getGroupList().subscribe({
+      next: (data) => {
+        this.groupList.set(data);
+      },
+      error: () => {
+        this.serverUnreachable.set(true);
+      },
+      complete: () => {
+        this.sysIsBusy.set(false);
+      },
+    });
   }
 
   setMouzaList(): void {
@@ -211,9 +271,7 @@ export class MouzaMasterComponent implements OnInit, OnDestroy {
       this.mouzaMasterService.deleteMouza(mouzaId).subscribe({
         next: () => {
           this.mouzaList.set(
-            this.mouzaList().filter(
-              (mouza) => mouza.mouzaId !== mouzaId
-            )
+            this.mouzaList().filter((mouza) => mouza.mouzaId !== mouzaId)
           );
         },
         error: (err: HttpErrorResponse) => {
@@ -232,8 +290,26 @@ export class MouzaMasterComponent implements OnInit, OnDestroy {
     }
   }
 
+  onGroupChange(): void {
+    const group = this.groupList().find(
+      (data) => data.groupId === this.form['groupId'].value
+    );
+    if (group) {
+      group.state = this.getStateName(group.state);
+      this.selectedGroup.set(group);
+    } else
+      this.selectedGroup.set({
+        groupId: '',
+        groupName: '',
+        state: '',
+        city: '',
+        pincode: NaN,
+      });
+  }
+
   ngOnInit(): void {
     this.setMouzaList();
+    this.setGroupList();
 
     if (this.route.children[0]) {
       this.route.children[0].url.subscribe((data) => {

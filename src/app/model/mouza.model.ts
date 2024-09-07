@@ -1,5 +1,7 @@
 export interface Mouza {
   mouzaId: string;
+  groupId: string;
+  mouza: string; 
   block: string;
   JLno: string;
   oldRsDag: string;
