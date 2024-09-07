@@ -50,6 +50,7 @@
                   "maximumError": "4kB"
                 }
               ],
+              "optimization": true,
               "outputHashing": "all"
             },
             "development": {
