@@ -80,10 +80,12 @@ export class CompanyMasterComponent implements OnInit {
     if(this.companyForm.invalid)
       return;
     this.sysIsBusy.set(true);
+    const formData = this.formData;
+    formData.panNumber = formData.panNumber.toUpperCase();
     if (this.updateMode()) {
       //update master
       this.companyMasterService
-        .updateCompany(this.id(), this.formData)
+        .updateCompany(this.id(), formData)
         .subscribe({
           next: (data) => {
             this.companyList.set(
