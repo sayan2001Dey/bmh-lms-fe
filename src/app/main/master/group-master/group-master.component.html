@@ -72,7 +72,7 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
     </table>
     @if(!groupList().length) {
-    <div class="my-5 text-center text-green">NO COMPANIES FOUND</div>
+    <div class="my-5 text-center text-green">NO GROUPS FOUND</div>
     }
   </mat-card>
   } @else {
@@ -98,7 +98,7 @@
             }
             <mat-form-field appearance="outline">
               <mat-label>Group Name</mat-label>
-              <input matInput formControlName="groupName" />
+              <input matInput formControlName="groupName" [readonly]="viewMode()" />
             </mat-form-field>
           </div>
         </section>

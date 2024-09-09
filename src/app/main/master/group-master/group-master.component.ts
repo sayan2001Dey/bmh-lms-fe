@@ -1,10 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
-  effect,
-  EffectRef,
   inject,
-  OnDestroy,
   OnInit,
   signal,
   WritableSignal,
@@ -47,7 +44,7 @@ import { statesCollection } from '../../../data/states.collection';
   templateUrl: './group-master.component.html',
   styleUrl: './group-master.component.scss',
 })
-export class GroupMasterComponent implements OnInit, OnDestroy {
+export class GroupMasterComponent implements OnInit {
   private readonly groupMasterService: GroupMasterService =
     inject(GroupMasterService);
   private route: ActivatedRoute = inject(ActivatedRoute);
@@ -72,15 +69,6 @@ export class GroupMasterComponent implements OnInit, OnDestroy {
   private readonly fb: FormBuilder = inject(FormBuilder);
   readonly sysIsBusy: WritableSignal<boolean> = signal(true);
   readonly serverUnreachable: WritableSignal<boolean> = signal(false);
-
-  private readonly viewModeEffect: EffectRef = effect(() => {
-    if (this.viewMode()) {
-      this.groupForm.disable();
-    } else {
-      this.groupForm.enable();
-      this.groupForm.controls['groupId'].disable();
-    }
-  });
 
   groupForm: FormGroup<any> = this.fb.group({
     groupId: [''],
@@ -179,6 +167,10 @@ export class GroupMasterComponent implements OnInit, OnDestroy {
     this.updateMode.set(false);
     this.viewMode.set(false);
     this.id.set('');
+
+    this.groupForm.controls['state'].enable();
+    this.groupForm.controls['city'].enable();
+    this.groupForm.controls['groupId'].disable();
   }
 
   onUpdateGroup(groupId: string) {
@@ -186,6 +178,10 @@ export class GroupMasterComponent implements OnInit, OnDestroy {
     this.router.navigate(['master', 'group', 'update', groupId]);
     this.updateMode.set(true);
     this.viewMode.set(false);
+
+    this.groupForm.controls['state'].enable();
+    this.groupForm.controls['city'].enable();
+    this.groupForm.controls['groupId'].disable();
 
     this.groupFormPatchValueOptimized(groupId);
     this.listMode.set(false);
@@ -195,6 +191,10 @@ export class GroupMasterComponent implements OnInit, OnDestroy {
     this.router.navigate(['master', 'group', 'view', groupId]);
     this.updateMode.set(false);
     this.viewMode.set(true);
+
+    this.groupForm.controls['state'].disable();
+    this.groupForm.controls['city'].disable();
+    this.groupForm.controls['groupId'].disable();
 
     this.groupFormPatchValueOptimized(groupId);
     this.listMode.set(false);
@@ -300,17 +300,9 @@ export class GroupMasterComponent implements OnInit, OnDestroy {
     } else {
       this.onListGroup();
     }
+
+    this.groupForm.controls['groupId'].disable();
   }
   // TODO: if we click on nav item while in new or update etc. i need to go back to list mode. but its not happening
   // I think i need to make my own framework and ditch angular  huh!!!!!!!!!!!!
-  ngOnDestroy(): void {
-    this.sysIsBusy.set(false);
-    this.serverUnreachable.set(false);
-    this.listMode.set(false);
-    this.updateMode.set(false);
-    this.viewMode.set(false);
-    this.id.set('');
-    this.groupForm.reset();
-    this.viewModeEffect.destroy();
-  }
 }

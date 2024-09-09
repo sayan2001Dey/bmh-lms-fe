@@ -1,11 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
-  EffectRef,
-  OnDestroy,
   OnInit,
   WritableSignal,
-  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -48,7 +45,7 @@ import { statesCollection } from '../../../data/states.collection';
   templateUrl: './mouza-master.component.html',
   styleUrl: './mouza-master.component.scss',
 })
-export class MouzaMasterComponent implements OnInit, OnDestroy {
+export class MouzaMasterComponent implements OnInit {
   private readonly mouzaMasterService: MouzaMasterService =
     inject(MouzaMasterService);
   private readonly groupMasterService: GroupMasterService =
@@ -68,8 +65,9 @@ export class MouzaMasterComponent implements OnInit, OnDestroy {
     'slno',
     'mouzaId',
     'mouzaName',
-    'panNumber',
-    'mouzaAddress',
+    'groupName',
+    'block',
+    'jlno',
     'action',
   ]);
   readonly listMode: WritableSignal<boolean> = signal(true);
@@ -81,22 +79,13 @@ export class MouzaMasterComponent implements OnInit, OnDestroy {
   readonly sysIsBusy: WritableSignal<boolean> = signal(true);
   readonly serverUnreachable: WritableSignal<boolean> = signal(false);
 
-  private readonly viewModeEffect: EffectRef = effect(() => {
-    if (this.viewMode()) {
-      this.mouzaForm.disable();
-    } else {
-      this.mouzaForm.enable();
-      this.mouzaForm.controls['mouzaId'].disable();
-    }
-  });
-
   //TODO: form
   mouzaForm: FormGroup<any> = this.fb.group({
     mouzaId: [''],
     groupId: ['', Validators.required],
     mouza: ['', Validators.required],
     block: ['', Validators.required],
-    JLno: ['', Validators.required],
+    jlno: ['', Validators.required],
     oldRsDag: ['', Validators.required],
     newLrDag: ['', Validators.required],
     oldKhatian: ['', Validators.required],
@@ -121,9 +110,23 @@ export class MouzaMasterComponent implements OnInit, OnDestroy {
    * @returns the name of the given state code or the code itself if not found
    */
   getStateName(stateCode: string): string {
-    return statesCollection.find(
-      (state) => state.code === stateCode
-    )?.name || stateCode;
+    return (
+      statesCollection.find((state) => state.code === stateCode)?.name ||
+      stateCode
+    );
+  }
+
+  /**
+   * Returns the name of the given groupId from groupList.
+   * If the id is not found, the given id is returned as is.
+   * @param groupId the group id to find the name for
+   * @returns the name of the given group id or the id itself if not found
+   */
+  getGroupName(groupId: string): string {
+    return (
+      this.groupList().find((group) => group.groupId === groupId)?.groupName ||
+      groupId
+    );
   }
 
   onSubmit() {
@@ -204,6 +207,16 @@ export class MouzaMasterComponent implements OnInit, OnDestroy {
     this.updateMode.set(false);
     this.viewMode.set(false);
     this.id.set('');
+    this.selectedGroup.set({
+      groupId: '',
+      groupName: '',
+      state: '',
+      city: '',
+      pincode: NaN,
+    });
+
+    this.mouzaForm.controls['groupId'].enable();
+    this.mouzaForm.controls['mouzaId'].disable();
   }
 
   onUpdateMouza(mouzaId: string) {
@@ -211,6 +224,9 @@ export class MouzaMasterComponent implements OnInit, OnDestroy {
     this.router.navigate(['master', 'mouza', 'update', mouzaId]);
     this.updateMode.set(true);
     this.viewMode.set(false);
+
+    this.mouzaForm.controls['groupId'].enable();
+    this.mouzaForm.controls['mouzaId'].disable();
 
     this.mouzaFormPatchValueOptimized(mouzaId);
     this.listMode.set(false);
@@ -220,6 +236,9 @@ export class MouzaMasterComponent implements OnInit, OnDestroy {
     this.router.navigate(['master', 'mouza', 'view', mouzaId]);
     this.updateMode.set(false);
     this.viewMode.set(true);
+
+    this.mouzaForm.controls['groupId'].disable();
+    this.mouzaForm.controls['mouzaId'].disable();
 
     this.mouzaFormPatchValueOptimized(mouzaId);
     this.listMode.set(false);
@@ -236,6 +255,7 @@ export class MouzaMasterComponent implements OnInit, OnDestroy {
 
     if (mouza) {
       this.mouzaForm.patchValue(mouza);
+      this.onGroupChange();
     } else {
       this.mouzaMasterService.getMouza(mouzaId).subscribe({
         next: (data) => {
@@ -245,6 +265,7 @@ export class MouzaMasterComponent implements OnInit, OnDestroy {
           this.serverUnreachable.set(true);
         },
         complete: () => {
+          this.onGroupChange();
           this.sysIsBusy.set(false);
         },
       });
@@ -328,17 +349,9 @@ export class MouzaMasterComponent implements OnInit, OnDestroy {
     } else {
       this.onListMouza();
     }
+
+    this.mouzaForm.controls['mouzaId'].disable();
   }
   // TODO: if we click on nav item while in new or update etc. i need to go back to list mode. but its not happening
   // I think i need to make my own framework and ditch angular  huh!!!!!!!!!!!!
-  ngOnDestroy(): void {
-    this.sysIsBusy.set(false);
-    this.serverUnreachable.set(false);
-    this.listMode.set(false);
-    this.updateMode.set(false);
-    this.viewMode.set(false);
-    this.id.set('');
-    this.mouzaForm.reset();
-    this.viewModeEffect.destroy();
-  }
 }
