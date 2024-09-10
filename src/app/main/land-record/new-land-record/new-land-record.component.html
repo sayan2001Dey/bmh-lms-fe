@@ -2,17 +2,12 @@
 
 <main class="container w-100">
   <section class="my-5 d-flex">
-    <button
-      mat-icon-button
-      class="my-sm-auto back-icon-button"
-      routerLink="/land-record"
-    >
+    <button mat-icon-button class="my-sm-auto back-icon-button" routerLink="/land-record">
       <mat-icon>arrow_back</mat-icon>
     </button>
-    <span class="h1 my-auto"
-      >{{ updateMode() ? "Update" : viewMode() ? "View" : "Add new" }} land
-      record</span
-    >
+    <span class="h1 my-auto">
+      {{ updateMode() ? "Update" : viewMode() ? "View" : "Add new" }} land
+      record</span>
   </section>
 
   <mat-card class="p-3 m-2 mb-4 border">
@@ -21,13 +16,17 @@
         <h5 class="font-weight-normal py-2">Group</h5>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <mat-form-field appearance="outline">
-            <mat-label>Group Name</mat-label>
-            <input
-              type="text"
-              formControlName="groupName"
-              [readonly]="viewMode()"
-              matInput
-            />
+            <mat-label>Group</mat-label>
+            <mat-select formControlName="groupId" (ngModelChange)="onGroupChange()" required>
+              @for (group of groupList(); track $index) {
+              <mat-option [value]="group.groupId">
+                {{ group.groupName }}
+                <span class="text-muted">
+                  {{ "(" + group.groupId + ")" }}
+                </span>
+              </mat-option>
+              }
+            </mat-select>
           </mat-form-field>
         </div>
       </section>
@@ -38,73 +37,48 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <mat-form-field appearance="outline">
             <mat-label>State</mat-label>
-            <mat-select
-              formControlName="state"
-              (ngModelChange)="onStatesChange()"
-              required
-            >
-              @for (state of states(); track 'state-' + state.code) {
-              <mat-option [value]="state.code">{{ state.name }}</mat-option>
-              }
-            </mat-select>
+            <input [value]="selectedGroup().state" disabled matInput />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>City/Area</mat-label>
-            <mat-select
-              formControlName="city"
-              placeholder="Pick a city"
-              required
-            >
-              @for (city of cities(); track 'city-' + $index) {
-              <mat-option [value]="city">{{ city }}</mat-option>
-              }
-            </mat-select>
-            @if(form["city"].touched && cities().length === 0){
-            <mat-hint class="text-red"
-              ><mat-icon>info</mat-icon> Select a state first</mat-hint
-            >
-            }
+            <input [value]="selectedGroup().city" disabled matInput />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Mouza</mat-label>
-            <input formControlName="mouza" [readonly]="viewMode()" matInput />
+            <mat-select formControlName="mouzaId" (ngModelChange)="onMouzaChange()" required>
+              @for (mouza of mouzaList(); track $index) {
+              @if (mouza.groupId === selectedGroup().groupId){
+              <mat-option [value]="mouza.mouzaId">
+                {{ mouza.mouza }}
+                <span class="text-muted">
+                  {{ "(" + mouza.mouzaId + ")" }}
+                </span>
+              </mat-option>
+              }
+              }
+            </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Block</mat-label>
-            <input formControlName="block" [readonly]="viewMode()" matInput />
+            <input [value]="selectedMouza().block" disabled matInput />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>JL No.</mat-label>
-            <input
-              type="number"
-              formControlName="jlno"
-              [readonly]="viewMode()"
-              matInput
-            />
+            <input type="number" [value]="selectedMouza().jlno" disabled matInput />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Pincode</mat-label>
-            <input
-              type="number"
-              formControlName="pincode"
-              [readonly]="viewMode()"
-              matInput
-            />
+            <input type="number" [value]="selectedGroup().pincode" disabled matInput />
           </mat-form-field>
         </div>
 
         <div class="row m-1">
-          <button
-            type="button"
-            mat-flat-button
-            class="col-auto"
-            [disabled]="viewMode()"
-          >
+          <button type="button" mat-flat-button class="col-auto" [disabled]="viewMode()">
             Banglar Bhumi Info
           </button>
         </div>
@@ -116,11 +90,16 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <mat-form-field appearance="outline">
             <mat-label>Buyer/Owner</mat-label>
-            <input
-              formControlName="buyerOwner"
-              [readonly]="viewMode()"
-              matInput
-            />
+            <mat-select formControlName="buyerOwner" required>
+              @for (company of companyList(); track $index) {
+              <mat-option [value]="company.companyId">
+                {{ company.companyName }}
+                <span class="text-muted">
+                  {{ "(" + company.companyId + ")" }}
+                </span>
+              </mat-option>
+              }
+            </mat-select>
           </mat-form-field>
         </div>
 
@@ -129,38 +108,22 @@
           <div>
             @for (seller of sellerFormControls; track 'seller-'+$index) {
             <div class="d-flex flex-nowrap align-items-center">
-              <span class="h5 p-2 py-3 mb-auto">{{ $index + 1 }}.</span>
+              <span class="h5 p-2 py-3 mb-auto">
+                {{ $index + 1 }}.</span>
               <mat-form-field>
                 <mat-label>Seller</mat-label>
-                <input
-                  [formControl]="seller"
-                  [readonly]="viewMode()"
-                  matInput
-                />
+                <input [formControl]="seller" [readonly]="viewMode()" matInput />
               </mat-form-field>
               <span class="mt-2 mb-auto">
-                <button
-                  mat-icon-button
-                  type="button"
-                  (click)="onRemoveSeller($index)"
-                  [disabled]="this.sellerForms.length < 2 || viewMode()"
-                >
-                  <mat-icon
-                    [class]="this.sellerForms.length < 2 ? '' : 'text-red'"
-                  >
+                <button mat-icon-button type="button" (click)="onRemoveSeller($index)" [disabled]="this.sellerForms.length < 2 || viewMode()">
+                  <mat-icon [class]="this.sellerForms.length < 2 ? '' : 'text-red'">
                     do_not_disturb_on
                   </mat-icon>
                 </button>
               </span>
             </div>
             }
-            <button
-              mat-button
-              type="button"
-              class="btn-sp2"
-              (click)="onAddSeller()"
-              [disabled]="viewMode()"
-            >
+            <button mat-button type="button" class="btn-sp2" (click)="onAddSeller()" [disabled]="viewMode()">
               <mat-icon>add</mat-icon> Add Seller
             </button>
           </div>
@@ -175,33 +138,16 @@
 
           <mat-form-field appearance="outline">
             <mat-label>Date of Deed</mat-label>
-            <input
-              matInput
-              formControlName="deedDate"
-              [matDatepicker]="datePicker1"
-              placeholder="DD/MM/YYYY"
-              (focus)="datePicker1.open()"
-              readonly
-            />
-            <mat-datepicker-toggle
-              matSuffix
-              [for]="datePicker1"
-              [disabled]="viewMode()"
-            ></mat-datepicker-toggle>
+            <input matInput formControlName="deedDate" [matDatepicker]="datePicker1" placeholder="DD/MM/YYYY" (focus)="datePicker1.open()" readonly />
+            <mat-datepicker-toggle matSuffix [for]="datePicker1" [disabled]="viewMode()"></mat-datepicker-toggle>
             <mat-datepicker #datePicker1></mat-datepicker>
           </mat-form-field>
 
           <div>
             <mat-card appearance="outlined" class="m-auto p-2">
-              <mat-radio-group
-                formControlName="deedName"
-                aria-label="Select an option"
-                class="m-auto"
-              >
+              <mat-radio-group formControlName="deedName" aria-label="Select an option" class="m-auto">
                 <mat-radio-button value="Main Deed">Main Deed</mat-radio-button>
-                <mat-radio-button value="Chain Deed" class="m-2"
-                  >Chain Deed</mat-radio-button
-                >
+                <mat-radio-button value="Chain Deed" class="m-2">Chain Deed</mat-radio-button>
               </mat-radio-group>
             </mat-card>
           </div>
@@ -226,44 +172,36 @@
                 <mat-list role="list">
                   @for(fileInfo of oldFileInfoArray.scanCopyFile; track
                   $index+'hcd-'+fileInfo.fileName) {
-                  <div
-                    class="d-flex justify-content-between align-items-center mb-1"
-                  >
-                    <span class="pt-2 text-truncate px-2"
-                      ><b class="text-dark">{{ $index + 1 }}. </b>
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="pt-2 text-truncate px-2"><b class="text-dark">
+                        {{ $index + 1 }}. </b>
                       @if(fileInfo.markedForDeletion) {
-                      <del>{{ fileInfo.fileName }}</del>
+                      <del>
+                        {{ fileInfo.fileName }}</del>
                       } @else {
                       {{ fileInfo.fileName }}
                       }
                     </span>
                     <span class="d-flex align-items-center">
-                      <button
-                        mat-icon-button
-                        class="mt-1"
-                        (click)="
+                      <button mat-icon-button class="mt-1" (click)="
                           onWindowPopupOpenForFiles(
                             'scanCopyFile',
                             fileInfo.fileName
                           )
-                        "
-                      >
+                        ">
                         <mat-icon>open_in_new</mat-icon>
                       </button>
                       @if(!viewMode()) {
-                      <button
-                        mat-icon-button
-                        class="mt-1"
-                        (click)="
+                      <button mat-icon-button class="mt-1" (click)="
                           removeFromPreviousUploads('scanCopyFile', $index)
-                        "
-                        [disabled]="disableFileRemoval()"
-                      >
-                        <mat-icon>{{
+                        " [disabled]="disableFileRemoval()">
+                        <mat-icon>
+                          {{
                           fileInfo.markedForDeletion
                             ? "undo"
                             : "do_not_disturb_on"
-                        }}</mat-icon>
+                        }}
+                        </mat-icon>
                       </button>
                       }
                     </span>
@@ -279,19 +217,12 @@
                 <mat-list role="list">
                   @for(fileInfo of fileInfoArray.scanCopyFile; track
                   $index+'hcd-'+fileInfo) {
-                  <div
-                    class="d-flex justify-content-between align-items-center mb-1"
-                  >
-                    <span class="pt-2 text-truncate px-2"
-                      ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
-                    >
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="pt-2 text-truncate px-2"><b>
+                        {{ $index + 1 }}. </b>
+                      {{ fileInfo }}</span>
                     @if(!viewMode()) {
-                    <button
-                      mat-icon-button
-                      class="mt-1"
-                      (click)="removeFiles('scanCopyFile', $index)"
-                      [disabled]="disableFileRemoval()"
-                    >
+                    <button mat-icon-button class="mt-1" (click)="removeFiles('scanCopyFile', $index)" [disabled]="disableFileRemoval()">
                       <mat-icon>do_not_disturb_on</mat-icon>
                     </button>
                     }
@@ -307,23 +238,10 @@
               </mat-card>
               }
 
-              <button
-                type="button"
-                mat-stroked-button
-                class="mt-2 mb-1"
-                (click)="scanCopyAttachments.click()"
-                [disabled]="viewMode()"
-              >
+              <button type="button" mat-stroked-button class="mt-2 mb-1" (click)="scanCopyAttachments.click()" [disabled]="viewMode()">
                 <mat-icon>upload</mat-icon> Upload Files
               </button>
-              <input
-                type="file"
-                accept=".pdf, image/jpeg, image/png"
-                class="d-none"
-                (change)="onClickUploadFiles($event, 'scanCopyFile')"
-                multiple
-                #scanCopyAttachments
-              />
+              <input type="file" accept=".pdf, image/jpeg, image/png" class="d-none" (change)="onClickUploadFiles($event, 'scanCopyFile')" multiple #scanCopyAttachments />
             </mat-card>
           </div>
         </div>
@@ -334,47 +252,27 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <mat-form-field appearance="outline">
             <mat-label>RS Dag No. (Old)</mat-label>
-            <input
-              formControlName="oldRsDag"
-              [readonly]="viewMode()"
-              matInput
-            />
+            <input [value]="selectedMouza().oldRsDag" disabled matInput />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>LR Dag No. (New)</mat-label>
-            <input
-              matInput
-              formControlName="newLrDag"
-              [readonly]="viewMode()"
-            />
+            <input [value]="selectedMouza().newLrDag" disabled matInput />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Khatian No. (Old)</mat-label>
-            <input
-              matInput
-              formControlName="oldKhatian"
-              [readonly]="viewMode()"
-            />
+            <input [value]="selectedMouza().oldKhatian" disabled matInput />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Khatian No. (New)</mat-label>
-            <input
-              matInput
-              formControlName="newKhatian"
-              [readonly]="viewMode()"
-            />
+            <input matInput [value]="selectedMouza().newKhatian" disabled />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Khatian No. (Current)</mat-label>
-            <input
-              matInput
-              formControlName="currKhatian"
-              [readonly]="viewMode()"
-            />
+            <input matInput [value]="selectedMouza().currKhatian" disabled />
           </mat-form-field>
         </div>
 
@@ -382,59 +280,33 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <mat-form-field appearance="outline">
             <mat-label>Total Qty</mat-label>
-            <input
-              type="number"
-              matInput
-              formControlName="totalQty"
-              [readonly]="viewMode()"
-            />
+            <input type="number" matInput formControlName="totalQty" [readonly]="viewMode()" />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Purchased Qty</mat-label>
-            <input
-              type="number"
-              matInput
-              formControlName="purQty"
-              [readonly]="viewMode()"
-            />
+            <input type="number" matInput formControlName="purQty" [readonly]="viewMode()" />
           </mat-form-field>
 
           <div>
             <mat-form-field class="w-100" appearance="outline">
               <mat-label>Mutated Qty</mat-label>
-              <input
-                type="number"
-                matInput
-                formControlName="mutedQty"
-                [readonly]="viewMode()"
-              />
+              <input type="number" matInput formControlName="mutedQty" [readonly]="viewMode()" />
             </mat-form-field>
           </div>
 
           <div>
             <mat-form-field class="w-100" appearance="outline">
               <mat-label>Un-mutated Qty</mat-label>
-              <input
-                type="number"
-                matInput
-                formControlName="unMutedQty"
-                [readonly]="viewMode()"
-              />
+              <input type="number" matInput formControlName="unMutedQty" [readonly]="viewMode()" />
             </mat-form-field>
           </div>
 
           <div class="mb-3">
             <mat-card appearance="outlined" class="m-auto p-2">
-              <mat-radio-group
-                formControlName="landStatus"
-                aria-label="Select an option"
-                class="m-auto"
-              >
+              <mat-radio-group formControlName="landStatus" aria-label="Select an option" class="m-auto">
                 <mat-radio-button value="Vested">Vested</mat-radio-button>
-                <mat-radio-button value="Unvested" class="m-2"
-                  >Unvested</mat-radio-button
-                >
+                <mat-radio-button value="Unvested" class="m-2">Unvested</mat-radio-button>
               </mat-radio-group>
 
               <mat-form-field appearance="outline">
@@ -472,44 +344,36 @@
                 <mat-list role="list">
                   @for(fileInfo of oldFileInfoArray.mutationFile; track
                   $index+'hcd-'+fileInfo.fileName) {
-                  <div
-                    class="d-flex justify-content-between align-items-center mb-1"
-                  >
-                    <span class="pt-2 text-truncate px-2"
-                      ><b class="text-dark">{{ $index + 1 }}. </b>
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="pt-2 text-truncate px-2"><b class="text-dark">
+                        {{ $index + 1 }}. </b>
                       @if(fileInfo.markedForDeletion) {
-                      <del>{{ fileInfo.fileName }}</del>
+                      <del>
+                        {{ fileInfo.fileName }}</del>
                       } @else {
                       {{ fileInfo.fileName }}
                       }
                     </span>
                     <span class="d-flex align-items-center">
-                      <button
-                        mat-icon-button
-                        class="mt-1"
-                        (click)="
+                      <button mat-icon-button class="mt-1" (click)="
                           onWindowPopupOpenForFiles(
                             'mutationFile',
                             fileInfo.fileName
                           )
-                        "
-                      >
+                        ">
                         <mat-icon>open_in_new</mat-icon>
                       </button>
                       @if(!viewMode()) {
-                      <button
-                        mat-icon-button
-                        class="mt-1"
-                        (click)="
+                      <button mat-icon-button class="mt-1" (click)="
                           removeFromPreviousUploads('mutationFile', $index)
-                        "
-                        [disabled]="disableFileRemoval()"
-                      >
-                        <mat-icon>{{
+                        " [disabled]="disableFileRemoval()">
+                        <mat-icon>
+                          {{
                           fileInfo.markedForDeletion
                             ? "undo"
                             : "do_not_disturb_on"
-                        }}</mat-icon>
+                        }}
+                        </mat-icon>
                       </button>
                       }
                     </span>
@@ -525,19 +389,12 @@
                 <mat-list role="list">
                   @for(fileInfo of fileInfoArray.mutationFile; track
                   $index+'hcd-'+fileInfo) {
-                  <div
-                    class="d-flex justify-content-between align-items-center mb-1"
-                  >
-                    <span class="pt-2 text-truncate px-2"
-                      ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
-                    >
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="pt-2 text-truncate px-2"><b>
+                        {{ $index + 1 }}. </b>
+                      {{ fileInfo }}</span>
                     @if(!viewMode()) {
-                    <button
-                      mat-icon-button
-                      class="mt-1"
-                      (click)="removeFiles('mutationFile', $index)"
-                      [disabled]="disableFileRemoval()"
-                    >
+                    <button mat-icon-button class="mt-1" (click)="removeFiles('mutationFile', $index)" [disabled]="disableFileRemoval()">
                       <mat-icon>do_not_disturb_on</mat-icon>
                     </button>
                     }
@@ -553,40 +410,19 @@
               </mat-card>
               }
 
-              <button
-                type="button"
-                mat-stroked-button
-                class="mt-2 mb-1"
-                (click)="mutationAttachments.click()"
-                [disabled]="viewMode()"
-              >
+              <button type="button" mat-stroked-button class="mt-2 mb-1" (click)="mutationAttachments.click()" [disabled]="viewMode()">
                 <mat-icon>upload</mat-icon> Upload Files
               </button>
-              <input
-                type="file"
-                accept=".pdf, image/jpeg, image/png"
-                class="d-none"
-                (change)="onClickUploadFiles($event, 'mutationFile')"
-                multiple
-                #mutationAttachments
-              />
+              <input type="file" accept=".pdf, image/jpeg, image/png" class="d-none" (change)="onClickUploadFiles($event, 'mutationFile')" multiple #mutationAttachments />
             </mat-card>
           </div>
 
           <div class="pb-2">
             <mat-card class="px-2 py-1" appearance="outlined">
               <div class="m-auto p-2">
-                <mat-radio-group
-                  formControlName="conversionLandStus"
-                  aria-label="Select an option"
-                  class="m-auto"
-                >
-                  <mat-radio-button value="Converted" class="m-1"
-                    >Converted</mat-radio-button
-                  >
-                  <mat-radio-button value="Unconverted" class="m-1"
-                    >Unconverted</mat-radio-button
-                  >
+                <mat-radio-group formControlName="conversionLandStus" aria-label="Select an option" class="m-auto">
+                  <mat-radio-button value="Converted" class="m-1">Converted</mat-radio-button>
+                  <mat-radio-button value="Unconverted" class="m-1">Unconverted</mat-radio-button>
                 </mat-radio-group>
               </div>
 
@@ -612,44 +448,36 @@
                 <mat-list role="list">
                   @for(fileInfo of oldFileInfoArray.conversionFile; track
                   $index+'hcd-'+fileInfo.fileName) {
-                  <div
-                    class="d-flex justify-content-between align-items-center mb-1"
-                  >
-                    <span class="pt-2 text-truncate px-2"
-                      ><b class="text-dark">{{ $index + 1 }}. </b>
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="pt-2 text-truncate px-2"><b class="text-dark">
+                        {{ $index + 1 }}. </b>
                       @if(fileInfo.markedForDeletion) {
-                      <del>{{ fileInfo.fileName }}</del>
+                      <del>
+                        {{ fileInfo.fileName }}</del>
                       } @else {
                       {{ fileInfo.fileName }}
                       }
                     </span>
                     <span class="d-flex align-items-center">
-                      <button
-                        mat-icon-button
-                        class="mt-1"
-                        (click)="
+                      <button mat-icon-button class="mt-1" (click)="
                           onWindowPopupOpenForFiles(
                             'conversionFile',
                             fileInfo.fileName
                           )
-                        "
-                      >
+                        ">
                         <mat-icon>open_in_new</mat-icon>
                       </button>
                       @if(!viewMode()) {
-                      <button
-                        mat-icon-button
-                        class="mt-1"
-                        (click)="
+                      <button mat-icon-button class="mt-1" (click)="
                           removeFromPreviousUploads('conversionFile', $index)
-                        "
-                        [disabled]="disableFileRemoval()"
-                      >
-                        <mat-icon>{{
+                        " [disabled]="disableFileRemoval()">
+                        <mat-icon>
+                          {{
                           fileInfo.markedForDeletion
                             ? "undo"
                             : "do_not_disturb_on"
-                        }}</mat-icon>
+                        }}
+                        </mat-icon>
                       </button>
                       }
                     </span>
@@ -665,19 +493,12 @@
                 <mat-list role="list">
                   @for(fileInfo of fileInfoArray.conversionFile; track
                   $index+'hcd-'+fileInfo) {
-                  <div
-                    class="d-flex justify-content-between align-items-center mb-1"
-                  >
-                    <span class="pt-2 text-truncate px-2"
-                      ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
-                    >
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="pt-2 text-truncate px-2"><b>
+                        {{ $index + 1 }}. </b>
+                      {{ fileInfo }}</span>
                     @if(!viewMode()) {
-                    <button
-                      mat-icon-button
-                      class="mt-1"
-                      (click)="removeFiles('conversionFile', $index)"
-                      [disabled]="disableFileRemoval()"
-                    >
+                    <button mat-icon-button class="mt-1" (click)="removeFiles('conversionFile', $index)" [disabled]="disableFileRemoval()">
                       <mat-icon>do_not_disturb_on</mat-icon>
                     </button>
                     }
@@ -693,23 +514,10 @@
               </mat-card>
               }
 
-              <button
-                type="button"
-                mat-stroked-button
-                class="mt-2 mb-1"
-                (click)="conversionAttachments.click()"
-                [disabled]="viewMode()"
-              >
+              <button type="button" mat-stroked-button class="mt-2 mb-1" (click)="conversionAttachments.click()" [disabled]="viewMode()">
                 <mat-icon>upload</mat-icon> Upload Files
               </button>
-              <input
-                type="file"
-                accept=".pdf, image/jpeg, image/png"
-                class="d-none"
-                (change)="onClickUploadFiles($event, 'conversionFile')"
-                multiple
-                #conversionAttachments
-              />
+              <input type="file" accept=".pdf, image/jpeg, image/png" class="d-none" (change)="onClickUploadFiles($event, 'conversionFile')" multiple #conversionAttachments />
             </mat-card>
           </div>
         </div>
@@ -722,29 +530,17 @@
           <div>
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Location of Deed</mat-label>
-              <input
-                matInput
-                [readonly]="viewMode()"
-                formControlName="deedLoc"
-              />
+              <input matInput [readonly]="viewMode()" formControlName="deedLoc" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Location of Photocopy</mat-label>
-              <input
-                matInput
-                [readonly]="viewMode()"
-                formControlName="photoLoc"
-              />
+              <input matInput [readonly]="viewMode()" formControlName="photoLoc" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Status as per Govt. Records</mat-label>
-              <input
-                matInput
-                [readonly]="viewMode()"
-                formControlName="govtRec"
-              />
+              <input matInput [readonly]="viewMode()" formControlName="govtRec" />
             </mat-form-field>
 
             <div class="pb-2">
@@ -766,44 +562,36 @@
                   <mat-list role="list">
                     @for(fileInfo of oldFileInfoArray.parchaFile; track
                     $index+'hcd-'+fileInfo.fileName) {
-                    <div
-                      class="d-flex justify-content-between align-items-center mb-1"
-                    >
-                      <span class="pt-2 text-truncate px-2"
-                        ><b class="text-dark">{{ $index + 1 }}. </b>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <span class="pt-2 text-truncate px-2"><b class="text-dark">
+                          {{ $index + 1 }}. </b>
                         @if(fileInfo.markedForDeletion) {
-                        <del>{{ fileInfo.fileName }}</del>
+                        <del>
+                          {{ fileInfo.fileName }}</del>
                         } @else {
                         {{ fileInfo.fileName }}
                         }
                       </span>
                       <span class="d-flex align-items-center">
-                        <button
-                          mat-icon-button
-                          class="mt-1"
-                          (click)="
+                        <button mat-icon-button class="mt-1" (click)="
                             onWindowPopupOpenForFiles(
                               'parchaFile',
                               fileInfo.fileName
                             )
-                          "
-                        >
+                          ">
                           <mat-icon>open_in_new</mat-icon>
                         </button>
                         @if(!viewMode()) {
-                        <button
-                          mat-icon-button
-                          class="mt-1"
-                          (click)="
+                        <button mat-icon-button class="mt-1" (click)="
                             removeFromPreviousUploads('parchaFile', $index)
-                          "
-                          [disabled]="disableFileRemoval()"
-                        >
-                          <mat-icon>{{
+                          " [disabled]="disableFileRemoval()">
+                          <mat-icon>
+                            {{
                             fileInfo.markedForDeletion
                               ? "undo"
                               : "do_not_disturb_on"
-                          }}</mat-icon>
+                          }}
+                          </mat-icon>
                         </button>
                         }
                       </span>
@@ -819,19 +607,12 @@
                   <mat-list role="list">
                     @for(fileInfo of fileInfoArray.parchaFile; track
                     $index+'hcd-'+fileInfo) {
-                    <div
-                      class="d-flex justify-content-between align-items-center mb-1"
-                    >
-                      <span class="pt-2 text-truncate px-2"
-                        ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
-                      >
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <span class="pt-2 text-truncate px-2"><b>
+                          {{ $index + 1 }}. </b>
+                        {{ fileInfo }}</span>
                       @if(!viewMode()) {
-                      <button
-                        mat-icon-button
-                        class="mt-1"
-                        (click)="removeFiles('parchaFile', $index)"
-                        [disabled]="disableFileRemoval()"
-                      >
+                      <button mat-icon-button class="mt-1" (click)="removeFiles('parchaFile', $index)" [disabled]="disableFileRemoval()">
                         <mat-icon>do_not_disturb_on</mat-icon>
                       </button>
                       }
@@ -849,23 +630,10 @@
                 </mat-card>
                 }
 
-                <button
-                  type="button"
-                  mat-stroked-button
-                  class="mt-2 mb-1"
-                  (click)="parchaFileAttachments.click()"
-                  [disabled]="viewMode()"
-                >
+                <button type="button" mat-stroked-button class="mt-2 mb-1" (click)="parchaFileAttachments.click()" [disabled]="viewMode()">
                   <mat-icon>upload</mat-icon> Upload Files
                 </button>
-                <input
-                  type="file"
-                  accept=".pdf, image/jpeg, image/png"
-                  class="d-none"
-                  (change)="onClickUploadFiles($event, 'parchaFile')"
-                  multiple
-                  #parchaFileAttachments
-                />
+                <input type="file" accept=".pdf, image/jpeg, image/png" class="d-none" (change)="onClickUploadFiles($event, 'parchaFile')" multiple #parchaFileAttachments />
               </mat-card>
             </div>
           </div>
@@ -890,44 +658,36 @@
                 <mat-list role="list">
                   @for(fileInfo of oldFileInfoArray.documentFile; track
                   $index+'hcd-'+fileInfo.fileName) {
-                  <div
-                    class="d-flex justify-content-between align-items-center mb-1"
-                  >
-                    <span class="pt-2 text-truncate px-2"
-                      ><b class="text-dark">{{ $index + 1 }}. </b>
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="pt-2 text-truncate px-2"><b class="text-dark">
+                        {{ $index + 1 }}. </b>
                       @if(fileInfo.markedForDeletion) {
-                      <del>{{ fileInfo.fileName }}</del>
+                      <del>
+                        {{ fileInfo.fileName }}</del>
                       } @else {
                       {{ fileInfo.fileName }}
                       }
                     </span>
                     <span class="d-flex align-items-center">
-                      <button
-                        mat-icon-button
-                        class="mt-1"
-                        (click)="
+                      <button mat-icon-button class="mt-1" (click)="
                           onWindowPopupOpenForFiles(
                             'documentFile',
                             fileInfo.fileName
                           )
-                        "
-                      >
+                        ">
                         <mat-icon>open_in_new</mat-icon>
                       </button>
                       @if(!viewMode()) {
-                      <button
-                        mat-icon-button
-                        class="mt-1"
-                        (click)="
+                      <button mat-icon-button class="mt-1" (click)="
                           removeFromPreviousUploads('documentFile', $index)
-                        "
-                        [disabled]="disableFileRemoval()"
-                      >
-                        <mat-icon>{{
+                        " [disabled]="disableFileRemoval()">
+                        <mat-icon>
+                          {{
                           fileInfo.markedForDeletion
                             ? "undo"
                             : "do_not_disturb_on"
-                        }}</mat-icon>
+                        }}
+                        </mat-icon>
                       </button>
                       }
                     </span>
@@ -943,19 +703,12 @@
                 <mat-list role="list">
                   @for(fileInfo of fileInfoArray.documentFile; track
                   $index+'hcd-'+fileInfo) {
-                  <div
-                    class="d-flex justify-content-between align-items-center mb-1"
-                  >
-                    <span class="pt-2 text-truncate px-2"
-                      ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
-                    >
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="pt-2 text-truncate px-2"><b>
+                        {{ $index + 1 }}. </b>
+                      {{ fileInfo }}</span>
                     @if(!viewMode()) {
-                    <button
-                      mat-icon-button
-                      class="mt-1"
-                      (click)="removeFiles('documentFile', $index)"
-                      [disabled]="disableFileRemoval()"
-                    >
+                    <button mat-icon-button class="mt-1" (click)="removeFiles('documentFile', $index)" [disabled]="disableFileRemoval()">
                       <mat-icon>do_not_disturb_on</mat-icon>
                     </button>
                     }
@@ -971,71 +724,33 @@
               </mat-card>
               }
 
-              <button
-                type="button"
-                mat-stroked-button
-                class="mt-2 mb-1"
-                (click)="documentFileAttachments.click()"
-                [disabled]="viewMode()"
-              >
+              <button type="button" mat-stroked-button class="mt-2 mb-1" (click)="documentFileAttachments.click()" [disabled]="viewMode()">
                 <mat-icon>upload</mat-icon> Upload Files
               </button>
-              <input
-                type="file"
-                accept=".pdf, image/jpeg, image/png"
-                class="d-none"
-                (change)="onClickUploadFiles($event, 'documentFile')"
-                multiple
-                #documentFileAttachments
-              />
+              <input type="file" accept=".pdf, image/jpeg, image/png" class="d-none" (change)="onClickUploadFiles($event, 'documentFile')" multiple #documentFileAttachments />
             </mat-card>
           </div>
 
           <div>
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Remarks</mat-label>
-              <textarea
-                matInput
-                [readonly]="viewMode()"
-                formControlName="remarks"
-                placeholder="Remarks..."
-              ></textarea>
+              <textarea matInput [readonly]="viewMode()" formControlName="remarks" placeholder="Remarks..."></textarea>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Khazana Status</mat-label>
-              <input
-                matInput
-                [readonly]="viewMode()"
-                formControlName="khazanaStatus"
-              />
+              <input matInput [readonly]="viewMode()" formControlName="khazanaStatus" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Property Tax</mat-label>
-              <input
-                type="number"
-                matInput
-                formControlName="tax"
-                [readonly]="viewMode()"
-              />
+              <input type="number" matInput formControlName="tax" [readonly]="viewMode()" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Last Updated Date</mat-label>
-              <input
-                matInput
-                formControlName="dueDate"
-                [matDatepicker]="datePicker2"
-                placeholder="DD/MM/YYYY"
-                (focus)="datePicker2.open()"
-                readonly
-              />
-              <mat-datepicker-toggle
-                matSuffix
-                [for]="datePicker2"
-                [disabled]="viewMode()"
-              ></mat-datepicker-toggle>
+              <input matInput formControlName="dueDate" [matDatepicker]="datePicker2" placeholder="DD/MM/YYYY" (focus)="datePicker2.open()" readonly />
+              <mat-datepicker-toggle matSuffix [for]="datePicker2" [disabled]="viewMode()"></mat-datepicker-toggle>
               <mat-datepicker #datePicker2></mat-datepicker>
             </mat-form-field>
           </div>
@@ -1073,44 +788,36 @@
                 <mat-list role="list">
                   @for(fileInfo of oldFileInfoArray.hcdocumentFile; track
                   $index+'hcd-'+fileInfo.fileName) {
-                  <div
-                    class="d-flex justify-content-between align-items-center mb-1"
-                  >
-                    <span class="pt-2 text-truncate px-2"
-                      ><b class="text-dark">{{ $index + 1 }}. </b>
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="pt-2 text-truncate px-2"><b class="text-dark">
+                        {{ $index + 1 }}. </b>
                       @if(fileInfo.markedForDeletion) {
-                      <del>{{ fileInfo.fileName }}</del>
+                      <del>
+                        {{ fileInfo.fileName }}</del>
                       } @else {
                       {{ fileInfo.fileName }}
                       }
                     </span>
                     <span class="d-flex align-items-center">
-                      <button
-                        mat-icon-button
-                        class="mt-1"
-                        (click)="
+                      <button mat-icon-button class="mt-1" (click)="
                           onWindowPopupOpenForFiles(
                             'hcdocumentFile',
                             fileInfo.fileName
                           )
-                        "
-                      >
+                        ">
                         <mat-icon>open_in_new</mat-icon>
                       </button>
                       @if(!viewMode()) {
-                      <button
-                        mat-icon-button
-                        class="mt-1"
-                        (click)="
+                      <button mat-icon-button class="mt-1" (click)="
                           removeFromPreviousUploads('hcdocumentFile', $index)
-                        "
-                        [disabled]="disableFileRemoval()"
-                      >
-                        <mat-icon>{{
+                        " [disabled]="disableFileRemoval()">
+                        <mat-icon>
+                          {{
                           fileInfo.markedForDeletion
                             ? "undo"
                             : "do_not_disturb_on"
-                        }}</mat-icon>
+                        }}
+                        </mat-icon>
                       </button>
                       }
                     </span>
@@ -1126,19 +833,12 @@
                 <mat-list role="list">
                   @for(fileInfo of fileInfoArray.hcdocumentFile; track
                   $index+'hcd-'+fileInfo) {
-                  <div
-                    class="d-flex justify-content-between align-items-center mb-1"
-                  >
-                    <span class="pt-2 text-truncate px-2"
-                      ><b>{{ $index + 1 }}. </b>{{ fileInfo }}</span
-                    >
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="pt-2 text-truncate px-2"><b>
+                        {{ $index + 1 }}. </b>
+                      {{ fileInfo }}</span>
                     @if(!viewMode()) {
-                    <button
-                      mat-icon-button
-                      class="mt-1"
-                      (click)="removeFiles('hcdocumentFile', $index)"
-                      [disabled]="disableFileRemoval()"
-                    >
+                    <button mat-icon-button class="mt-1" (click)="removeFiles('hcdocumentFile', $index)" [disabled]="disableFileRemoval()">
                       <mat-icon>do_not_disturb_on</mat-icon>
                     </button>
                     }
@@ -1154,23 +854,10 @@
               </mat-card>
               }
 
-              <button
-                type="button"
-                mat-stroked-button
-                class="mt-2 mb-1"
-                (click)="historyChainAttachments.click()"
-                [disabled]="viewMode()"
-              >
+              <button type="button" mat-stroked-button class="mt-2 mb-1" (click)="historyChainAttachments.click()" [disabled]="viewMode()">
                 <mat-icon>upload</mat-icon> Upload Files
               </button>
-              <input
-                type="file"
-                accept=".pdf, image/jpeg, image/png"
-                class="d-none"
-                (change)="onClickUploadFiles($event, 'hcdocumentFile')"
-                multiple
-                #historyChainAttachments
-              />
+              <input type="file" accept=".pdf, image/jpeg, image/png" class="d-none" (change)="onClickUploadFiles($event, 'hcdocumentFile')" multiple #historyChainAttachments />
             </mat-card>
           </div>
         </div>
@@ -1179,46 +866,20 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <mat-form-field appearance="outline">
             <mat-label>Legal Matters</mat-label>
-            <textarea
-              rows="1"
-              matInput
-              formControlName="legalMatters"
-              placeholder="Remarks..."
-              [readonly]="viewMode()"
-            ></textarea>
+            <textarea rows="1" matInput formControlName="legalMatters" placeholder="Remarks..." [readonly]="viewMode()"></textarea>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Appeal Due Date</mat-label>
-            <input
-              matInput
-              formControlName="ledueDate"
-              [matDatepicker]="datePicker3"
-              (focus)="datePicker3.open()"
-              readonly
-            />
-            <mat-datepicker-toggle
-              matSuffix
-              [for]="datePicker3"
-              [disabled]="viewMode()"
-            ></mat-datepicker-toggle>
+            <input matInput formControlName="ledueDate" [matDatepicker]="datePicker3" (focus)="datePicker3.open()" readonly />
+            <mat-datepicker-toggle matSuffix [for]="datePicker3" [disabled]="viewMode()"></mat-datepicker-toggle>
             <mat-datepicker #datePicker3></mat-datepicker>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Appeal Last Date</mat-label>
-            <input
-              matInput
-              formControlName="lelastDate"
-              [matDatepicker]="datePicker4"
-              (focus)="datePicker4.open()"
-              readonly
-            />
-            <mat-datepicker-toggle
-              matSuffix
-              [for]="datePicker4"
-              [disabled]="viewMode()"
-            ></mat-datepicker-toggle>
+            <input matInput formControlName="lelastDate" [matDatepicker]="datePicker4" (focus)="datePicker4.open()" readonly />
+            <mat-datepicker-toggle matSuffix [for]="datePicker4" [disabled]="viewMode()"></mat-datepicker-toggle>
             <mat-datepicker #datePicker4></mat-datepicker>
           </mat-form-field>
         </div>
@@ -1227,33 +888,19 @@
         <div class="row">
           <mat-form-field appearance="outline">
             <mat-label>History/ Chain Tree</mat-label>
-            <textarea
-              rows="8"
-              formControlName="historyChain"
-              required
-              matInput
-              [readonly]="viewMode()"
-            ></textarea>
+            <textarea rows="8" formControlName="historyChain" required matInput [readonly]="viewMode()"></textarea>
           </mat-form-field>
         </div>
 
         <div class="row mx-1 my-2">
-          <button
-            type="button"
-            mat-stroked-button
-            class="col-auto"
-            [disabled]="viewMode()"
-          >
+          <button type="button" mat-stroked-button class="col-auto" [disabled]="viewMode()">
             <mat-icon>list</mat-icon> Choose Existing Deed as Chain Deed
           </button>
         </div>
 
         <div class="mx-1 d-flex">
           <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
-            <mat-slide-toggle
-              formControlName="mortgaged"
-              labelPosition="before"
-            >
+            <mat-slide-toggle formControlName="mortgaged" labelPosition="before">
               <span class="h6"> Mortgaged ? </span>
             </mat-slide-toggle>
           </mat-card>
@@ -1263,19 +910,20 @@
         <mat-card appearance="outlined" class="mx-1 p-2 mb-2">
           <div class="mx-1 d-flex">
             <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
-              <div>Purchased Qty: {{ purQty }}</div>
-              <div>Mortgaged Qty: {{ mortgagedQty }}</div>
-              <div>Remaining Qty: {{ remainingQty }}</div>
+              <div>Purchased Qty:
+                {{ purQty }}
+              </div>
+              <div>Mortgaged Qty:
+                {{ mortgagedQty }}
+              </div>
+              <div>Remaining Qty:
+                {{ remainingQty }}
+              </div>
             </mat-card>
           </div>
           @if (!viewMode()) {
           <div>
-            <button
-              mat-stroked-button
-              type="button"
-              class="my-2 me-auto"
-              (click)="onAddMortgaged()"
-            >
+            <button mat-stroked-button type="button" class="my-2 me-auto" (click)="onAddMortgaged()">
               <mat-icon>add</mat-icon>
               Add
             </button>
@@ -1285,57 +933,49 @@
           }
           <mat-table [dataSource]="mortgagedData()">
             <ng-container matColumnDef="slno">
-              <mat-header-cell mat-header-cell *matHeaderCellDef
-                >No.</mat-header-cell
-              >
-              <mat-cell mat-cell *matCellDef="let element; let i = index">{{
+              <mat-header-cell mat-header-cell *matHeaderCellDef>No.</mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let element; let i = index">
+                {{
                 i + 1
-              }}</mat-cell>
+              }}
+              </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="party">
               <mat-header-cell *matHeaderCellDef>To Whom</mat-header-cell>
-              <mat-cell *matCellDef="let row"> {{ row.party }} </mat-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.party }}
+              </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="mortQty">
-              <mat-header-cell *matHeaderCellDef
-                >Mortgaged Qty.</mat-header-cell
-              >
-              <mat-cell *matCellDef="let row"> {{ row.mortQty }} </mat-cell>
+              <mat-header-cell *matHeaderCellDef>Mortgaged Qty.</mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.mortQty }}
+              </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="mortDateStr">
               <mat-header-cell *matHeaderCellDef>Mortgage Date</mat-header-cell>
-              <mat-cell *matCellDef="let row"> {{ row.mortDateStr }} </mat-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.mortDateStr }}
+              </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="actions">
               <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
               <mat-cell *matCellDef="let i = index">
-                <button
-                  mat-icon-button
-                  (click)="onEditMortgaged(i)"
-                  [disabled]="viewMode()"
-                >
+                <button mat-icon-button (click)="onEditMortgaged(i)" [disabled]="viewMode()">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button
-                  mat-icon-button
-                  (click)="onDeleteMortgaged(i)"
-                  [disabled]="viewMode()"
-                >
+                <button mat-icon-button (click)="onDeleteMortgaged(i)" [disabled]="viewMode()">
                   <mat-icon>delete</mat-icon>
                 </button>
               </mat-cell>
             </ng-container>
 
-            <mat-header-row
-              *matHeaderRowDef="mortgagedDisplayedColumns"
-            ></mat-header-row>
-            <mat-row
-              *matRowDef="let row; columns: mortgagedDisplayedColumns"
-            ></mat-row>
+            <mat-header-row *matHeaderRowDef="mortgagedDisplayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: mortgagedDisplayedColumns"></mat-row>
           </mat-table>
           }
         </mat-card>
@@ -1343,10 +983,7 @@
 
         <div class="mx-1 d-flex">
           <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
-            <mat-slide-toggle
-              formControlName="partlySold"
-              labelPosition="before"
-            >
+            <mat-slide-toggle formControlName="partlySold" labelPosition="before">
               <span class="h6"> Partly sold ? </span>
             </mat-slide-toggle>
           </mat-card>
@@ -1356,20 +993,20 @@
         <mat-card appearance="outlined" class="mx-1 p-2 mb-2">
           <div class="mx-1 d-flex">
             <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
-              <div>Purchased Qty: {{ purQty }}</div>
-              <div>Sold Qty: {{ partlySoldQty }}</div>
-              <div>Existing Qty: {{ remainingQty }}</div>
+              <div>Purchased Qty:
+                {{ purQty }}
+              </div>
+              <div>Sold Qty:
+                {{ partlySoldQty }}
+              </div>
+              <div>Existing Qty:
+                {{ remainingQty }}
+              </div>
             </mat-card>
           </div>
           @if (!viewMode()) {
           <div>
-            <button
-              mat-stroked-button
-              type="button"
-              class="my-2 me-auto"
-              (click)="onAddPartlySold()"
-              [disabled]="viewMode()"
-            >
+            <button mat-stroked-button type="button" class="my-2 me-auto" (click)="onAddPartlySold()" [disabled]="viewMode()">
               <mat-icon>add</mat-icon>
               Add
             </button>
@@ -1379,73 +1016,62 @@
           }
           <mat-table [dataSource]="partlySoldData()">
             <ng-container matColumnDef="slno">
-              <mat-header-cell mat-header-cell *matHeaderCellDef
-                >No.</mat-header-cell
-              >
-              <mat-cell mat-cell *matCellDef="let element; let i = index">{{
+              <mat-header-cell mat-header-cell *matHeaderCellDef>No.</mat-header-cell>
+              <mat-cell mat-cell *matCellDef="let element; let i = index">
+                {{
                 i + 1
-              }}</mat-cell>
+              }}
+              </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="sale">
               <mat-header-cell *matHeaderCellDef>To Whom</mat-header-cell>
-              <mat-cell *matCellDef="let row"> {{ row.sale }} </mat-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.sale }}
+              </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="dateStr">
               <mat-header-cell *matHeaderCellDef>Date of Sale</mat-header-cell>
-              <mat-cell *matCellDef="let row"> {{ row.dateStr }} </mat-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.dateStr }}
+              </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="qty">
               <mat-header-cell *matHeaderCellDef>Qty.</mat-header-cell>
-              <mat-cell *matCellDef="let row"> {{ row.qty }} </mat-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.qty }}
+              </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="deedLink">
-              <mat-header-cell *matHeaderCellDef
-                >Deed to be Linked</mat-header-cell
-              >
-              <mat-cell *matCellDef="let row"> {{ row.deedLink }} </mat-cell>
+              <mat-header-cell *matHeaderCellDef>Deed to be Linked</mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.deedLink }}
+              </mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="actions">
               <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
               <mat-cell *matCellDef="let i = index">
-                <button
-                  mat-icon-button
-                  (click)="onEditPartlySold(i)"
-                  [disabled]="viewMode()"
-                >
+                <button mat-icon-button (click)="onEditPartlySold(i)" [disabled]="viewMode()">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button
-                  mat-icon-button
-                  (click)="onDeletePartlySold(i)"
-                  [disabled]="viewMode()"
-                >
+                <button mat-icon-button (click)="onDeletePartlySold(i)" [disabled]="viewMode()">
                   <mat-icon>delete</mat-icon>
                 </button>
               </mat-cell>
             </ng-container>
 
-            <mat-header-row
-              *matHeaderRowDef="partlySoldDisplayedColumns"
-            ></mat-header-row>
-            <mat-row
-              *matRowDef="let row; columns: partlySoldDisplayedColumns"
-            ></mat-row>
+            <mat-header-row *matHeaderRowDef="partlySoldDisplayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: partlySoldDisplayedColumns"></mat-row>
           </mat-table>
           }
         </mat-card>
         }
         <div class="row m-1">
-          <button
-            type="button"
-            mat-stroked-button
-            class="col-auto"
-            [disabled]="viewMode()"
-          >
+          <button type="button" mat-stroked-button class="col-auto" [disabled]="viewMode()">
             <mat-icon>list</mat-icon> Tag Deed
           </button>
         </div>
@@ -1455,22 +1081,14 @@
 
       <section class="d-flex">
         @if(!viewMode()){
-        <button
-          mat-flat-button
-          type="submit"
-          class="btn-sp btn-sp-final mt-4 mb-3 me-2 ms-auto"
-          (click)="onSubmit()"
-        >
-          <mat-icon>{{ updateMode() ? "edit" : "save" }}save</mat-icon>
+        <button mat-flat-button type="submit" class="btn-sp btn-sp-final mt-4 mb-3 me-2 ms-auto" (click)="onSubmit()">
+          <mat-icon>
+            {{ updateMode() ? "edit" : "save" }}save
+          </mat-icon>
           {{ updateMode() ? "Save Changes" : "Submit" }}
         </button>
         } @else {
-        <button
-          mat-stroked-button
-          type="submit"
-          class="btn-sp btn-sp-final mt-4 mb-3 me-2 ms-auto"
-          routerLink="/land-record/update/{{ id }}"
-        >
+        <button mat-stroked-button type="submit" class="btn-sp btn-sp-final mt-4 mb-3 me-2 ms-auto" routerLink="/land-record/update/{{ id }}">
           <mat-icon>arrow_forward</mat-icon>
           Go to Update Page
         </button>

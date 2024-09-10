@@ -3,7 +3,7 @@ export interface Mouza {
   groupId: string;
   mouza: string; 
   block: string;
-  JLno: string;
+  jlno: number;
   oldRsDag: string;
   newLrDag: string;
   oldKhatian: string;
