@@ -37,7 +37,7 @@ export class ListLandRecordComponent {
   displayedColumns: Array<string> = [
     'slno',
     'recordId',
-    'buyerOwner',
+    'companyName',
     'groupName',
     'city',
     'mouza',
@@ -77,7 +77,7 @@ export class ListLandRecordComponent {
     });
   }
 
-  getBuyerOwner(buyerOwner: string): string {
+  getCompanyName(buyerOwner: string): string {
     return (
       this.companyList().find((company) => company.companyId === buyerOwner)
         ?.companyName || buyerOwner

@@ -1,7 +1,11 @@
 import {
   Component,
+  CreateEffectOptions,
+  EffectRef,
+  OnDestroy,
   OnInit,
   WritableSignal,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -41,6 +45,7 @@ import { Mouza } from '../../../model/mouza.model';
 import { MouzaMasterService } from '../../master/mouza-master/mouza-master.service';
 import { Company } from '../../../model/company.model';
 import { CompanyMasterService } from '../../master/company-master/company-master.service';
+import { SellerType } from '../../../model/seller-type.model';
 
 @Component({
   selector: 'app-new-land-record',
@@ -66,7 +71,7 @@ import { CompanyMasterService } from '../../master/company-master/company-master
   templateUrl: './new-land-record.component.html',
   styleUrl: './new-land-record.component.scss',
 })
-export class NewLandRecordComponent implements OnInit {
+export class NewLandRecordComponent implements OnInit, OnDestroy {
   private readonly fb: FormBuilder = inject(FormBuilder);
   private readonly route: ActivatedRoute = inject(ActivatedRoute);
 
@@ -92,7 +97,8 @@ export class NewLandRecordComponent implements OnInit {
   newLandRecordForm: FormGroup = this.fb.group({
     groupId: ['', Validators.required],
     mouzaId: ['', Validators.required],
-    buyerOwner: ['', Validators.required],
+    companyId: ['', Validators.required],
+    sellerType: ['within-group', Validators.required],
     sellers: this.fb.array([]),
     deedName: ['Main Deed', Validators.required],
     deedNo: ['', Validators.required],
@@ -118,6 +124,40 @@ export class NewLandRecordComponent implements OnInit {
     mortgaged: [false, Validators.required],
     partlySold: [false, Validators.required],
   });
+  sellerTypes: WritableSignal<SellerType[]> = signal([
+    {
+      name: 'Within Group',
+      value: 'within-group',
+    },
+    {
+      name: 'Other',
+      value: 'other',
+    },
+  ]);
+
+  sellerType: WritableSignal<string> = signal('within-group');
+  addSellerBtnVisible: WritableSignal<boolean> = signal(true);
+  /**
+   * DO NOT TRY TO FETCH THE VALUE OF addSellerBtnVisible IN THIS EFFECT.
+   * 
+   * IT MAY CAUSE AN INFINITE RECURSION.
+   * I DID NOT TRY THOUGH. (^_^)?
+   */
+  sellerTypeEffect: EffectRef = effect(
+    () => {
+      if (this.sellerType() === 'within-group') {
+        while (this.sellerForms.length > 1)
+          this.onRemoveSeller(this.sellerForms.length - 1);
+        this.addSellerBtnVisible.set(false);
+      } else {
+        this.addSellerBtnVisible.set(true);
+      }
+    },
+    {
+      allowSignalWrites: true,
+    }
+  );
+
   mortgagedData: WritableSignal<MortgageData[]> = signal([]);
   partlySoldData: WritableSignal<PartlySoldData[]> = signal([]);
 
@@ -344,6 +384,10 @@ export class NewLandRecordComponent implements OnInit {
    */
   onRemoveSeller(idx: number): void {
     if (this.sellerForms.length > 1) this.sellerForms.removeAt(idx);
+  }
+
+  onSellerTypeChange(): void {
+    this.sellerType.set(this.form['sellerType'].value);
   }
 
   /**
@@ -829,7 +873,7 @@ export class NewLandRecordComponent implements OnInit {
         this.disableFileRemoval.set(true);
         this.newLandRecordForm.controls['groupId'].disable();
         this.newLandRecordForm.controls['mouzaId'].disable();
-        this.newLandRecordForm.controls['buyerOwner'].disable();
+        this.newLandRecordForm.controls['companyId'].disable();
         this.newLandRecordForm.controls['deedName'].disable();
         this.newLandRecordForm.controls['landStatus'].disable();
         this.newLandRecordForm.controls['conversionLandStus'].disable();
@@ -838,5 +882,9 @@ export class NewLandRecordComponent implements OnInit {
         this.newLandRecordForm.controls['landType'].disable();
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.sellerTypeEffect.destroy();
   }
 }

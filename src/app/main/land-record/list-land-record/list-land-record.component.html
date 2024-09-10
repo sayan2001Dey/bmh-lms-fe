@@ -30,10 +30,10 @@
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="buyerOwner">
-        <th mat-header-cell *matHeaderCellDef class="text-green">Buyer/Owner</th>
+      <ng-container matColumnDef="companyName">
+        <th mat-header-cell *matHeaderCellDef class="text-green">Company Name</th>
         <td mat-cell *matCellDef="let element">
-          {{ getBuyerOwner(element.buyerOwner) }}
+          {{ getCompanyName(element.companyId) }}
         </td>
       </ng-container>
 

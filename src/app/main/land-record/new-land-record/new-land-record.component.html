@@ -13,10 +13,30 @@
   <mat-card class="p-3 m-2 mb-4 border">
     <form [formGroup]="newLandRecordForm">
       <section class="container mb-3">
+        <h5 class="font-weight-normal py-2">Ownership & Transaction</h5>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Company Name</mat-label>
+            <mat-select formControlName="companyId" required>
+              @for (company of companyList(); track $index) {
+              <mat-option [value]="company.companyId">
+                {{ company.companyName }}
+                <span class="text-muted">
+                  {{ "(" + company.companyId + ")" }}
+                </span>
+              </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </section>
+
+      <section class="container mb-3">
         <h5 class="font-weight-normal py-2">Group</h5>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <mat-form-field appearance="outline">
-            <mat-label>Group</mat-label>
+            <mat-label>Group Name</mat-label>
             <mat-select formControlName="groupId" (ngModelChange)="onGroupChange()" required>
               @for (group of groupList(); track $index) {
               <mat-option [value]="group.groupId">
@@ -46,6 +66,17 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
+            <mat-label>Pincode</mat-label>
+            <input type="number" [value]="selectedGroup().pincode" disabled matInput />
+          </mat-form-field>
+        </div>
+      </section>
+
+      <section class="container mb-3">
+        <h5 class="font-weight-normal py-2">Mouza</h5>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+          <mat-form-field appearance="outline">
             <mat-label>Mouza</mat-label>
             <mat-select formControlName="mouzaId" (ngModelChange)="onMouzaChange()" required>
               @for (mouza of mouzaList(); track $index) {
@@ -70,42 +101,27 @@
             <mat-label>JL No.</mat-label>
             <input type="number" [value]="selectedMouza().jlno" disabled matInput />
           </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Pincode</mat-label>
-            <input type="number" [value]="selectedGroup().pincode" disabled matInput />
-          </mat-form-field>
-        </div>
-
-        <div class="row m-1">
-          <button type="button" mat-flat-button class="col-auto" [disabled]="viewMode()">
-            Banglar Bhumi Info
-          </button>
         </div>
       </section>
 
       <section class="container mb-3">
-        <h5 class="font-weight-normal py-2">Ownership & Transaction</h5>
-
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-          <mat-form-field appearance="outline">
-            <mat-label>Buyer/Owner</mat-label>
-            <mat-select formControlName="buyerOwner" required>
-              @for (company of companyList(); track $index) {
-              <mat-option [value]="company.companyId">
-                {{ company.companyName }}
-                <span class="text-muted">
-                  {{ "(" + company.companyId + ")" }}
-                </span>
-              </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
+        <h5 class="font-weight-normal py-2">Seller Info</h5>
 
         <h6 class="font-regular">Seller List</h6>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <div>
+            <div>
+              <mat-form-field appearance="outline">
+                <mat-label>Seller Type</mat-label>
+                <mat-select formControlName="sellerType" (selectionChange)="onSellerTypeChange()" required>
+                  @for (sellerType of sellerTypes(); track $index) {
+                  <mat-option [value]="sellerType.value">
+                    {{ sellerType.name }}
+                  </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
             @for (seller of sellerFormControls; track 'seller-'+$index) {
             <div class="d-flex flex-nowrap align-items-center">
               <span class="h5 p-2 py-3 mb-auto">
@@ -114,6 +130,7 @@
                 <mat-label>Seller</mat-label>
                 <input [formControl]="seller" [readonly]="viewMode()" matInput />
               </mat-form-field>
+              @if(addSellerBtnVisible()){
               <span class="mt-2 mb-auto">
                 <button mat-icon-button type="button" (click)="onRemoveSeller($index)" [disabled]="this.sellerForms.length < 2 || viewMode()">
                   <mat-icon [class]="this.sellerForms.length < 2 ? '' : 'text-red'">
@@ -121,11 +138,14 @@
                   </mat-icon>
                 </button>
               </span>
+              }
             </div>
             }
+            @if(addSellerBtnVisible()){
             <button mat-button type="button" class="btn-sp2" (click)="onAddSeller()" [disabled]="viewMode()">
               <mat-icon>add</mat-icon> Add Seller
             </button>
+            }
           </div>
         </div>
 
