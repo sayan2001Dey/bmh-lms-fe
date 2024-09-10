@@ -102,26 +102,52 @@
             <input type="number" [value]="selectedMouza().jlno" disabled matInput />
           </mat-form-field>
         </div>
+
+        <h6 class="font-regular py-2">Land Specifics</h6>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+          <mat-form-field appearance="outline">
+            <mat-label>RS Dag No. (Old)</mat-label>
+            <input [value]="selectedMouza().oldRsDag" disabled matInput />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>LR Dag No. (New)</mat-label>
+            <input [value]="selectedMouza().newLrDag" disabled matInput />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Khatian No. (Old)</mat-label>
+            <input [value]="selectedMouza().oldKhatian" disabled matInput />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Khatian No. (New)</mat-label>
+            <input matInput [value]="selectedMouza().newKhatian" disabled />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Khatian No. (Current)</mat-label>
+            <input matInput [value]="selectedMouza().currKhatian" disabled />
+          </mat-form-field>
+        </div>
       </section>
 
       <section class="container mb-3">
         <h5 class="font-weight-normal py-2">Seller Info</h5>
 
-        <h6 class="font-regular">Seller List</h6>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <div>
-            <div>
-              <mat-form-field appearance="outline">
-                <mat-label>Seller Type</mat-label>
-                <mat-select formControlName="sellerType" (selectionChange)="onSellerTypeChange()" required>
-                  @for (sellerType of sellerTypes(); track $index) {
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Seller Type</mat-label>
+              <mat-select formControlName="sellerType" (selectionChange)="onSellerTypeChange()" required>
+                @for (sellerType of sellerTypes(); track $index) {
                   <mat-option [value]="sellerType.value">
                     {{ sellerType.name }}
                   </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            </div>
+                }
+              </mat-select>
+            </mat-form-field>
+            <h6 class="font-regular">Seller List</h6>
             @for (seller of sellerFormControls; track 'seller-'+$index) {
             <div class="d-flex flex-nowrap align-items-center">
               <span class="h5 p-2 py-3 mb-auto">
@@ -268,33 +294,7 @@
       </section>
 
       <section class="container mb-3">
-        <h5 class="font-regular py-2">Land Specifics</h5>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-          <mat-form-field appearance="outline">
-            <mat-label>RS Dag No. (Old)</mat-label>
-            <input [value]="selectedMouza().oldRsDag" disabled matInput />
-          </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>LR Dag No. (New)</mat-label>
-            <input [value]="selectedMouza().newLrDag" disabled matInput />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Khatian No. (Old)</mat-label>
-            <input [value]="selectedMouza().oldKhatian" disabled matInput />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Khatian No. (New)</mat-label>
-            <input matInput [value]="selectedMouza().newKhatian" disabled />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Khatian No. (Current)</mat-label>
-            <input matInput [value]="selectedMouza().currKhatian" disabled />
-          </mat-form-field>
-        </div>
 
         <h6 class="font-regular my-3">Quantity Info</h6>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
