@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { MouzaMasterService } from './mouza-master.service';
+import { MouzaMasterService } from '../services/mouza-master.service';
 
 describe('MouzaMasterService', () => {
   let service: MouzaMasterService;

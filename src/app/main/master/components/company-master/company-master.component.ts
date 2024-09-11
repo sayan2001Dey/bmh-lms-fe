@@ -10,7 +10,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Company } from '../../../model/company.model';
+import { Company } from '../../../../model/company.model';
 import {
   FormBuilder,
   FormGroup,
@@ -19,7 +19,7 @@ import {
 } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatDividerModule } from '@angular/material/divider';
-import { CompanyMasterService } from './company-master.service';
+import { CompanyMasterService } from '../../services/company-master.service';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({

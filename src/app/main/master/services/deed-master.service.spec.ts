@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { GroupMasterService } from './group-master.service';
+import { DeedMasterService } from '../services/deed-master.service';
 
-describe('GroupMasterService', () => {
-  let service: GroupMasterService;
+describe('DeedMasterService', () => {
+  let service: DeedMasterService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(GroupMasterService);
+    service = TestBed.inject(DeedMasterService);
   });
 
   it('should be created', () => {

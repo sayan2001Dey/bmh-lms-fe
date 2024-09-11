@@ -14,8 +14,8 @@ import { AuthService } from '../auth/auth.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
-import { DialogUserComponent } from '../main/master/user-master/modal/user/user.dialog';
-import { UserMasterService } from '../main/master/user-master/user-master.service';
+import { DialogUserComponent } from '../main/master/components/user-master/modal/user/user.dialog';
+import { UserMasterService } from '../main/master/services/user-master.service';
 import { User } from '../model/user.model';
 import { HttpErrorResponse } from '@angular/common/http';
 

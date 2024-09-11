@@ -1,15 +1,15 @@
-import { Routes } from '@angular/router';
-import { UserMasterComponent } from './user-master/user-master.component';
-import { adminGuard, authGuard } from '../../auth/auth.guard';
-import { userMasterRoutes } from './user-master/user-master.routes';
-import { CompanyMasterComponent } from './company-master/company-master.component';
-import { companyMasterRoutes } from './company-master/company-master.routes';
-import { GroupMasterComponent } from './group-master/group-master.component';
-import { groupMasterRoutes } from './group-master/group-master.routes';
-import { MouzaMasterComponent } from './mouza-master/mouza-master.component';
-import { mouzaMasterRoutes } from './mouza-master/mouza-master.routes';
-import { DeedMasterComponent } from './deed-master/deed-master.component';
-import { deedMasterRoutes } from './deed-master/deed-master.routes';
+import { Routes } from "@angular/router";
+import { adminGuard, authGuard } from "../../auth/auth.guard";
+import { CompanyMasterComponent } from "./components/company-master/company-master.component";
+import { companyMasterRoutes } from "./components/company-master/company-master.routes";
+import { DeedMasterComponent } from "./components/deed-master/deed-master.component";
+import { deedMasterRoutes } from "./components/deed-master/deed-master.routes";
+import { GroupMasterComponent } from "./components/group-master/group-master.component";
+import { groupMasterRoutes } from "./components/group-master/group-master.routes";
+import { MouzaMasterComponent } from "./components/mouza-master/mouza-master.component";
+import { mouzaMasterRoutes } from "./components/mouza-master/mouza-master.routes";
+import { UserMasterComponent } from "./components/user-master/user-master.component";
+import { userMasterRoutes } from "./components/user-master/user-master.routes";
 
 export const masterRoutes: Routes = [
   {

@@ -1,10 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
-  OnInit,
-  WritableSignal,
   inject,
+  OnInit,
   signal,
+  WritableSignal,
 } from '@angular/core';
 import {
   AbstractControl,
@@ -21,14 +21,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Mouza } from '../../../model/mouza.model';
-import { Group } from '../../../model/group.model';
-import { MouzaMasterService } from './mouza-master.service';
-import { GroupMasterService } from '../group-master/group-master.service';
-import { statesCollection } from '../../../data/states.collection';
+import { Group } from '../../../../model/group.model';
+import { GroupMasterService } from '../../services/group-master.service';
+import { State } from '../../../../model/state.model';
+import { statesCollection } from '../../../../data/states.collection';
 
 @Component({
-  selector: 'app-mouza-master',
+  selector: 'app-group-master',
   standalone: true,
   imports: [
     MatIconModule,
@@ -37,37 +36,29 @@ import { statesCollection } from '../../../data/states.collection';
     MatButtonModule,
     RouterLink,
     MatInputModule,
+    MatSelectModule,
     MatIconModule,
     MatDividerModule,
     ReactiveFormsModule,
-    MatSelectModule,
   ],
-  templateUrl: './mouza-master.component.html',
-  styleUrl: './mouza-master.component.scss',
+  templateUrl: './group-master.component.html',
+  styleUrl: './group-master.component.scss',
 })
-export class MouzaMasterComponent implements OnInit {
-  private readonly mouzaMasterService: MouzaMasterService =
-    inject(MouzaMasterService);
+export class GroupMasterComponent implements OnInit {
   private readonly groupMasterService: GroupMasterService =
     inject(GroupMasterService);
   private route: ActivatedRoute = inject(ActivatedRoute);
   private readonly router: Router = inject(Router);
-  readonly mouzaList: WritableSignal<Mouza[]> = signal([]);
+  readonly states: WritableSignal<State[]> = signal(statesCollection);
+  readonly cities: WritableSignal<string[]> = signal([]);
   readonly groupList: WritableSignal<Group[]> = signal([]);
-  readonly selectedGroup: WritableSignal<Group> = signal({
-    groupId: '',
-    groupName: '',
-    state: '',
-    city: '',
-    pincode: NaN,
-  });
   readonly displayedColumns: WritableSignal<string[]> = signal([
     'slno',
-    'mouzaId',
-    'mouzaName',
+    'groupId',
     'groupName',
-    'block',
-    'jlno',
+    'state',
+    'city',
+    'pincode',
     'action',
   ]);
   readonly listMode: WritableSignal<boolean> = signal(true);
@@ -79,28 +70,25 @@ export class MouzaMasterComponent implements OnInit {
   readonly sysIsBusy: WritableSignal<boolean> = signal(true);
   readonly serverUnreachable: WritableSignal<boolean> = signal(false);
 
-  //TODO: form
-  mouzaForm: FormGroup<any> = this.fb.group({
-    mouzaId: [''],
-    groupId: ['', Validators.required],
-    mouza: ['', Validators.required],
-    block: ['', Validators.required],
-    jlno: ['', Validators.required],
-    oldRsDag: ['', Validators.required],
-    newLrDag: ['', Validators.required],
-    oldKhatian: ['', Validators.required],
-    newKhatian: ['', Validators.required],
-    currKhatian: ['', Validators.required],
+  groupForm: FormGroup<any> = this.fb.group({
+    groupId: [''],
+    groupName: ['', Validators.required],
+    state: ['', Validators.required],
+    city: ['', Validators.required],
+    pincode: [
+      '',
+      [Validators.required, Validators.minLength(6), Validators.maxLength(6)],
+    ],
   });
 
   get form(): {
     [key: string]: AbstractControl<any, any>;
   } {
-    return this.mouzaForm.controls;
+    return this.groupForm.controls;
   }
 
-  get formData(): Mouza {
-    return this.mouzaForm.value;
+  get formData(): Group {
+    return this.groupForm.value;
   }
 
   /**
@@ -116,35 +104,22 @@ export class MouzaMasterComponent implements OnInit {
     );
   }
 
-  /**
-   * Returns the name of the given groupId from groupList.
-   * If the id is not found, the given id is returned as is.
-   * @param groupId the group id to find the name for
-   * @returns the name of the given group id or the id itself if not found
-   */
-  getGroupName(groupId: string): string {
-    return (
-      this.groupList().find((group) => group.groupId === groupId)?.groupName ||
-      groupId
-    );
-  }
-
   onSubmit() {
-    if (this.mouzaForm.invalid) return;
+    if (this.groupForm.invalid) return;
     this.sysIsBusy.set(true);
     if (this.updateMode()) {
       //update master
-      this.mouzaMasterService.updateMouza(this.id(), this.formData).subscribe({
+      this.groupMasterService.updateGroup(this.id(), this.formData).subscribe({
         next: (data) => {
-          this.mouzaList.set(
-            this.mouzaList().map((mouza) => {
-              if (mouza.mouzaId === this.id()) {
+          this.groupList.set(
+            this.groupList().map((group) => {
+              if (group.groupId === this.id()) {
                 return data;
               }
-              return mouza;
+              return group;
             })
           );
-          this.onListMouza();
+          this.onListGroup();
         },
         error: () => {
           console.error('error bro error');
@@ -155,10 +130,10 @@ export class MouzaMasterComponent implements OnInit {
       });
     } else {
       // new master
-      this.mouzaMasterService.newMouza(this.formData).subscribe({
+      this.groupMasterService.newGroup(this.formData).subscribe({
         next: (data) => {
-          this.mouzaList.set([data, ...this.mouzaList()]);
-          this.onListMouza();
+          this.groupList.set([data, ...this.groupList()]);
+          this.onListGroup();
         },
         error: () => {
           console.error('error bro error');
@@ -185,114 +160,95 @@ export class MouzaMasterComponent implements OnInit {
     });
   }
 
-  setMouzaList(): void {
-    this.sysIsBusy.set(true);
-    this.mouzaMasterService.getMouzaList().subscribe({
-      next: (data) => {
-        this.mouzaList.set(data);
-      },
-      error: () => {
-        this.serverUnreachable.set(true);
-      },
-      complete: () => {
-        this.sysIsBusy.set(false);
-      },
-    });
-  }
-
-  onNewMouza(): void {
-    this.router.navigate(['master', 'mouza', 'new']);
-    this.mouzaForm.reset();
+  onNewGroup(): void {
+    this.router.navigate(['master', 'group', 'new']);
+    this.groupForm.reset();
     this.listMode.set(false);
     this.updateMode.set(false);
     this.viewMode.set(false);
     this.id.set('');
-    this.selectedGroup.set({
-      groupId: '',
-      groupName: '',
-      state: '',
-      city: '',
-      pincode: NaN,
-    });
 
-    this.mouzaForm.controls['groupId'].enable();
-    this.mouzaForm.controls['mouzaId'].disable();
+    this.groupForm.controls['state'].enable();
+    this.groupForm.controls['city'].enable();
+    this.groupForm.controls['groupId'].disable();
   }
 
-  onUpdateMouza(mouzaId: string) {
-    console.log('mouza id', mouzaId);
-    this.router.navigate(['master', 'mouza', 'update', mouzaId]);
+  onUpdateGroup(groupId: string) {
+    console.log('group id', groupId);
+    this.router.navigate(['master', 'group', 'update', groupId]);
     this.updateMode.set(true);
     this.viewMode.set(false);
 
-    this.mouzaForm.controls['groupId'].enable();
-    this.mouzaForm.controls['mouzaId'].disable();
+    this.groupForm.controls['state'].enable();
+    this.groupForm.controls['city'].enable();
+    this.groupForm.controls['groupId'].disable();
 
-    this.mouzaFormPatchValueOptimized(mouzaId);
+    this.groupFormPatchValueOptimized(groupId);
     this.listMode.set(false);
   }
 
-  onViewMouza(mouzaId: string): void {
-    this.router.navigate(['master', 'mouza', 'view', mouzaId]);
+  onViewGroup(groupId: string): void {
+    this.router.navigate(['master', 'group', 'view', groupId]);
     this.updateMode.set(false);
     this.viewMode.set(true);
 
-    this.mouzaForm.controls['groupId'].disable();
-    this.mouzaForm.controls['mouzaId'].disable();
+    this.groupForm.controls['state'].disable();
+    this.groupForm.controls['city'].disable();
+    this.groupForm.controls['groupId'].disable();
 
-    this.mouzaFormPatchValueOptimized(mouzaId);
+    this.groupFormPatchValueOptimized(groupId);
     this.listMode.set(false);
   }
 
-  mouzaFormPatchValueOptimized(mouzaId: string): void {
-    this.mouzaForm.reset();
-    this.id.set(mouzaId);
+  groupFormPatchValueOptimized(groupId: string): void {
+    this.groupForm.reset();
+    this.id.set(groupId);
     this.sysIsBusy.set(true);
 
-    const mouza: Mouza | undefined = this.mouzaList().find(
-      (c) => c.mouzaId === mouzaId
+    const group: Group | undefined = this.groupList().find(
+      (c) => c.groupId === groupId
     );
 
-    if (mouza) {
-      this.mouzaForm.patchValue(mouza);
-      this.onGroupChange();
+    if (group) {
+      this.groupForm.patchValue(group);
     } else {
-      this.mouzaMasterService.getMouza(mouzaId).subscribe({
+      this.groupMasterService.getGroup(groupId).subscribe({
         next: (data) => {
-          this.mouzaForm.patchValue(data);
+          this.groupForm.patchValue(data);
         },
         error: () => {
           this.serverUnreachable.set(true);
         },
         complete: () => {
-          this.onGroupChange();
           this.sysIsBusy.set(false);
         },
       });
     }
+    // DON'T REMOVE
+    this.onStatesChange();
 
     this.sysIsBusy.set(false);
   }
 
-  onListMouza() {
-    this.router.navigate(['master', 'mouza']);
+  onListGroup() {
+    this.router.navigate(['master', 'group']);
     this.listMode.set(true);
     this.updateMode.set(false);
     this.viewMode.set(false);
     this.id.set('');
   }
 
-  onDeleteMouza(mouzaId: string) {
+  onDeleteGroup(groupId: string) {
     if (
       window.confirm(
-        '⚠ CAUTION: ACTION CANNOT BE UNDONE!\n\nDo you really want to delete this mouza master?'
+        '⚠ CAUTION: ACTION CANNOT BE UNDONE!\n\nDo you really want to delete this group master?'
       )
     ) {
       this.sysIsBusy.set(true);
-      this.mouzaMasterService.deleteMouza(mouzaId).subscribe({
+      this.groupMasterService.deleteGroup(groupId).subscribe({
         next: () => {
-          this.mouzaList.set(
-            this.mouzaList().filter((mouza) => mouza.mouzaId !== mouzaId)
+          this.groupList.set(
+            this.groupList().filter((group) => group.groupId !== groupId)
           );
         },
         error: (err: HttpErrorResponse) => {
@@ -311,46 +267,41 @@ export class MouzaMasterComponent implements OnInit {
     }
   }
 
-  onGroupChange(): void {
-    const group = this.groupList().find(
-      (data) => data.groupId === this.form['groupId'].value
+  /**
+   * Updates the list of cities based on the selected state.
+   *
+   * @return {void} This function does not return a value.
+   */
+  onStatesChange(): void {
+    const state = this.states().find(
+      (data) => data.code === this.form['state'].value
     );
-    if (group) {
-      group.state = this.getStateName(group.state);
-      this.selectedGroup.set(group);
-    } else
-      this.selectedGroup.set({
-        groupId: '',
-        groupName: '',
-        state: '',
-        city: '',
-        pincode: NaN,
-      });
+    if (state) this.cities.set(state.cities);
+    else this.cities.set([]);
   }
 
   ngOnInit(): void {
-    this.setMouzaList();
     this.setGroupList();
 
     if (this.route.children[0]) {
       this.route.children[0].url.subscribe((data) => {
         if (data[0].path) {
           if (data[0].path === 'update') {
-            this.onUpdateMouza(data[1].path);
+            this.onUpdateGroup(data[1].path);
           } else if (data[0].path === 'new') {
-            this.onNewMouza();
+            this.onNewGroup();
           } else if (data[0].path === 'view') {
-            this.onViewMouza(data[1].path);
+            this.onViewGroup(data[1].path);
           } else {
-            this.onListMouza();
+            this.onListGroup();
           }
         }
       });
     } else {
-      this.onListMouza();
+      this.onListGroup();
     }
 
-    this.mouzaForm.controls['mouzaId'].disable();
+    this.groupForm.controls['groupId'].disable();
   }
   // TODO: if we click on nav item while in new or update etc. i need to go back to list mode. but its not happening
   // I think i need to make my own framework and ditch angular  huh!!!!!!!!!!!!

@@ -10,13 +10,12 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { UserMasterService } from './user-master.service';
+import { UserMasterService } from '../../services/user-master.service';
 import { Dialog } from '@angular/cdk/dialog';
 import { DialogUserComponent } from './modal/user/user.dialog';
-import { User } from '../../../model/user.model';
-import { sys } from 'typescript';
+import { User } from '../../../../model/user.model';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AuthService } from '../../../auth/auth.service';
+import { AuthService } from '../../../../auth/auth.service';
 
 @Component({
   selector: 'app-user-master',

@@ -40,11 +40,11 @@ import { DialogMortgageFormComponent } from '../modal/mortgage-form/mortgage-for
 import { Dialog } from '@angular/cdk/dialog';
 import { DialogPartlySoldFormComponent } from '../modal/partly-sold-form/partly-sold-form.dialog';
 import { Group } from '../../../model/group.model';
-import { GroupMasterService } from '../../master/group-master/group-master.service';
+import { GroupMasterService } from '../../master/services/group-master.service';
 import { Mouza } from '../../../model/mouza.model';
-import { MouzaMasterService } from '../../master/mouza-master/mouza-master.service';
+import { MouzaMasterService } from '../../master/services/mouza-master.service';
 import { Company } from '../../../model/company.model';
-import { CompanyMasterService } from '../../master/company-master/company-master.service';
+import { CompanyMasterService } from '../../master/services/company-master.service';
 import { SellerType } from '../../../model/seller-type.model';
 
 @Component({
@@ -139,7 +139,7 @@ export class NewLandRecordComponent implements OnInit, OnDestroy {
   addSellerBtnVisible: WritableSignal<boolean> = signal(true);
   /**
    * DO NOT TRY TO FETCH THE VALUE OF addSellerBtnVisible IN THIS EFFECT.
-   * 
+   *
    * IT MAY CAUSE AN INFINITE RECURSION.
    * I DID NOT TRY THOUGH. (^_^)?
    */

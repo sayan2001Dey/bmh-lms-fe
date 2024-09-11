@@ -19,12 +19,12 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { User } from '../../../../../model/user.model';
+import { User } from '../../../../../../model/user.model';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatDividerModule } from '@angular/material/divider';
-import { UserMasterService } from '../../user-master.service';
+import { UserMasterService } from '../../../../services/user-master.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AuthService } from '../../../../../auth/auth.service';
+import { AuthService } from '../../../../../../auth/auth.service';
 
 @Component({
   selector: 'dialog-user',
@@ -213,7 +213,7 @@ export class DialogUserComponent implements OnInit {
 
     this.userForm.get('password')?.clearValidators();
     this.userForm.get('confirmPassword')?.clearValidators();
-    
+
     this.userForm.get('password')?.setValue(this.generatePassword(8));
     this.userForm.get('confirmPassword')?.setValue('');
 
@@ -270,7 +270,7 @@ export class DialogUserComponent implements OnInit {
       this.userForm.get('name')?.disable();
       this.userForm.get('name')?.setValue(this.authService.getName());
       this.userForm.get('username')?.disable();
-      this.userForm.get('username')?.setValue(this.data);    
+      this.userForm.get('username')?.setValue(this.data);
       this.passwordVisible.set(true);
       this.confirmPasswordVisible.set(true);
       return;

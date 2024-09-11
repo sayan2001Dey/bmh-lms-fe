@@ -6,7 +6,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { DeedMasterService } from './deed-master.service';
+import { DeedMasterService } from '../../services/deed-master.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   FormBuilder,
@@ -15,7 +15,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Deed } from '../../../model/deed.model';
+import { Deed } from '../../../../model/deed.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatCardModule } from '@angular/material/card';
