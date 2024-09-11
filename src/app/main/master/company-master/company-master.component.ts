@@ -1,9 +1,6 @@
 import {
   Component,
-  effect,
-  EffectRef,
   inject,
-  OnDestroy,
   OnInit,
   signal,
   WritableSignal,
@@ -42,7 +39,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   templateUrl: './company-master.component.html',
   styleUrl: './company-master.component.scss',
 })
-export class CompanyMasterComponent implements OnInit, OnDestroy {
+export class CompanyMasterComponent implements OnInit {
   private readonly companyMasterService: CompanyMasterService =
     inject(CompanyMasterService);
   private route: ActivatedRoute = inject(ActivatedRoute);
@@ -65,15 +62,6 @@ export class CompanyMasterComponent implements OnInit, OnDestroy {
   readonly sysIsBusy: WritableSignal<boolean> = signal(true);
   readonly serverUnreachable: WritableSignal<boolean> = signal(false);
 
-  private readonly viewModeEffect: EffectRef = effect(() => {
-    if (this.viewMode()) {
-      this.companyForm.disable();
-    } else {
-      this.companyForm.enable();
-      this.companyForm.controls['companyId'].disable();
-    }
-  })
-
   companyForm: FormGroup<any> = this.fb.group({
     companyId: [''],
     companyName: ['', [Validators.required, Validators.minLength(3)]],
@@ -92,10 +80,12 @@ export class CompanyMasterComponent implements OnInit, OnDestroy {
     if(this.companyForm.invalid)
       return;
     this.sysIsBusy.set(true);
+    const formData = this.formData;
+    formData.panNumber = formData.panNumber.toUpperCase();
     if (this.updateMode()) {
       //update master
       this.companyMasterService
-        .updateCompany(this.id(), this.formData)
+        .updateCompany(this.id(), formData)
         .subscribe({
           next: (data) => {
             this.companyList.set(
@@ -162,6 +152,8 @@ export class CompanyMasterComponent implements OnInit, OnDestroy {
     this.updateMode.set(true);
     this.viewMode.set(false);
 
+    this.companyForm.controls['companyId'].disable();
+
     this.companyFormPatchValueOptimized(companyId);
     this.listMode.set(false);
   }
@@ -170,6 +162,8 @@ export class CompanyMasterComponent implements OnInit, OnDestroy {
     this.router.navigate(['master', 'company', 'view', companyId]);
     this.updateMode.set(false);
     this.viewMode.set(true);
+
+    this.companyForm.controls['companyId'].disable();
 
     this.companyFormPatchValueOptimized(companyId);
     this.listMode.set(false);
@@ -262,17 +256,9 @@ export class CompanyMasterComponent implements OnInit, OnDestroy {
     } else {
       this.onListCompany();
     }
+
+    this.companyForm.controls['companyId'].disable();
   }
   // TODO: if we click on nav item while in new or update etc. i need to go back to list mode. but its not happening
   // I think i need to make my own framework and ditch angular  huh!!!!!!!!!!!!
-  ngOnDestroy(): void {
-    this.sysIsBusy.set(false);
-    this.serverUnreachable.set(false);
-    this.listMode.set(false);
-    this.updateMode.set(false);
-    this.viewMode.set(false);
-    this.id.set('');
-    this.companyForm.reset();
-    this.viewModeEffect.destroy();
-  }
 }

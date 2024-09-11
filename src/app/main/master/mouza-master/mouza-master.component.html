@@ -1,72 +1,211 @@
-<section class="my-5 d-flex">
-  <button mat-icon-button class="my-sm-auto back-icon-button" >
-    <mat-icon>arrow_back</mat-icon>
-  </button>
-  <span class="h1 my-auto">{{ false ? "Update" : false? "View" : "Add new" }} Mouza master</span>
-</section>
-<section class="container mb-3">
-  <h5 class="font-weight-normal py-2">Area</h5>
-
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-
-    <mat-form-field appearance="outline">
-      <mat-label>Group Name</mat-label>
-      <mat-select
-        formControlName="city"
-        placeholder="Pick a Group"
-        required
-      >
-
-      </mat-select>
-
-
-    </mat-form-field>
-
-
-    <mat-form-field appearance="outline">
-      <mat-label>Mouza</mat-label>
-      <input  matInput />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Block</mat-label>
-      <input  matInput />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>JL No.</mat-label>
-      <input type="number"  matInput />
-    </mat-form-field>
-
+<main class="container py-1">
+  @if(listMode()) {
+  <div class="row">
+    <button mat-raised-button type="button" class="ms-auto add-btn w-auto me-2 my-2" routerLink="./new" (click)="onNewMouza()">
+      <mat-icon>add</mat-icon> Add new mouza
+    </button>
   </div>
 
-</section>
-<section class="container mb-3">
-  <h5 class="font-regular py-2">Land Specifics</h5>
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-    <mat-form-field appearance="outline">
-      <mat-label>RS Dag No. (Old)</mat-label>
-      <input  [readonly]="viewMode()" matInput />
-    </mat-form-field>
+  <mat-card appearance="outlined" class="p-2">
+    <table mat-table [dataSource]="mouzaList()">
+      <ng-container matColumnDef="slno">
+        <th mat-header-cell *matHeaderCellDef class="text-green">No.</th>
+        <td mat-cell *matCellDef="let element; let i = index">
+          {{ i + 1 }}
+        </td>
+      </ng-container>
 
-    <mat-form-field appearance="outline">
-      <mat-label>LR Dag No. (New)</mat-label>
-      <input matInput  [readonly]="viewMode()" />
-    </mat-form-field>
+      <ng-container matColumnDef="mouzaId">
+        <th mat-header-cell *matHeaderCellDef class="text-green">ID</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.mouzaId }}
+        </td>
+      </ng-container>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Khatian No. (Old)</mat-label>
-      <input matInput  [readonly]="viewMode()" />
-    </mat-form-field>
+      <ng-container matColumnDef="mouzaName">
+        <th mat-header-cell *matHeaderCellDef class="text-green">Mouza Name</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.mouza }}
+        </td>
+      </ng-container>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Khatian No. (New)</mat-label>
-      <input matInput  [readonly]="viewMode()" />
-    </mat-form-field>
+      <ng-container matColumnDef="groupName">
+        <th mat-header-cell *matHeaderCellDef class="text-green">Group Name</th>
+        <td mat-cell *matCellDef="let element">
+          {{ getGroupName(element.groupId) }}
+          <span class="text-muted">
+            {{ "(" + element.groupId + ")" }}
+          </span>
+        </td>
+      </ng-container>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Khatian No. (Current)</mat-label>
-      <input matInput  [readonly]="viewMode()" />
-    </mat-form-field>
-  </div>
-</section>
+      <ng-container matColumnDef="block">
+        <th mat-header-cell *matHeaderCellDef class="text-green">Block</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.block }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="jlno">
+        <th mat-header-cell *matHeaderCellDef class="text-green">JL No.</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.jlno }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef class="text-green text-center">
+          Actions
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <span class="d-flex justify-content-center">
+            <button mat-icon-button type="button" (click)="onViewMouza(element.mouzaId)">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button type="button" (click)="onUpdateMouza(element.mouzaId)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button type="button" (click)="onDeleteMouza(element.mouzaId)">
+              <mat-icon class="text-red">delete</mat-icon>
+            </button>
+          </span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
+    </table>
+    @if(!mouzaList().length) {
+    <div class="my-5 text-center text-green">NO MOUZA FOUND</div>
+    }
+  </mat-card>
+  } @else {
+  <section class="my-5 d-flex">
+    <button mat-icon-button class="my-sm-auto back-icon-button" routerLink="./" (click)="listMode.set(true)">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="h1 my-auto">
+      {{ updateMode() ? "Update" : viewMode() ? "View" : "Add new" }} mouza master</span>
+  </section>
+
+  <mat-card class="p-3 m-2 mb-4 border">
+    <form [formGroup]="mouzaForm" (ngSubmit)="onSubmit()">
+      <section class="container mb-3 pt-3">
+        <section class="mb-3">
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+            @if(viewMode() || updateMode()) {
+            <mat-form-field>
+              <mat-label>Mouza ID</mat-label>
+              <input matInput formControlName="mouzaId" />
+            </mat-form-field>
+            }
+          </div>
+
+          <h5 class="font-weight-normal py-2">Area</h5>
+
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+            <mat-form-field appearance="outline">
+              <mat-label>Group</mat-label>
+              <mat-select formControlName="groupId" (ngModelChange)="onGroupChange()" required>
+                @for (group of groupList(); track $index) {
+                <mat-option [value]="group.groupId">
+                  {{ group.groupName }}
+                  <span class="text-muted">
+                    {{ "(" + group.groupId + ")" }}
+                  </span>
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+            <mat-form-field appearance="outline">
+              <mat-label>State</mat-label>
+              <input [value]="selectedGroup().state" disabled matInput />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>City/Area</mat-label>
+              <input [value]="selectedGroup().city" disabled matInput />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Mouza</mat-label>
+              <input formControlName="mouza" [readonly]="viewMode()" matInput />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Block</mat-label>
+              <input formControlName="block" [readonly]="viewMode()" matInput />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>JL No.</mat-label>
+              <input type="number" formControlName="jlno" [readonly]="viewMode()" matInput />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Pincode</mat-label>
+              <input type="number" [value]="selectedGroup().pincode" disabled matInput />
+            </mat-form-field>
+          </div>
+
+          <h5 class="font-regular py-2">Land Specifics</h5>
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+            <mat-form-field appearance="outline">
+              <mat-label>RS Dag No. (Old)</mat-label>
+              <input formControlName="oldRsDag" [readonly]="viewMode()" matInput />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>LR Dag No. (New)</mat-label>
+              <input matInput formControlName="newLrDag" [readonly]="viewMode()" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Khatian No. (Old)</mat-label>
+              <input matInput formControlName="oldKhatian" [readonly]="viewMode()" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Khatian No. (New)</mat-label>
+              <input matInput formControlName="newKhatian" [readonly]="viewMode()" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Khatian No. (Current)</mat-label>
+              <input matInput formControlName="currKhatian" [readonly]="viewMode()" />
+            </mat-form-field>
+          </div>
+        </section>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+
+
+
+
+
+        </div>
+      </section>
+
+      <mat-divider class="mt-4"></mat-divider>
+
+      <section class="d-flex">
+        @if(!viewMode()){
+        <button mat-flat-button type="submit" class="btn-sp btn-sp-final mt-4 mb-3 me-2 ms-auto">
+          <mat-icon>
+            {{ updateMode() ? "edit" : "save" }}save
+          </mat-icon>
+          {{ updateMode() ? "Save Changes" : "Submit" }}
+        </button>
+        } @else {
+        <button mat-stroked-button type="button" class="btn-sp btn-sp-final mt-4 mb-3 me-2 me-auto" (click)="onUpdateMouza(id())">
+          <mat-icon>arrow_forward</mat-icon>
+          Go to Update Page
+        </button>
+        }
+      </section>
+    </form>
+  </mat-card>
+  }
+</main>

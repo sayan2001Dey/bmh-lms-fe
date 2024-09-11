@@ -87,21 +87,21 @@
           <div>
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Company Name</mat-label>
-              <input matInput formControlName="companyName" />
+              <input matInput formControlName="companyName" [readonly]="viewMode()" required />
             </mat-form-field>
           </div>
 
           <div>
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Company PAN</mat-label>
-              <input matInput formControlName="panNumber" required />
+              <input matInput formControlName="panNumber" class="text-uppercase" [readonly]="viewMode()" required />
             </mat-form-field>
           </div>
 
           <div>
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Company Address</mat-label>
-              <textarea matInput formControlName="companyAddress" rows="4" required></textarea>
+              <textarea matInput formControlName="companyAddress" rows="4" [readonly]="viewMode()" required></textarea>
             </mat-form-field>
           </div>
         </div>

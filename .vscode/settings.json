@@ -1,5 +1,7 @@
 {
   "cSpell.words": [
-    "Mouza"
-  ]
+    "Mouza",
+    "Pincode"
+  ],
+  "livePreview.defaultPreviewPath": "/src/app/main/land-record/new-land-record/new-land-record.component.html"
 }

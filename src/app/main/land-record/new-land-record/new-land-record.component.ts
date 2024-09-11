@@ -1,7 +1,11 @@
 import {
   Component,
+  CreateEffectOptions,
+  EffectRef,
+  OnDestroy,
   OnInit,
   WritableSignal,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -35,6 +39,13 @@ import { PartlySoldData } from '../../../model/partly-sold-data.model';
 import { DialogMortgageFormComponent } from '../modal/mortgage-form/mortgage-form.dialog';
 import { Dialog } from '@angular/cdk/dialog';
 import { DialogPartlySoldFormComponent } from '../modal/partly-sold-form/partly-sold-form.dialog';
+import { Group } from '../../../model/group.model';
+import { GroupMasterService } from '../../master/group-master/group-master.service';
+import { Mouza } from '../../../model/mouza.model';
+import { MouzaMasterService } from '../../master/mouza-master/mouza-master.service';
+import { Company } from '../../../model/company.model';
+import { CompanyMasterService } from '../../master/company-master/company-master.service';
+import { SellerType } from '../../../model/seller-type.model';
 
 @Component({
   selector: 'app-new-land-record',
@@ -60,18 +71,93 @@ import { DialogPartlySoldFormComponent } from '../modal/partly-sold-form/partly-
   templateUrl: './new-land-record.component.html',
   styleUrl: './new-land-record.component.scss',
 })
-export class NewLandRecordComponent implements OnInit {
-  private route: ActivatedRoute = inject(ActivatedRoute);
-  private landRecordsService = inject(LandRecordsService);
-  private dialog: Dialog = inject(Dialog);
+export class NewLandRecordComponent implements OnInit, OnDestroy {
+  private readonly fb: FormBuilder = inject(FormBuilder);
+  private readonly route: ActivatedRoute = inject(ActivatedRoute);
+
+  private readonly landRecordsService = inject(LandRecordsService);
+  private readonly groupMasterService: GroupMasterService =
+    inject(GroupMasterService);
+  private readonly mouzaMasterService: MouzaMasterService =
+    inject(MouzaMasterService);
+  private readonly companyMasterService: CompanyMasterService =
+    inject(CompanyMasterService);
+
+  private readonly dialog: Dialog = inject(Dialog);
   states: WritableSignal<State[]> = signal(statesCollection);
   cities: WritableSignal<string[]> = signal([]);
   sysIsBusy: WritableSignal<boolean> = signal(false);
-  newLandRecordForm: FormGroup;
+  serverUnreachable: WritableSignal<boolean> = signal(false);
   id: string = '';
+
   updateMode: WritableSignal<boolean> = signal(false);
   disableFileRemoval: WritableSignal<boolean> = signal(false);
   viewMode: WritableSignal<boolean> = signal(false);
+
+  newLandRecordForm: FormGroup = this.fb.group({
+    groupId: ['', Validators.required],
+    mouzaId: ['', Validators.required],
+    companyId: ['', Validators.required],
+    sellerType: ['within-group', Validators.required],
+    sellers: this.fb.array([]),
+    deedName: ['Main Deed', Validators.required],
+    deedNo: ['', Validators.required],
+    deedDate: ['', Validators.required],
+    totalQty: ['', Validators.required],
+    purQty: ['', Validators.required],
+    mutedQty: ['', Validators.required],
+    unMutedQty: ['', Validators.required],
+    landStatus: ['Vested', Validators.required],
+    landType: ['', Validators.required],
+    conversionLandStus: ['Converted', Validators.required],
+    deedLoc: ['', Validators.required],
+    photoLoc: ['', Validators.required],
+    govtRec: ['', Validators.required],
+    remarks: [''],
+    khazanaStatus: ['', Validators.required],
+    tax: ['', Validators.required],
+    dueDate: ['', Validators.required],
+    legalMatters: ['', Validators.required],
+    ledueDate: ['', Validators.required],
+    lelastDate: ['', Validators.required],
+    historyChain: ['', Validators.required],
+    mortgaged: [false, Validators.required],
+    partlySold: [false, Validators.required],
+  });
+  sellerTypes: WritableSignal<SellerType[]> = signal([
+    {
+      name: 'Within Group',
+      value: 'within-group',
+    },
+    {
+      name: 'Other',
+      value: 'other',
+    },
+  ]);
+
+  sellerType: WritableSignal<string> = signal('within-group');
+  addSellerBtnVisible: WritableSignal<boolean> = signal(true);
+  /**
+   * DO NOT TRY TO FETCH THE VALUE OF addSellerBtnVisible IN THIS EFFECT.
+   * 
+   * IT MAY CAUSE AN INFINITE RECURSION.
+   * I DID NOT TRY THOUGH. (^_^)?
+   */
+  sellerTypeEffect: EffectRef = effect(
+    () => {
+      if (this.sellerType() === 'within-group') {
+        while (this.sellerForms.length > 1)
+          this.onRemoveSeller(this.sellerForms.length - 1);
+        this.addSellerBtnVisible.set(false);
+      } else {
+        this.addSellerBtnVisible.set(true);
+      }
+    },
+    {
+      allowSignalWrites: true,
+    }
+  );
+
   mortgagedData: WritableSignal<MortgageData[]> = signal([]);
   partlySoldData: WritableSignal<PartlySoldData[]> = signal([]);
 
@@ -90,49 +176,6 @@ export class NewLandRecordComponent implements OnInit {
     'deedLink',
     'actions',
   ];
-
-  constructor(private fb: FormBuilder) {
-    this.newLandRecordForm = fb.group({
-      groupName: ['', Validators.required],
-      state: ['', Validators.required],
-      city: ['', Validators.required],
-      mouza: ['', Validators.required],
-      block: ['', Validators.required],
-      jlno: ['', Validators.required],
-      pincode: ['', Validators.required],
-      buyerOwner: ['', Validators.required],
-      sellers: this.fb.array([]),
-      deedName: ['Main Deed', Validators.required],
-      deedNo: ['', Validators.required],
-      deedDate: ['', Validators.required],
-      oldRsDag: ['', Validators.required],
-      newLrDag: ['', Validators.required],
-      oldKhatian: ['', Validators.required],
-      newKhatian: ['', Validators.required],
-      currKhatian: ['', Validators.required],
-      totalQty: ['', Validators.required],
-      purQty: ['', Validators.required],
-      mutedQty: ['', Validators.required],
-      unMutedQty: ['', Validators.required],
-      landStatus: ['Vested', Validators.required],
-      landType: ['', Validators.required],
-      conversionLandStus: ['Converted', Validators.required],
-      deedLoc: ['', Validators.required],
-      photoLoc: ['', Validators.required],
-      govtRec: ['', Validators.required],
-      remarks: [''],
-      khazanaStatus: ['', Validators.required],
-      tax: ['', Validators.required],
-      dueDate: ['', Validators.required],
-      legalMatters: ['', Validators.required],
-      ledueDate: ['', Validators.required],
-      lelastDate: ['', Validators.required],
-      historyChain: ['', Validators.required],
-      mortgaged: [false, Validators.required],
-      partlySold: [false, Validators.required],
-    });
-    this.onAddSeller();
-  }
 
   get form() {
     return this.newLandRecordForm.controls;
@@ -187,17 +230,141 @@ export class NewLandRecordComponent implements OnInit {
     }, 0);
   }
 
-  /**
-   * Updates the list of cities based on the selected state.
-   *
-   * @return {void} This function does not return a value.
-   */
-  onStatesChange(): void {
-    const state = this.states().find(
-      (data) => data.code === this.form['state'].value
+  readonly selectedGroup: WritableSignal<Group> = signal({
+    groupId: '',
+    groupName: '',
+    state: '',
+    city: '',
+    pincode: NaN,
+  });
+
+  readonly groupList: WritableSignal<Group[]> = signal([]);
+
+  setGroupList(): void {
+    this.sysIsBusy.set(true);
+    this.groupMasterService.getGroupList().subscribe({
+      next: (data) => {
+        this.groupList.set(data);
+      },
+      error: () => {
+        this.serverUnreachable.set(true);
+      },
+      complete: () => {
+        this.sysIsBusy.set(false);
+      },
+    });
+  }
+
+  onGroupChange(): void {
+    const group = this.groupList().find(
+      (data) => data.groupId === this.form['groupId'].value
     );
-    if (state) this.cities.set(state.cities);
-    else this.cities.set([]);
+    if (group) {
+      group.state = this.getStateName(group.state);
+      this.selectedGroup.set(group);
+    } else
+      this.selectedGroup.set({
+        groupId: '',
+        groupName: '',
+        state: '',
+        city: '',
+        pincode: NaN,
+      });
+  }
+
+  readonly selectedMouza: WritableSignal<Mouza> = signal({
+    mouzaId: '',
+    groupId: '',
+    mouza: '',
+    block: '',
+    jlno: NaN,
+    oldRsDag: '',
+    newLrDag: '',
+    oldKhatian: '',
+    newKhatian: '',
+    currKhatian: '',
+  });
+
+  readonly mouzaList: WritableSignal<Mouza[]> = signal([]);
+
+  // TODO: need to get mouza by groupId also low priority
+  setMouzaList(): void {
+    this.sysIsBusy.set(true);
+    this.mouzaMasterService.getMouzaList().subscribe({
+      next: (data) => {
+        this.mouzaList.set(data);
+      },
+      error: () => {
+        this.serverUnreachable.set(true);
+      },
+      complete: () => {
+        this.sysIsBusy.set(false);
+      },
+    });
+  }
+
+  onMouzaChange(): void {
+    const mouza = this.mouzaList().find(
+      (data) => data.mouzaId === this.form['mouzaId'].value
+    );
+    if (mouza) {
+      this.selectedMouza.set(mouza);
+    } else
+      this.selectedMouza.set({
+        mouzaId: '',
+        groupId: '',
+        mouza: '',
+        block: '',
+        jlno: NaN,
+        oldRsDag: '',
+        newLrDag: '',
+        oldKhatian: '',
+        newKhatian: '',
+        currKhatian: '',
+      });
+  }
+
+  readonly companyList: WritableSignal<Company[]> = signal<Company[]>([]);
+
+  setCompanyList(): void {
+    this.sysIsBusy.set(true);
+    this.companyMasterService.getCompanyList().subscribe({
+      next: (data) => {
+        this.companyList.set(data);
+      },
+      error: () => {
+        this.serverUnreachable.set(true);
+      },
+      complete: () => {
+        this.sysIsBusy.set(false);
+      },
+    });
+  }
+
+  /**
+   * Returns the name of the given groupId from groupList.
+   * If the id is not found, the given id is returned as is.
+   * @param groupId the group id to find the name for
+   * @returns the name of the given group id or the id itself if not found
+   */
+  getGroupName(groupId: string): string {
+    return (
+      this.groupList().find((group) => group.groupId === groupId)?.groupName ||
+      groupId
+    );
+  }
+
+  /**
+   * Returns the name of the given state code from statesCollection.
+   * If the code is not found, the given code is returned as is.
+   * @param stateCode the state code to find the name for
+   * @returns the name of the given state code or the code itself if not found
+   */
+  getStateName(stateCode: string): string {
+    return (
+      statesCollection.find((state) => state.code === stateCode)?.name ||
+      stateCode
+    );
   }
 
   /**
@@ -217,6 +384,10 @@ export class NewLandRecordComponent implements OnInit {
    */
   onRemoveSeller(idx: number): void {
     if (this.sellerForms.length > 1) this.sellerForms.removeAt(idx);
+  }
+
+  onSellerTypeChange(): void {
+    this.sellerType.set(this.form['sellerType'].value);
   }
 
   /**
@@ -274,7 +445,9 @@ export class NewLandRecordComponent implements OnInit {
         );
       }
     } else {
-      alert('⛔ ERROR: CAN NOT SUBMIT\n\nInvalid form data. Please check and try again');
+      alert(
+        '⛔ ERROR: CAN NOT SUBMIT\n\nInvalid form data. Please check and try again'
+      );
     }
     console.log(this.newLandRecordForm);
   }
@@ -380,7 +553,7 @@ export class NewLandRecordComponent implements OnInit {
         data: {
           remainingQty: this.remainingQty,
           purQty: this.purQty,
-        }
+        },
       }
     );
 
@@ -598,11 +771,16 @@ export class NewLandRecordComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.onAddSeller();
+    this.setGroupList();
+    this.setMouzaList();
+    this.setCompanyList();
+
     this.route.url.subscribe((data) => {
       this.updateMode.set(data[0].path == 'update');
       this.viewMode.set(data[0].path == 'view');
       if (this.updateMode() || this.viewMode()) {
-        if(this.viewMode()){
+        if (this.viewMode()) {
           this.partlySoldDisplayedColumns.pop();
           this.mortgagedDisplayedColumns.pop();
         }
@@ -693,8 +871,9 @@ export class NewLandRecordComponent implements OnInit {
       }
       if (this.viewMode()) {
         this.disableFileRemoval.set(true);
-        this.newLandRecordForm.controls['city'].disable();
-        this.newLandRecordForm.controls['state'].disable();
+        this.newLandRecordForm.controls['groupId'].disable();
+        this.newLandRecordForm.controls['mouzaId'].disable();
+        this.newLandRecordForm.controls['companyId'].disable();
         this.newLandRecordForm.controls['deedName'].disable();
         this.newLandRecordForm.controls['landStatus'].disable();
         this.newLandRecordForm.controls['conversionLandStus'].disable();
@@ -703,5 +882,9 @@ export class NewLandRecordComponent implements OnInit {
         this.newLandRecordForm.controls['landType'].disable();
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.sellerTypeEffect.destroy();
   }
 }

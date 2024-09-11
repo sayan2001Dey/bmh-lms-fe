@@ -17,5 +17,5 @@ export const companyMasterRoutes: Routes = [
     component: CompanyMasterComponent,
     data: { title: 'Update Company Master | LMS' },
   },
-  { path: '**', redirectTo: './', pathMatch: 'full' },
+  { path: '**', redirectTo: './' },
 ];
