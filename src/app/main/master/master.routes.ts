@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { UserMasterComponent } from './user-master/user-master.component';
-import { adminGuard } from '../../auth/auth.guard';
+import { adminGuard, authGuard } from '../../auth/auth.guard';
 import { userMasterRoutes } from './user-master/user-master.routes';
 import { CompanyMasterComponent } from './company-master/company-master.component';
 import { companyMasterRoutes } from './company-master/company-master.routes';
@@ -44,7 +44,7 @@ export const masterRoutes: Routes = [
     path: 'deed',
     component: DeedMasterComponent,
     data: { title: 'Deed Master | LMS' },
-    canActivate: [adminGuard],
+    canActivate: [authGuard],
     children: deedMasterRoutes,
   },
 ];
