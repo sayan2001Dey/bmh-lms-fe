@@ -8,6 +8,11 @@ export const deedMasterRoutes: Routes = [
     data: { title: 'New Deed Master | LMS' },
   },
   {
+    path: 'view/:id',
+    component: DeedMasterComponent,
+    data: { title: 'View Deed Master | LMS' },
+  },
+  {
     path: 'update/:id',
     component: DeedMasterComponent,
     data: { title: 'Update Deed Master | LMS' },

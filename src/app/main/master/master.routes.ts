@@ -9,7 +9,7 @@ import { groupMasterRoutes } from './group-master/group-master.routes';
 import { MouzaMasterComponent } from './mouza-master/mouza-master.component';
 import { mouzaMasterRoutes } from './mouza-master/mouza-master.routes';
 import { DeedMasterComponent } from './deed-master/deed-master.component';
-import { deedMasterRoutes } from './deed-master/group-master.routes';
+import { deedMasterRoutes } from './deed-master/deed-master.routes';
 
 export const masterRoutes: Routes = [
   {
