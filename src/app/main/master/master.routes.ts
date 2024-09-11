@@ -8,6 +8,8 @@ import { GroupMasterComponent } from './group-master/group-master.component';
 import { groupMasterRoutes } from './group-master/group-master.routes';
 import { MouzaMasterComponent } from './mouza-master/mouza-master.component';
 import { mouzaMasterRoutes } from './mouza-master/mouza-master.routes';
+import { DeedMasterComponent } from './deed-master/deed-master.component';
+import { deedMasterRoutes } from './deed-master/group-master.routes';
 
 export const masterRoutes: Routes = [
   {
@@ -37,5 +39,12 @@ export const masterRoutes: Routes = [
     data: { title: 'Mouza Master | LMS' },
     canActivate: [adminGuard],
     children: mouzaMasterRoutes,
+  },
+  {
+    path: 'deed',
+    component: DeedMasterComponent,
+    data: { title: 'Deed Master | LMS' },
+    canActivate: [adminGuard],
+    children: deedMasterRoutes,
   },
 ];
