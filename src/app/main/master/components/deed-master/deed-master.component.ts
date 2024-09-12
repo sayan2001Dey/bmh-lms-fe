@@ -31,6 +31,7 @@ import { PartlySoldData } from '../../../../model/partly-sold-data.model';
 import { DialogMortgageFormComponent } from './modal/mortgage-form/mortgage-form.dialog';
 import { DialogPartlySoldFormComponent } from './modal/partly-sold-form/partly-sold-form.dialog';
 import { Dialog } from '@angular/cdk/dialog';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-deed-master',
@@ -46,6 +47,7 @@ import { Dialog } from '@angular/cdk/dialog';
     MatInputModule,
     MatDatepickerModule,
     MatRadioModule,
+    MatSlideToggleModule,
     MatSelectModule,
     MatListModule,
     ReactiveFormsModule,
@@ -75,25 +77,27 @@ export class DeedMasterComponent implements OnInit {
 
   readonly deedForm: FormGroup<any> = this.fb.group({
     deedId: [''],
-    deedNo: ['', [Validators.required]],
-    deedDate: ['', [Validators.required]],
-    totalQty: [NaN, [Validators.required]],
-    purQty: [NaN, [Validators.required]],
-    mutedQty: [NaN, [Validators.required]],
-    unMutedQty: [NaN, [Validators.required]],
-    landStatus: ['', [Validators.required]],
-    landType: ['', [Validators.required]],
-    conversionLandStatus: ['', [Validators.required]],
-    deedLoc: ['', [Validators.required]],
-    photoLoc: ['', [Validators.required]],
-    govtRec: ['', [Validators.required]],
-    remarks: ['', [Validators.required]],
-    khazanaStatus: ['', [Validators.required]],
-    tax: [NaN, [Validators.required]],
-    dueDate: ['', [Validators.required]],
-    legalMatters: ['', [Validators.required]],
-    ledueDate: ['', [Validators.required]],
-    lelastDate: ['', [Validators.required]],
+    deedNo: ['', Validators.required],
+    deedDate: ['', Validators.required],
+    totalQty: [NaN, Validators.required],
+    purQty: [NaN, Validators.required],
+    mutedQty: [NaN, Validators.required],
+    unMutedQty: [NaN, Validators.required],
+    landStatus: ['', Validators.required],
+    landType: ['', Validators.required],
+    conversionLandStatus: ['', Validators.required],
+    deedLoc: ['', Validators.required],
+    photoLoc: ['', Validators.required],
+    govtRec: ['', Validators.required],
+    remarks: ['', Validators.required],
+    khazanaStatus: ['', Validators.required],
+    tax: [NaN, Validators.required],
+    dueDate: ['', Validators.required],
+    legalMatters: ['', Validators.required],
+    ledueDate: ['', Validators.required],
+    lelastDate: ['', Validators.required],
+    mortgaged: [false, Validators.required],
+    partlySold: [false, Validators.required],
   });
 
   mortgagedData: WritableSignal<MortgageData[]> = signal([]);
@@ -180,22 +184,21 @@ export class DeedMasterComponent implements OnInit {
    * @return {Object} The prepared form data.
    */
   get preparedForm(): Object {
-    const data = this.deedForm.value;
+    const data = this.formData;
 
     data.deedDate = this.formatDateForBackend(data.deedDate);
     data.dueDate = this.formatDateForBackend(data.dueDate);
     data.ledueDate = this.formatDateForBackend(data.ledueDate);
     data.lelastDate = this.formatDateForBackend(data.lelastDate);
 
-    if (data.mortgaged || data.mortgaged === 'true')
+    if (data.mortgaged || (data.mortgaged as unknown) === 'true')
       data.mortgagedData = this.mortgagedData();
 
-    if (data.partlySold || data.partlySold === 'true')
+    if (data.partlySold || (data.partlySold as unknown) === 'true')
       data.partlySoldData = this.partlySoldData();
 
     return data;
   }
-
 
   /**
    * Adds a new mortgaged record to the mortgagedData array.

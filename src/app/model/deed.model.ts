@@ -1,4 +1,5 @@
 import { MortgageData } from "./mortgage-data.model";
+import { PartlySoldData } from "./partly-sold-data.model";
 
 export interface Deed {
   deedId?: string;
@@ -28,4 +29,5 @@ export interface Deed {
   mortgaged: boolean;
   partlySold: boolean;
   mortgagedData: MortgageData[];
+  partlySoldData: PartlySoldData[];
 }

@@ -830,178 +830,179 @@
 
         <section class="mb-3">
 
-        <div class="mx-1 d-flex">
-          <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
-            <mat-slide-toggle formControlName="mortgaged" labelPosition="before">
-              <span class="h6"> Mortgaged ? </span>
-            </mat-slide-toggle>
-          </mat-card>
-        </div>
-
-        @if(form['mortgaged'].value) {
-        <mat-card appearance="outlined" class="mx-1 p-2 mb-2">
           <div class="mx-1 d-flex">
             <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
-              <div>Purchased Qty:
-                {{ purQty }}
-              </div>
-              <div>Mortgaged Qty:
-                {{ mortgagedQty }}
-              </div>
-              <div>Remaining Qty:
-                {{ remainingQty }}
-              </div>
+              <mat-slide-toggle formControlName="mortgaged" labelPosition="before">
+                <span class="h6"> Mortgaged ? </span>
+              </mat-slide-toggle>
             </mat-card>
           </div>
-          @if (!viewMode()) {
-          <div>
-            <button mat-stroked-button type="button" class="my-2 me-auto" (click)="onAddMortgaged()">
-              <mat-icon>add</mat-icon>
-              Add
-            </button>
-          </div>
-          } @if(mortgagedData().length) { @if (!viewMode()) {
-          <mat-divider></mat-divider>
-          }
-          <mat-table [dataSource]="mortgagedData()">
-            <ng-container matColumnDef="slno">
-              <mat-header-cell mat-header-cell *matHeaderCellDef>No.</mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let element; let i = index">
-                {{
-                i + 1
-              }}
-              </mat-cell>
-            </ng-container>
 
-            <ng-container matColumnDef="party">
-              <mat-header-cell *matHeaderCellDef>To Whom</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.party }}
-              </mat-cell>
-            </ng-container>
+          @if(formData.mortgaged) {
+          <mat-card appearance="outlined" class="mx-1 p-2 mb-2">
+            <div class="mx-1 d-flex">
+              <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
+                <div>Purchased Qty:
+                  {{ purQty }}
+                </div>
+                <div>Mortgaged Qty:
+                  {{ mortgagedQty }}
+                </div>
+                <div>Remaining Qty:
+                  {{ remainingQty }}
+                </div>
+              </mat-card>
+            </div>
+            @if (!viewMode()) {
+            <div>
+              <button mat-stroked-button type="button" class="my-2 me-auto" (click)="onAddMortgaged()">
+                <mat-icon>add</mat-icon>
+                Add
+              </button>
+            </div>
+            } @if(mortgagedData().length) { @if (!viewMode()) {
+            <mat-divider></mat-divider>
+            }
+            <mat-table [dataSource]="mortgagedData()">
+              <ng-container matColumnDef="slno">
+                <mat-header-cell mat-header-cell *matHeaderCellDef>No.</mat-header-cell>
+                <mat-cell mat-cell *matCellDef="let element; let i = index">
+                  {{
+                  i + 1
+                  }}
+                </mat-cell>
+              </ng-container>
 
-            <ng-container matColumnDef="mortQty">
-              <mat-header-cell *matHeaderCellDef>Mortgaged Qty.</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.mortQty }}
-              </mat-cell>
-            </ng-container>
+              <ng-container matColumnDef="party">
+                <mat-header-cell *matHeaderCellDef>To Whom</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  {{ row.party }}
+                </mat-cell>
+              </ng-container>
 
-            <ng-container matColumnDef="mortDateStr">
-              <mat-header-cell *matHeaderCellDef>Mortgage Date</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.mortDateStr }}
-              </mat-cell>
-            </ng-container>
+              <ng-container matColumnDef="mortQty">
+                <mat-header-cell *matHeaderCellDef>Mortgaged Qty.</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  {{ row.mortQty }}
+                </mat-cell>
+              </ng-container>
 
-            <ng-container matColumnDef="actions">
-              <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
-              <mat-cell *matCellDef="let i = index">
-                <button mat-icon-button (click)="onEditMortgaged(i)" [disabled]="viewMode()">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button (click)="onDeleteMortgaged(i)" [disabled]="viewMode()">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </mat-cell>
-            </ng-container>
+              <ng-container matColumnDef="mortDateStr">
+                <mat-header-cell *matHeaderCellDef>Mortgage Date</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  {{ row.mortDateStr }}
+                </mat-cell>
+              </ng-container>
 
-            <mat-header-row *matHeaderRowDef="mortgagedDisplayedColumns()"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: mortgagedDisplayedColumns()"></mat-row>
-          </mat-table>
-          }
-        </mat-card>
-        }
+              <ng-container matColumnDef="actions">
+                <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
+                <mat-cell *matCellDef="let i = index">
+                  <button mat-icon-button (click)="onEditMortgaged(i)" [disabled]="viewMode()">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="onDeleteMortgaged(i)" [disabled]="viewMode()">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </mat-cell>
+              </ng-container>
 
-        <div class="mx-1 d-flex">
-          <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
-            <mat-slide-toggle formControlName="partlySold" labelPosition="before">
-              <span class="h6"> Partly sold ? </span>
-            </mat-slide-toggle>
+              <mat-header-row *matHeaderRowDef="mortgagedDisplayedColumns()"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: mortgagedDisplayedColumns()"></mat-row>
+            </mat-table>
+            }
           </mat-card>
-        </div>
+          }
 
-        @if(form['partlySold'].value) {
-        <mat-card appearance="outlined" class="mx-1 p-2 mb-2">
           <div class="mx-1 d-flex">
             <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
-              <div>Purchased Qty:
-                {{ purQty }}
-              </div>
-              <div>Sold Qty:
-                {{ partlySoldQty }}
-              </div>
-              <div>Existing Qty:
-                {{ remainingQty }}
-              </div>
+              <mat-slide-toggle formControlName="partlySold" labelPosition="before">
+                <span class="h6"> Partly sold ? </span>
+              </mat-slide-toggle>
             </mat-card>
           </div>
-          @if (!viewMode()) {
-          <div>
-            <button mat-stroked-button type="button" class="my-2 me-auto" (click)="onAddPartlySold()" [disabled]="viewMode()">
-              <mat-icon>add</mat-icon>
-              Add
-            </button>
-          </div>
-          } @if(this.partlySoldData().length) { @if (!viewMode()) {
-          <mat-divider></mat-divider>
+
+          @if(formData.partlySold) {
+          <mat-card appearance="outlined" class="mx-1 p-2 mb-2">
+            <div class="mx-1 d-flex">
+              <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
+                <div>Purchased Qty:
+                  {{ purQty }}
+                </div>
+                <div>Sold Qty:
+                  {{ partlySoldQty }}
+                </div>
+                <div>Existing Qty:
+                  {{ remainingQty }}
+                </div>
+              </mat-card>
+            </div>
+            @if (!viewMode()) {
+            <div>
+              <button mat-stroked-button type="button" class="my-2 me-auto" (click)="onAddPartlySold()"
+                [disabled]="viewMode()">
+                <mat-icon>add</mat-icon>
+                Add
+              </button>
+            </div>
+            } @if(this.partlySoldData().length) { @if (!viewMode()) {
+            <mat-divider></mat-divider>
+            }
+            <mat-table [dataSource]="partlySoldData()">
+              <ng-container matColumnDef="slno">
+                <mat-header-cell mat-header-cell *matHeaderCellDef>No.</mat-header-cell>
+                <mat-cell mat-cell *matCellDef="let element; let i = index">
+                  {{
+                  i + 1
+                  }}
+                </mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="sale">
+                <mat-header-cell *matHeaderCellDef>To Whom</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  {{ row.sale }}
+                </mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="dateStr">
+                <mat-header-cell *matHeaderCellDef>Date of Sale</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  {{ row.dateStr }}
+                </mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="qty">
+                <mat-header-cell *matHeaderCellDef>Qty.</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  {{ row.qty }}
+                </mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="deedLink">
+                <mat-header-cell *matHeaderCellDef>Deed to be Linked</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  {{ row.deedLink }}
+                </mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
+                <mat-cell *matCellDef="let i = index">
+                  <button mat-icon-button (click)="onEditPartlySold(i)" [disabled]="viewMode()">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="onDeletePartlySold(i)" [disabled]="viewMode()">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </mat-cell>
+              </ng-container>
+
+              <mat-header-row *matHeaderRowDef="partlySoldDisplayedColumns()"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: partlySoldDisplayedColumns()"></mat-row>
+            </mat-table>
+            }
+          </mat-card>
           }
-          <mat-table [dataSource]="partlySoldData()">
-            <ng-container matColumnDef="slno">
-              <mat-header-cell mat-header-cell *matHeaderCellDef>No.</mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let element; let i = index">
-                {{
-                i + 1
-              }}
-              </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="sale">
-              <mat-header-cell *matHeaderCellDef>To Whom</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.sale }}
-              </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="dateStr">
-              <mat-header-cell *matHeaderCellDef>Date of Sale</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.dateStr }}
-              </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="qty">
-              <mat-header-cell *matHeaderCellDef>Qty.</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.qty }}
-              </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="deedLink">
-              <mat-header-cell *matHeaderCellDef>Deed to be Linked</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.deedLink }}
-              </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="actions">
-              <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
-              <mat-cell *matCellDef="let i = index">
-                <button mat-icon-button (click)="onEditPartlySold(i)" [disabled]="viewMode()">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button (click)="onDeletePartlySold(i)" [disabled]="viewMode()">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </mat-cell>
-            </ng-container>
-
-            <mat-header-row *matHeaderRowDef="partlySoldDisplayedColumns()"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: partlySoldDisplayedColumns()"></mat-row>
-          </mat-table>
-          }
-        </mat-card>
-        }
         </section>
       </div>
 
