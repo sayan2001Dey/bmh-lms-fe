@@ -387,7 +387,8 @@ export class DeedMasterComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.deedForm.invalid) return;
+    // if (this.deedForm.invalid) return;
+    console.log('form submitted', this.deedForm.value);
     this.sysIsBusy.set(true);
     const formData = this.formData;
     if (this.updateMode()) {
