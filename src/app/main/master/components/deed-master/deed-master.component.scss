@@ -8,3 +8,28 @@
 mat-icon {
   margin-bottom: 2px;
 }
+
+.drag-n-drop-box {
+  justify-self: center;
+  border: 3px, dotted, #00800050;
+  border-radius: 0.4rem;
+  margin: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 6rem;
+}
+
+.img-view {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 15rem;
+  border: 3px, dotted, #00800050;
+  border-radius: 0.4rem;
+  color: green;
+}
+
+.icon-img {
+  transform: scale(3);
+}

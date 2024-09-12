@@ -1,3 +1,4 @@
+import { FileUploadService } from './../../../../../../services/file-upload.service';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import {
   Component,
@@ -17,9 +18,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MortgageData } from '../../../../model/mortgage-data.model';
+import { MortgageData } from '../../../../../../model/mortgage-data.model';
 import { MatCardModule } from '@angular/material/card';
-import { LandRecordsService } from '../../land-records.service';
 
 @Component({
   selector: 'dialog-mortgage-form',
@@ -38,8 +38,9 @@ import { LandRecordsService } from '../../land-records.service';
   styleUrl: './mortgage-form.dialog.scss',
 })
 export class DialogMortgageFormComponent {
-  fb: FormBuilder = inject(FormBuilder);
-  landRecordsService: LandRecordsService = inject(LandRecordsService);
+  private readonly fb: FormBuilder = inject(FormBuilder);
+  private readonly fileUploadService: FileUploadService =
+    inject(FileUploadService);
   mortgagedDetails: FormGroup = this.fb.group({
     party: ['', Validators.required],
     mortDate: ['', Validators.required],
@@ -126,8 +127,7 @@ export class DialogMortgageFormComponent {
    */
   onWindowPopupOpenForMortFile(fileName: string): void {
     this.sysIsBusy.set(true);
-    this.landRecordsService
-      .getFile('mortDocFile', fileName)
+    this.fileUploadService.getFile('mortDocFile', fileName)
       .subscribe((blob) => {
         const url = window.URL.createObjectURL(blob);
 
@@ -167,11 +167,15 @@ export class DialogMortgageFormComponent {
    */
   onSubmit(): void {
     if (!this.mortgagedDetails.valid) {
-      alert('⛔ ERROR: CAN NOT SUBMIT\n\nInvalid form data. Please check and try again');
+      alert(
+        '⛔ ERROR: CAN NOT SUBMIT\n\nInvalid form data. Please check and try again'
+      );
       return;
     }
-    if(this.remainingQty < 0) {
-      alert('⛔ ERROR: CAN NOT SUBMIT\n\nQuantity cannot be greater than remaining quantity');
+    if (this.remainingQty < 0) {
+      alert(
+        '⛔ ERROR: CAN NOT SUBMIT\n\nQuantity cannot be greater than remaining quantity'
+      );
       return;
     }
     if (this.mortgageQty === 0) {

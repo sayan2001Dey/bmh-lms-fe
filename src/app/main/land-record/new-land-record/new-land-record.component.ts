@@ -36,9 +36,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MortgageData } from '../../../model/mortgage-data.model';
 import { PartlySoldData } from '../../../model/partly-sold-data.model';
-import { DialogMortgageFormComponent } from '../modal/mortgage-form/mortgage-form.dialog';
 import { Dialog } from '@angular/cdk/dialog';
-import { DialogPartlySoldFormComponent } from '../modal/partly-sold-form/partly-sold-form.dialog';
 import { Group } from '../../../model/group.model';
 import { GroupMasterService } from '../../master/services/group-master.service';
 import { Mouza } from '../../../model/mouza.model';
@@ -46,6 +44,8 @@ import { MouzaMasterService } from '../../master/services/mouza-master.service';
 import { Company } from '../../../model/company.model';
 import { CompanyMasterService } from '../../master/services/company-master.service';
 import { SellerType } from '../../../model/seller-type.model';
+import { DialogMortgageFormComponent } from '../../master/components/deed-master/modal/mortgage-form/mortgage-form.dialog';
+import { DialogPartlySoldFormComponent } from '../../master/components/deed-master/modal/partly-sold-form/partly-sold-form.dialog';
 
 @Component({
   selector: 'app-new-land-record',

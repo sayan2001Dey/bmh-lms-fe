@@ -1,26 +1,19 @@
+import { FileUploadService } from './../../../services/file-upload.service';
 import { inject, Injectable } from '@angular/core';
 import { apiUrl } from '../../../config/api.config';
 import { HttpClient } from '@angular/common/http';
 import { Deed } from '../../../model/deed.model';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
+import { MortgageData } from '../../../model/mortgage-data.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DeedMasterService {
   public readonly url: string = apiUrl + 'deed';
-
   private readonly http: HttpClient = inject(HttpClient);
-
-  /**
-   * Creates a new deed master.
-   *
-   * @param {Deed} data - The deed data to create.
-   * @return {Observable<Deed>} An observable that emits the created deed master.
-   */
-  newDeed(data: Deed): Observable<Deed> {
-    return this.http.post<Deed>(this.url, data);
-  }
+  private readonly fileUploadService: FileUploadService =
+    inject(FileUploadService);
 
   /**
    * Retrieves a list of deed masters from the server.
@@ -48,10 +41,7 @@ export class DeedMasterService {
    * @param {Deed} updatedDeed - The updated deed master data.
    * @return {Observable<Deed>} An observable that emits the updated deed master.
    */
-  updateDeed(
-    deedId: string,
-    updatedDeed: Deed
-  ): Observable<Deed> {
+  updateDeed(deedId: string, updatedDeed: Deed): Observable<Deed> {
     return this.http.patch<Deed>(this.url + `/${deedId}`, updatedDeed);
   }
 
@@ -63,5 +53,168 @@ export class DeedMasterService {
    */
   deleteDeed(deedId: string): Observable<any> {
     return this.http.delete(this.url + `/${deedId}`);
+  }
+
+  /**
+   * Sends a new land record to the server and performs additional actions.
+   *
+   * @param {object} formValues - The values of the form to be submitted.
+   * @param {any} fileObj - The file object to be uploaded.
+   * @param {any} fileInfoArrayObj - The array of file information objects.
+   * @return {void} This function does not return anything.
+   */
+  public newDeed(
+    formValues: any,
+    fileObj: any,
+    fileInfoArrayObj: any,
+    subFnObj?: {
+      next?: (data: Partial<Deed>) => void;
+      error?: (error?: any) => void;
+      complete?: () => void;
+    }
+  ): void {
+    this.http.post(this.url, formValues).subscribe({
+      next: (data: Partial<Deed>) => {
+        console.log(data);
+
+        const fileObsArr: Observable<string>[] = this.uploadMultipleNewFiles(
+          fileInfoArrayObj,
+          fileObj,
+          data.deedId!
+        );
+
+        if (formValues.mortgaged) {
+          for (const mort of formValues.mortgagedData) {
+            let newMortId: string =
+              (data.mortgagedData || []).find((newMort) => {
+                return (
+                  newMort.mortDate === mort.mortDate &&
+                  newMort.mortQty === mort.mortQty &&
+                  newMort.party === mort.party
+                );
+              })?.mortId || '';
+            fileObsArr.push(
+              this.fileUploadService.uploadFile(
+                data.deedId || '',
+                'mortDocFile',
+                mort.fileRAW.name,
+                mort.fileRAW,
+                'mort',
+                newMortId
+              )
+            );
+          }
+        }
+
+        if (subFnObj) {
+          forkJoin(fileObsArr).subscribe({
+            next: (uploadResArr: string[]) => {
+              uploadResArr.forEach((d) => console.log(d));
+              this.getDeed(data.deedId!).subscribe(subFnObj);
+            },
+            error: subFnObj.error,
+          });
+        }
+      },
+      error: subFnObj?.error,
+    });
+  }
+
+  /**
+   * Updates a land record on the server by its ID with the provided data and files.
+   *
+   * @param {string} id - The ID of the land record to update.
+   * @param {any} updatedData - The data to update the land record with.
+   * @param {any} fileObj - The file object to be uploaded.
+   * @param {any} fileInfoArrayObj - The array of file information objects.
+   * @param {any} oldFileInfoArray - The array of old file information objects.
+   * @return {void} This function does not return anything.
+   */
+  // public updateLandRecord(
+  //   id: string,
+  //   updatedData: any,
+  //   fileObj: any,
+  //   fileInfoArrayObj: any,
+  //   oldFileInfoArray: any,
+  //   subFnObj:
+  //     | {
+  //         next: (next: any) => void;
+  //         error: (error: any) => void;
+  //         complete: () => void;
+  //       }
+  //     | undefined = undefined
+  // ): void {
+  //   const url = this.url + '/' + id;
+  //   this.http.patch(url, updatedData).subscribe((data: any) => {
+  //     console.log(data);
+  //     this.uploadMultipleNewFiles(fileInfoArrayObj, fileObj, id);
+  //     for (const key of Object.keys(oldFileInfoArray)) {
+  //       oldFileInfoArray[key].forEach(
+  //         (item: { markedForDeletion: any; fileName: string }) => {
+  //           if (item.markedForDeletion)
+  //             this.deleteFile(id, key, item.fileName).subscribe((data) => {
+  //               console.log(data);
+  //             });
+  //         }
+  //       );
+  //     }
+  //     if (updatedData.mortgaged)
+  //       for (const mort of updatedData.mortgagedData) {
+  //         if (mort.mortId) {
+  //           if (mort.newFile) {
+  //             this.deleteFile(id, 'mortDocFile', mort.mortDocFile)
+  //               .subscribe((data) => console.log(data))
+  //               .add(() =>
+  //                 this.uploadMortgagedFile(
+  //                   id,
+  //                   mort.fileRAW,
+  //                   mort.mortId
+  //                 ).subscribe((data) => console.log(data))
+  //               );
+  //           }
+  //         } else {
+  //           let newMortId: string =
+  //             (data.mortgagedData as Array<MortgageData>).find((newMort) => {
+  //               return (
+  //                 newMort.mortDate === mort.mortDate &&
+  //                 newMort.mortQty === mort.mortQty &&
+  //                 newMort.party === mort.party
+  //               );
+  //             })?.mortId || '';
+  //           this.uploadMortgagedFile(id, mort.fileRAW, newMortId).subscribe(
+  //             (data) => console.log(data)
+  //           );
+  //         }
+  //       }
+  //   });
+  // }
+
+  /**
+   * Uploads multiple new files based on fileInfoArrayObj and fileObj for a specific ID.
+   *
+   * @param {Record<string, Array<string>>} fileInfoArrayObj - Object containing file information arrays.
+   * @param {Record<string, Array<File>>} fileObj - Object containing raw file data.
+   * @param {string} id - The ID associated with the files.
+   * @return {Observable<string>[]} An array of observables for the file upload process.
+   */
+  private uploadMultipleNewFiles(
+    fileInfoArrayObj: any,
+    fileObj: any,
+    id: string
+  ): Observable<string>[] {
+    const obsArr: Observable<string>[] = [];
+    for (const key of Object.keys(fileInfoArrayObj)) {
+      for (let index = 0; index < fileObj[key + 'RAW'].length; index++) {
+        obsArr.push(
+          this.fileUploadService.uploadFile(
+            id,
+            key,
+            fileInfoArrayObj[key][index],
+            fileObj[key + 'RAW'][index]
+          )
+        );
+      }
+    }
+    return obsArr;
   }
 }
