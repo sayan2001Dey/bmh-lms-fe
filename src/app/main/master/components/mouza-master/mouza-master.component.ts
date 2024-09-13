@@ -297,10 +297,10 @@ export class MouzaMasterComponent implements OnInit {
         },
         error: (err: HttpErrorResponse) => {
           if (err.status === 404) {
-            alert('⛔ ERROR: CAN NOT DELETE\n\nUser not found.');
+            alert('⛔ ERROR: CAN NOT DELETE\n\nMouza not found.');
           } else {
             alert(
-              '⛔ ERROR: CAN NOT DELETE\n\nFailed to delete user. Please try again.'
+              '⛔ ERROR: CAN NOT DELETE\n\nFailed to delete mouza. Please try again.'
             );
           }
         },

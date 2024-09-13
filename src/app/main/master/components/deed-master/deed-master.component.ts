@@ -540,10 +540,10 @@ export class DeedMasterComponent implements OnInit {
         },
         error: (err: HttpErrorResponse) => {
           if (err.status === 404) {
-            alert('⛔ ERROR: CAN NOT DELETE\n\nUser not found.');
+            alert('⛔ ERROR: CAN NOT DELETE\n\nDeed not found.');
           } else {
             alert(
-              '⛔ ERROR: CAN NOT DELETE\n\nFailed to delete user. Please try again.'
+              '⛔ ERROR: CAN NOT DELETE\n\nFailed to delete deed. Please try again.'
             );
           }
         },

@@ -253,10 +253,10 @@ export class GroupMasterComponent implements OnInit {
         },
         error: (err: HttpErrorResponse) => {
           if (err.status === 404) {
-            alert('⛔ ERROR: CAN NOT DELETE\n\nUser not found.');
+            alert('⛔ ERROR: CAN NOT DELETE\n\nGroup not found.');
           } else {
             alert(
-              '⛔ ERROR: CAN NOT DELETE\n\nFailed to delete user. Please try again.'
+              '⛔ ERROR: CAN NOT DELETE\n\nFailed to delete group. Please try again.'
             );
           }
         },
