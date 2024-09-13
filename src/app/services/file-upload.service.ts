@@ -68,11 +68,18 @@ export class FileUploadService {
    * @param {string} id - The ID of the ref entity.
    * @param {string} fieldName - The name of the field.
    * @param {string} fileName - The name of the file.
-   * @return {Observable<any>} An observable that emits the response from the server.
+   * @return {Observable<string>} An observable that emits the response from the server.
    */
-  deleteFile(id: string, fieldName: string, fileName: string): Observable<any> {
+  deleteFile(
+    id: string,
+    fieldName: string,
+    fileName: string
+  ): Observable<string> {
     return this.http.delete(
-      this.url + '/' + fieldName + '?id=' + id + '&filename=' + fileName
+      this.url + '/' + fieldName + '?id=' + id + '&filename=' + fileName,
+      {
+        responseType: 'text',
+      }
     );
   }
 }

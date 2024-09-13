@@ -183,7 +183,7 @@ export class DeedMasterComponent implements OnInit {
    *
    * @return {Object} The prepared form data.
    */
-  get preparedForm(): Object {
+  get preparedFormData(): Deed {
     const data = this.formData;
 
     data.deedDate = this.formatDateForBackend(data.deedDate);
@@ -388,49 +388,57 @@ export class DeedMasterComponent implements OnInit {
 
   onSubmit() {
     // if (this.deedForm.invalid) return;
+    if (this.remainingQty < 0) {
+      alert(
+        '⛔ ERROR: CAN NOT SUBMIT\n\nRemaining asset quantity cannot be less than zero.'
+      );
+      return;
+    }
     console.log('form submitted', this.deedForm.value);
     this.sysIsBusy.set(true);
     const formData = this.formData;
-    if (this.updateMode()) {
-      //update master
-      this.deedMasterService.updateDeed(this.id(), formData).subscribe({
-        next: (data) => {
-          this.deedList.set(
-            this.deedList().map((deed) => {
-              if (deed.deedId === this.id()) {
-                return data;
-              }
-              return deed;
-            })
-          );
-          this.onListDeed();
-        },
-        error: () => {
-          console.error('error bro error');
-        },
-        complete: () => {
-          this.sysIsBusy.set(false);
-        },
-      });
-    } else {
-      // new master
-      this.deedMasterService.newDeed(
-        this.formData,
-        this.fileObj,
-        this.fileInfoArray,
-        {
-          next: (data: Partial<Deed>) => {
-            this.deedList.set([{ ...data } as Deed, ...this.deedList()]);
-            this.onListDeed();
-          },
-          error: () => {
-            console.error('error bro error');
-          },
-          complete: () => {
-            this.sysIsBusy.set(false);
-          },
-        }
-      );
+    if (this.deedForm.valid) {
+      if (this.updateMode()) {
+        //update master
+        this.deedMasterService.updateDeed(
+          this.id(),
+          this.preparedFormData,
+          this.fileObj,
+          this.fileInfoArray,
+          this.oldFileInfoArray,
+          {
+            next: (data: Partial<Deed>) => {
+              this.deedList.set([{ ...data } as Deed, ...this.deedList()]);
+              this.onListDeed();
+            },
+            error: () => {
+              console.error('error bro error');
+            },
+            complete: () => {
+              this.sysIsBusy.set(false);
+            },
+          }
+        );
+      } else {
+        // new master
+        this.deedMasterService.newDeed(
+          this.preparedFormData,
+          this.fileObj,
+          this.fileInfoArray,
+          {
+            next: (data: Partial<Deed>) => {
+              this.deedList.set([{ ...data } as Deed, ...this.deedList()]);
+              this.onListDeed();
+            },
+            error: () => {
+              console.error('error bro error');
+            },
+            complete: () => {
+              this.sysIsBusy.set(false);
+            },
+          }
+        );
+      }
     }
   }
 
