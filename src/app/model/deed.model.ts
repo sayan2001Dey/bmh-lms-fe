@@ -28,6 +28,13 @@ export interface Deed {
 
   mortgaged: boolean;
   partlySold: boolean;
-  mortgagedData: MortgageData[];
-  partlySoldData: PartlySoldData[];
+  mortgagedData?: MortgageData[];
+  partlySoldData?: PartlySoldData[];
+
+  scanCopyFile?: string[];
+  mutationFile?: string[];
+  conversionFile?: string[];
+  documentFile?: string[];
+  hcdocumentFile?: string[];
+  parchaFile?: string[];
 }

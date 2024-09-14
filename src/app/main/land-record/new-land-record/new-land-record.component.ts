@@ -278,11 +278,7 @@ export class NewLandRecordComponent implements OnInit, OnDestroy {
     mouza: '',
     block: '',
     jlno: NaN,
-    oldRsDag: '',
-    newLrDag: '',
-    oldKhatian: '',
-    newKhatian: '',
-    currKhatian: '',
+    landSpecifics: [],
   });
 
   readonly mouzaList: WritableSignal<Mouza[]> = signal([]);
@@ -316,11 +312,7 @@ export class NewLandRecordComponent implements OnInit, OnDestroy {
         mouza: '',
         block: '',
         jlno: NaN,
-        oldRsDag: '',
-        newLrDag: '',
-        oldKhatian: '',
-        newKhatian: '',
-        currKhatian: '',
+        landSpecifics: [],
       });
   }
 

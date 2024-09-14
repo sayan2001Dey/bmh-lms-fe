@@ -52,7 +52,7 @@ export class DeedMasterService {
    * @param {any} fileInfoArrayObj - The array of file information objects.
    * @return {void} This function does not return anything.
    */
-  public newDeed(
+  newDeed(
     formValues: any,
     fileObj: any,
     fileInfoArrayObj: any,
@@ -96,13 +96,15 @@ export class DeedMasterService {
         }
 
         if (subFnObj) {
-          forkJoin(fileObsArr).subscribe({
-            next: (uploadResArr: string[]) => {
-              uploadResArr.forEach((d) => console.log(d));
-              this.getDeed(data.deedId!).subscribe(subFnObj);
-            },
-            error: subFnObj.error,
-          });
+          if (fileObsArr.length)
+            forkJoin(fileObsArr).subscribe({
+              next: (uploadResArr: string[]) => {
+                uploadResArr.forEach((d) => console.log(d));
+                this.getDeed(data.deedId!).subscribe(subFnObj);
+              },
+              error: subFnObj.error,
+            });
+          else this.getDeed(data.deedId!).subscribe(subFnObj);
         }
       },
       error: subFnObj?.error,
@@ -120,7 +122,7 @@ export class DeedMasterService {
    * @param {subFnObj} subFnObj - Optional object containing next, error, and complete functions to be called after the operation is complete.
    * @return {void} This function does not return anything.
    */
-  public updateDeed(
+  updateDeed(
     deedId: string,
     updatedData: any,
     fileObj: any,
@@ -200,13 +202,16 @@ export class DeedMasterService {
         }
 
         if (subFnObj) {
-          forkJoin(fileObsArr).subscribe({
-            next: (uploadResArr: string[]) => {
-              uploadResArr.forEach((d) => console.log(d));
-              this.getDeed(data.deedId!).subscribe(subFnObj);
-            },
-            error: subFnObj.error,
-          });
+          if (fileObsArr.length)
+            forkJoin(fileObsArr).subscribe({
+              next: (uploadResArr: string[]) => {
+                uploadResArr.forEach((d) => console.log(d));
+                console.log(deedId);
+                this.getDeed(data.deedId).subscribe(subFnObj);
+              },
+              error: subFnObj.error,
+            });
+          else this.getDeed(data.deedId).subscribe(subFnObj);
         }
       },
       error: subFnObj?.error,

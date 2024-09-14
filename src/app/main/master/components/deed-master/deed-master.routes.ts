@@ -17,5 +17,5 @@ export const deedMasterRoutes: Routes = [
     component: DeedMasterComponent,
     data: { title: 'Update Deed Master | LMS' },
   },
-  { path: '**', redirectTo: './', pathMatch: 'full' },
+  { path: '**', redirectTo: './' },
 ];

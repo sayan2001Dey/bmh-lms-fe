@@ -1,7 +1,8 @@
 <main class="container py-1">
   @if(listMode()) {
   <div class="row">
-    <button mat-raised-button type="button" class="ms-auto add-btn w-auto me-2 my-2" routerLink="./new" (click)="onNewMouza()">
+    <button mat-raised-button type="button" class="ms-auto add-btn w-auto me-2 my-2" routerLink="./new"
+      (click)="onNewMouza()">
       <mat-icon>add</mat-icon> Add new mouza
     </button>
   </div>
@@ -92,7 +93,7 @@
     <form [formGroup]="mouzaForm" (ngSubmit)="onSubmit()">
       <section class="container mb-3 pt-3">
         <section class="mb-3">
-          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+          <div>
             @if(viewMode() || updateMode()) {
             <mat-form-field>
               <mat-label>Mouza ID</mat-label>
@@ -117,8 +118,7 @@
                 }
               </mat-select>
             </mat-form-field>
-          </div>
-          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+
             <mat-form-field appearance="outline">
               <mat-label>State</mat-label>
               <input [value]="selectedGroup().state" disabled matInput />
@@ -129,6 +129,15 @@
               <input [value]="selectedGroup().city" disabled matInput />
             </mat-form-field>
 
+            <mat-form-field appearance="outline">
+              <mat-label>Pincode</mat-label>
+              <input type="number" [value]="selectedGroup().pincode" disabled matInput />
+            </mat-form-field>
+          </div>
+
+          <h5 class="font-weight-normal py-2">Mouza</h5>
+
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
             <mat-form-field appearance="outline">
               <mat-label>Mouza</mat-label>
               <input formControlName="mouza" [readonly]="viewMode()" matInput />
@@ -143,39 +152,48 @@
               <mat-label>JL No.</mat-label>
               <input type="number" formControlName="jlno" [readonly]="viewMode()" matInput />
             </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Pincode</mat-label>
-              <input type="number" [value]="selectedGroup().pincode" disabled matInput />
-            </mat-form-field>
           </div>
 
           <h5 class="font-regular py-2">Land Specifics</h5>
-          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-            <mat-form-field appearance="outline">
-              <mat-label>RS Dag No. (Old)</mat-label>
-              <input formControlName="oldRsDag" [readonly]="viewMode()" matInput />
-            </mat-form-field>
+          <div class="row">
+            <div>
+              @for (item of landSpecifics(); track 'landSpecifics-'+$index) {
+              <div class="d-flex flex-nowrap align-items-center">
+                <span class="h5 p-2 py-3 mb-auto">
+                  {{ $index + 1 }}.
+                </span>
 
-            <mat-form-field appearance="outline">
-              <mat-label>LR Dag No. (New)</mat-label>
-              <input matInput formControlName="newLrDag" [readonly]="viewMode()" />
-            </mat-form-field>
+                <form [formGroup]="item">
+                  <mat-form-field class="mx-2">
+                    <mat-label>RS Dag No. (Old)</mat-label>
+                    <input formControlName="oldRsDag" [readonly]="viewMode()" matInput />
+                  </mat-form-field>
 
-            <mat-form-field appearance="outline">
-              <mat-label>Khatian No. (Old)</mat-label>
-              <input matInput formControlName="oldKhatian" [readonly]="viewMode()" />
-            </mat-form-field>
+                  <mat-form-field class="mx-2">
+                    <mat-label>RS Dag No. (New)</mat-label>
+                    <input formControlName="newLrDag" [readonly]="viewMode()" matInput />
+                  </mat-form-field>
 
-            <mat-form-field appearance="outline">
-              <mat-label>Khatian No. (New)</mat-label>
-              <input matInput formControlName="newKhatian" [readonly]="viewMode()" />
-            </mat-form-field>
+                  <mat-form-field class="mx-2">
+                    <mat-label>Qty.</mat-label>
+                    <input type="number" formControlName="qty" [readonly]="viewMode()" matInput />
+                  </mat-form-field>
+                </form>
 
-            <mat-form-field appearance="outline">
-              <mat-label>Khatian No. (Current)</mat-label>
-              <input matInput formControlName="currKhatian" [readonly]="viewMode()" />
-            </mat-form-field>
+                <span class="mt-2 mb-auto">
+                  <button mat-icon-button type="button" (click)="onRemoveLandSpecifics($index)"
+                    [disabled]="landSpecifics().length < 2 || viewMode()">
+                    <mat-icon [class]="landSpecifics().length < 2 ? '' : 'text-red'">
+                      do_not_disturb_on
+                    </mat-icon>
+                  </button>
+                </span>
+              </div>
+              }
+              <button mat-button type="button" class="btn-sp2" (click)="onAddLandSpecifics()" [disabled]="viewMode()">
+                <mat-icon>add</mat-icon> Add land specifics
+              </button>
+            </div>
           </div>
         </section>
 
@@ -199,7 +217,8 @@
           {{ updateMode() ? "Save Changes" : "Submit" }}
         </button>
         } @else {
-        <button mat-stroked-button type="button" class="btn-sp btn-sp-final mt-4 mb-3 me-2 me-auto" (click)="onUpdateMouza(id())">
+        <button mat-stroked-button type="button" class="btn-sp btn-sp-final mt-4 mb-3 me-2 me-auto"
+          (click)="onUpdateMouza(id())">
           <mat-icon>arrow_forward</mat-icon>
           Go to Update Page
         </button>

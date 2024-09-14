@@ -8,7 +8,9 @@ import {
 } from '@angular/core';
 import {
   AbstractControl,
+  FormArray,
   FormBuilder,
+  FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
@@ -26,6 +28,7 @@ import { Group } from '../../../../model/group.model';
 import { MouzaMasterService } from '../../services/mouza-master.service';
 import { GroupMasterService } from '../../services/group-master.service';
 import { statesCollection } from '../../../../data/states.collection';
+import { MouzaLandSpecifics } from '../../../../model/mouza-land-specifics.model';
 
 @Component({
   selector: 'app-mouza-master',
@@ -78,19 +81,16 @@ export class MouzaMasterComponent implements OnInit {
   private readonly fb: FormBuilder = inject(FormBuilder);
   readonly sysIsBusy: WritableSignal<boolean> = signal(true);
   readonly serverUnreachable: WritableSignal<boolean> = signal(false);
+  readonly landSpecifics: WritableSignal<FormGroup[]> = signal(
+    [] as FormGroup[]
+  );
 
-  //TODO: form
   mouzaForm: FormGroup<any> = this.fb.group({
     mouzaId: [''],
     groupId: ['', Validators.required],
     mouza: ['', Validators.required],
     block: ['', Validators.required],
     jlno: ['', Validators.required],
-    oldRsDag: ['', Validators.required],
-    newLrDag: ['', Validators.required],
-    oldKhatian: ['', Validators.required],
-    newKhatian: ['', Validators.required],
-    currKhatian: ['', Validators.required],
   });
 
   get form(): {
@@ -101,6 +101,92 @@ export class MouzaMasterComponent implements OnInit {
 
   get formData(): Mouza {
     return this.mouzaForm.value;
+  }
+
+  /**
+   * Returns an array of the controls of the land specifics form group array.
+   * Each control is of type `AbstractControl<any, any>`.
+   * @returns An array of objects with property names corresponding to the
+   * control names in the form groups, and property values of type
+   * `AbstractControl<any, any>`.
+   */
+  get landSpecificsFormsArray(): {
+    [key: string]: AbstractControl<any, any>;
+  }[] {
+    return this.landSpecifics().map((formGroup) => formGroup.controls);
+  }
+
+  /**
+   * Returns an array of the values of the land specifics form group array.
+   * The values are of type `MouzaLandSpecifics`.
+   * @returns An array of `MouzaLandSpecifics` objects.
+   */
+  get landSpecificsDataArray(): MouzaLandSpecifics[] {
+    return this.landSpecifics().map((formGroup) => formGroup.value);
+  }
+
+  /**
+   * Returns the controls of the land specifics form at the specified index.
+   * @param index The index of the land specifics form to retrieve.
+   * @returns The controls of the land specifics form at the specified index.
+   */
+  landSpecificsForm(index: number): {
+    [key: string]: AbstractControl<any, any>;
+  } {
+    return this.landSpecifics()[index].controls;
+  }
+
+  /**
+   * Returns the land specifics data at the specified index.
+   * @param index The index of the land specifics to retrieve.
+   * @returns The land specifics data at the specified index.
+   */
+  landSpecificsData(index: number): MouzaLandSpecifics {
+    return this.landSpecifics()[index].value;
+  }
+
+  /**
+   * Adds a new land specifics control to the form.
+   *
+   * @param initialValues Optional object with initial values for the land specifics.
+   * The object should have the following properties:
+   * - oldRsDag: The old RS Dag no. (string)
+   * - newLrDag: The new LR Dag no. (string)
+   * - qty: The quantity of land (number)
+   *
+   * If not provided, the method will use the default values of empty string for
+   * both oldRsDag and newLrDag, and NaN for qty.
+   */
+  onAddLandSpecifics(
+    initialValues: MouzaLandSpecifics = {
+      oldRsDag: '',
+      newLrDag: '',
+      qty: NaN,
+    }
+  ): void {
+    this.landSpecifics.update((formsArray: FormGroup[]) => {
+      formsArray.push(
+        this.fb.group({
+          oldRsDag: [initialValues.oldRsDag, [Validators.required]],
+          newLrDag: [initialValues.newLrDag, [Validators.required]],
+          qty: [initialValues.qty, [Validators.required, Validators.min(1)]],
+        })
+      );
+      return formsArray;
+    });
+  }
+
+  /**
+   * Removes the land specific at the given index from the landSpecificsFormArray.
+   * Does nothing if there is only one land specific left.
+   * @param index the index of the land specific to remove
+   */
+  onRemoveLandSpecifics(index: number): void {
+    const oldFormsArray: FormGroup[] = this.landSpecifics();
+    if (oldFormsArray.length > 1) {
+      oldFormsArray.splice(index, 1);
+      this.landSpecifics.set(oldFormsArray);
+    }
   }
 
   /**
@@ -202,7 +288,7 @@ export class MouzaMasterComponent implements OnInit {
 
   onNewMouza(): void {
     this.router.navigate(['master', 'mouza', 'new']);
-    this.mouzaForm.reset();
+    this.mouzaFormResetFn();
     this.listMode.set(false);
     this.updateMode.set(false);
     this.viewMode.set(false);
@@ -214,6 +300,8 @@ export class MouzaMasterComponent implements OnInit {
       city: '',
       pincode: NaN,
     });
+
+    this.onAddLandSpecifics();
 
     this.mouzaForm.controls['groupId'].enable();
     this.mouzaForm.controls['mouzaId'].disable();
@@ -245,7 +333,6 @@ export class MouzaMasterComponent implements OnInit {
   }
 
   mouzaFormPatchValueOptimized(mouzaId: string): void {
-    this.mouzaForm.reset();
     this.id.set(mouzaId);
     this.sysIsBusy.set(true);
 
@@ -254,12 +341,12 @@ export class MouzaMasterComponent implements OnInit {
     );
 
     if (mouza) {
-      this.mouzaForm.patchValue(mouza);
+      this.mouzaFormPatchHelperFn(mouza);
       this.onGroupChange();
     } else {
       this.mouzaMasterService.getMouza(mouzaId).subscribe({
         next: (data) => {
-          this.mouzaForm.patchValue(data);
+          this.mouzaFormPatchHelperFn(data);
         },
         error: () => {
           this.serverUnreachable.set(true);
@@ -272,6 +359,19 @@ export class MouzaMasterComponent implements OnInit {
     }
 
     this.sysIsBusy.set(false);
+  }
+
+  mouzaFormPatchHelperFn(mouza: Mouza): void {
+    this.mouzaFormResetFn();
+    this.mouzaForm.patchValue(mouza);
+    mouza.landSpecifics.forEach((item)=>{
+      this.onAddLandSpecifics(item);
+    });
+  }
+
+  mouzaFormResetFn(): void {
+    this.landSpecifics.set([]);
+    this.mouzaForm.reset();
   }
 
   onListMouza() {

@@ -61,7 +61,7 @@ export class DeedMasterComponent implements OnInit {
   private readonly fileUploadService: FileUploadService =
     inject(FileUploadService);
 
-  private readonly route: ActivatedRoute = inject(ActivatedRoute);
+  private route: ActivatedRoute = inject(ActivatedRoute);
   private readonly router: Router = inject(Router);
   private readonly dialog: Dialog = inject(Dialog);
 
@@ -96,8 +96,8 @@ export class DeedMasterComponent implements OnInit {
     legalMatters: ['', Validators.required],
     ledueDate: ['', Validators.required],
     lelastDate: ['', Validators.required],
-    mortgaged: [false, Validators.required],
-    partlySold: [false, Validators.required],
+    mortgaged: [false],
+    partlySold: [false],
   });
 
   mortgagedData: WritableSignal<MortgageData[]> = signal([]);
@@ -191,11 +191,11 @@ export class DeedMasterComponent implements OnInit {
     data.ledueDate = this.formatDateForBackend(data.ledueDate);
     data.lelastDate = this.formatDateForBackend(data.lelastDate);
 
-    if (data.mortgaged || (data.mortgaged as unknown) === 'true')
-      data.mortgagedData = this.mortgagedData();
+    if (data.mortgaged) data.mortgagedData = this.mortgagedData();
+    else data.mortgaged = false;
 
-    if (data.partlySold || (data.partlySold as unknown) === 'true')
-      data.partlySoldData = this.partlySoldData();
+    if (data.partlySold) data.partlySoldData = this.partlySoldData();
+    else data.partlySold = false;
 
     return data;
   }
@@ -388,27 +388,28 @@ export class DeedMasterComponent implements OnInit {
 
   onSubmit() {
     // if (this.deedForm.invalid) return;
-    if (this.remainingQty < 0) {
-      alert(
-        '⛔ ERROR: CAN NOT SUBMIT\n\nRemaining asset quantity cannot be less than zero.'
-      );
-      return;
-    }
-    console.log('form submitted', this.deedForm.value);
+    console.log('on form submit: ', this.deedForm.value);
     this.sysIsBusy.set(true);
-    const formData = this.formData;
-    if (this.deedForm.valid) {
+    const formData = this.preparedFormData;
+    if (this.runFormValidation()) {
       if (this.updateMode()) {
         //update master
         this.deedMasterService.updateDeed(
           this.id(),
-          this.preparedFormData,
+          formData,
           this.fileObj,
           this.fileInfoArray,
           this.oldFileInfoArray,
           {
             next: (data: Partial<Deed>) => {
-              this.deedList.set([{ ...data } as Deed, ...this.deedList()]);
+              this.deedList.set(
+                this.deedList().map((deed) => {
+                  if (data.deedId === this.id()) {
+                    return data;
+                  }
+                  return deed;
+                }) as Deed[]
+              );
               this.onListDeed();
             },
             error: () => {
@@ -422,7 +423,7 @@ export class DeedMasterComponent implements OnInit {
       } else {
         // new master
         this.deedMasterService.newDeed(
-          this.preparedFormData,
+          formData,
           this.fileObj,
           this.fileInfoArray,
           {
@@ -442,6 +443,23 @@ export class DeedMasterComponent implements OnInit {
     }
   }
 
+  runFormValidation(): boolean {
+    let alertMsg: string = '';
+    if (this.remainingQty < 0) {
+      alertMsg += '\nRemaining asset quantity cannot be less than zero.';
+    }
+    for (const controlName in this.form) {
+      if (this.form[controlName].invalid) {
+        alertMsg += '\n Field ' + controlName + ' is invalid.';
+      }
+    }
+    if (alertMsg.length) {
+      alert('⛔ ERROR: CAN NOT SUBMIT\n' + alertMsg);
+      return false;
+    }
+    return true;
+  }
+
   setDeedList(): void {
     this.sysIsBusy.set(true);
     this.deedMasterService.getDeedList().subscribe({
@@ -459,7 +477,7 @@ export class DeedMasterComponent implements OnInit {
 
   onNewDeed(): void {
     this.router.navigate(['master', 'deed', 'new']);
-    this.deedForm.reset();
+    this.formResetHelper();
     this.listMode.set(false);
     this.updateMode.set(false);
     this.viewMode.set(false);
@@ -490,7 +508,7 @@ export class DeedMasterComponent implements OnInit {
   }
 
   deedFormPatchValueOptimized(deedId: string): void {
-    this.deedForm.reset();
+    this.formResetHelper();
     this.id.set(deedId);
     this.sysIsBusy.set(true);
 
@@ -499,11 +517,11 @@ export class DeedMasterComponent implements OnInit {
     );
 
     if (deed) {
-      this.deedForm.patchValue(deed);
+      this.formPatchHelper(deed);
     } else {
       this.deedMasterService.getDeed(deedId).subscribe({
         next: (data) => {
-          this.deedForm.patchValue(data);
+          this.formPatchHelper(data);
         },
         error: () => {
           this.serverUnreachable.set(true);
@@ -515,6 +533,75 @@ export class DeedMasterComponent implements OnInit {
     }
 
     this.sysIsBusy.set(false);
+  }
+
+  formResetHelper(): void {
+    this.deedForm.reset();
+    this.oldFileInfoArray.scanCopyFile = [];
+    this.oldFileInfoArray.mutationFile = [];
+    this.oldFileInfoArray.conversionFile = [];
+    this.oldFileInfoArray.documentFile = [];
+    this.oldFileInfoArray.hcdocumentFile = [];
+    this.oldFileInfoArray.parchaFile = [];
+  }
+
+  formPatchHelper(deed: Partial<Deed>): void {
+    this.deedForm.patchValue(deed);
+    this.deedForm.patchValue({
+      deedDate: this.getDateFromString(deed.deedDate!),
+      dueDate: this.getDateFromString(deed.dueDate!),
+      ledueDate: this.getDateFromString(deed.ledueDate!),
+      lelastDate: this.getDateFromString(deed.lelastDate!),
+    });
+
+    if (deed.scanCopyFile) {
+      deed.scanCopyFile.forEach((fileName: string) => {
+        this.oldFileInfoArray.scanCopyFile.push({
+          fileName,
+          markedForDeletion: false,
+        });
+      });
+    }
+    if (deed.mutationFile) {
+      deed.mutationFile.forEach((fileName: string) => {
+        this.oldFileInfoArray.mutationFile.push({
+          fileName,
+          markedForDeletion: false,
+        });
+      });
+    }
+    if (deed.conversionFile) {
+      deed.conversionFile.forEach((fileName: string) => {
+        this.oldFileInfoArray.conversionFile.push({
+          fileName,
+          markedForDeletion: false,
+        });
+      });
+    }
+    if (deed.documentFile) {
+      deed.documentFile.forEach((fileName: string) => {
+        this.oldFileInfoArray.documentFile.push({
+          fileName,
+          markedForDeletion: false,
+        });
+      });
+    }
+    if (deed.hcdocumentFile) {
+      deed.hcdocumentFile.forEach((fileName: string) => {
+        this.oldFileInfoArray.hcdocumentFile.push({
+          fileName,
+          markedForDeletion: false,
+        });
+      });
+    }
+    if (deed.parchaFile) {
+      deed.parchaFile.forEach((fileName: string) => {
+        this.oldFileInfoArray.parchaFile.push({
+          fileName,
+          markedForDeletion: false,
+        });
+      });
+    }
   }
 
   onListDeed() {
