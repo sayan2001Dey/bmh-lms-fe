@@ -176,7 +176,7 @@
 
                   <mat-form-field class="mx-2">
                     <mat-label>Qty.</mat-label>
-                    <input type="number" formControlName="qty" [readonly]="viewMode()" matInput />
+                    <input type="number" min="1" formControlName="qty" [readonly]="viewMode()" matInput />
                   </mat-form-field>
                 </form>
 
@@ -228,3 +228,5 @@
   </mat-card>
   }
 </main>
+
+<button type="button" (click)="onSubmit()">XD</button>

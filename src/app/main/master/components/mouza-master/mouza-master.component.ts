@@ -218,34 +218,66 @@ export class MouzaMasterComponent implements OnInit {
   get prepFormData(): Mouza {
     const res: Mouza = this.formData;
     res.landSpecifics = this.landSpecificsDataArray;
-    console.log(res);
     return res;
   }
 
+  runFormValidation(): boolean {
+    let alertMsg: string = '';
+
+    for (const controlName in this.form) {
+      if (this.form[controlName].invalid) {
+        alertMsg += '\n Field ' + controlName + ' is invalid.';
+      }
+    }
+    
+    const lsFormGroups = this.landSpecifics();
+    
+    if (!lsFormGroups.length)
+      alertMsg += '\n Land Specifics must have at least 1 row of data.'
+
+    for (let i = 0; i < lsFormGroups.length; i++) {
+      for (const controlName in lsFormGroups[i].controls) {
+        if (controlName === 'qty' && lsFormGroups[i].value.qty < 1)
+          alertMsg += `\n Value of field ${controlName} on row ${i+1} of Land Specifics can not be less than 1.`;
+        else if (lsFormGroups[i].controls[controlName].invalid) {
+          alertMsg += `\n Field ${controlName} on row ${i+1} of Land Specifics is invalid.`;
+        }
+      }
+    }
+
+    if (alertMsg.length) {
+      alert('⛔ ERROR: CAN NOT SUBMIT\n' + alertMsg);
+      return false;
+    }
+    return true;
+  }
+
   onSubmit() {
-    if (this.mouzaForm.invalid) return;
+    if (!this.runFormValidation()) return;
     this.sysIsBusy.set(true);
     if (this.updateMode()) {
       //update master
-      this.mouzaMasterService.updateMouza(this.id(), this.prepFormData).subscribe({
-        next: (data) => {
-          this.mouzaList.set(
-            this.mouzaList().map((mouza) => {
-              if (mouza.mouzaId === this.id()) {
-                return data;
-              }
-              return mouza;
-            })
-          );
-          this.onListMouza();
-        },
-        error: () => {
-          console.error('error bro error');
-        },
-        complete: () => {
-          this.sysIsBusy.set(false);
-        },
-      });
+      this.mouzaMasterService
+        .updateMouza(this.id(), this.prepFormData)
+        .subscribe({
+          next: (data) => {
+            this.mouzaList.set(
+              this.mouzaList().map((mouza) => {
+                if (mouza.mouzaId === this.id()) {
+                  return data;
+                }
+                return mouza;
+              })
+            );
+            this.onListMouza();
+          },
+          error: () => {
+            console.error('error bro error');
+          },
+          complete: () => {
+            this.sysIsBusy.set(false);
+          },
+        });
     } else {
       // new master
       this.mouzaMasterService.newMouza(this.prepFormData).subscribe({
@@ -371,7 +403,7 @@ export class MouzaMasterComponent implements OnInit {
   mouzaFormPatchHelperFn(mouza: Mouza): void {
     this.mouzaFormResetFn();
     this.mouzaForm.patchValue(mouza);
-    mouza.landSpecifics.forEach((item)=>{
+    mouza.landSpecifics.forEach((item) => {
       this.onAddLandSpecifics(item);
     });
   }
