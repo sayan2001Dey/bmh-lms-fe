@@ -1,8 +1,7 @@
 <main class="container py-1">
   @if(listMode()) {
   <div class="row">
-    <button mat-raised-button type="button" class="ms-auto add-btn w-auto me-2 my-2" routerLink="./new"
-      (click)="onNewMouza()">
+    <button mat-raised-button type="button" class="ms-auto add-btn w-auto me-2 my-2" routerLink="./new" (click)="onNewMouza()">
       <mat-icon>add</mat-icon> Add new mouza
     </button>
   </div>
@@ -181,8 +180,7 @@
                 </form>
 
                 <span class="mt-2 mb-auto">
-                  <button mat-icon-button type="button" (click)="onRemoveLandSpecifics($index)"
-                    [disabled]="landSpecifics().length < 2 || viewMode()">
+                  <button mat-icon-button type="button" (click)="onRemoveLandSpecifics($index)" [disabled]="landSpecifics().length < 2 || viewMode()">
                     <mat-icon [class]="landSpecifics().length < 2 ? '' : 'text-red'">
                       do_not_disturb_on
                     </mat-icon>
@@ -217,8 +215,7 @@
           {{ updateMode() ? "Save Changes" : "Submit" }}
         </button>
         } @else {
-        <button mat-stroked-button type="button" class="btn-sp btn-sp-final mt-4 mb-3 me-2 me-auto"
-          (click)="onUpdateMouza(id())">
+        <button mat-stroked-button type="button" class="btn-sp btn-sp-final mt-4 mb-3 me-2 me-auto" (click)="onUpdateMouza(id())">
           <mat-icon>arrow_forward</mat-icon>
           Go to Update Page
         </button>
@@ -228,5 +225,3 @@
   </mat-card>
   }
 </main>
-
-<button type="button" (click)="onSubmit()">XD</button>
