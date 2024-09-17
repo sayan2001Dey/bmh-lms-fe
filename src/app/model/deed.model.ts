@@ -35,6 +35,6 @@ export interface Deed {
   mutationFile?: string[];
   conversionFile?: string[];
   documentFile?: string[];
-  hcdocumentFile?: string[];
+  hcdocumentFile?: string[]; //TODO: remove(probably) need confirmation
   parchaFile?: string[];
 }
