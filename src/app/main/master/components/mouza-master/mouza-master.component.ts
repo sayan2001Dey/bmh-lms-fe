@@ -215,12 +215,19 @@ export class MouzaMasterComponent implements OnInit {
     );
   }
 
+  get prepFormData(): Mouza {
+    const res: Mouza = this.formData;
+    res.landSpecifics = this.landSpecificsDataArray;
+    console.log(res);
+    return res;
+  }
+
   onSubmit() {
     if (this.mouzaForm.invalid) return;
     this.sysIsBusy.set(true);
     if (this.updateMode()) {
       //update master
-      this.mouzaMasterService.updateMouza(this.id(), this.formData).subscribe({
+      this.mouzaMasterService.updateMouza(this.id(), this.prepFormData).subscribe({
         next: (data) => {
           this.mouzaList.set(
             this.mouzaList().map((mouza) => {
@@ -241,7 +248,7 @@ export class MouzaMasterComponent implements OnInit {
       });
     } else {
       // new master
-      this.mouzaMasterService.newMouza(this.formData).subscribe({
+      this.mouzaMasterService.newMouza(this.prepFormData).subscribe({
         next: (data) => {
           this.mouzaList.set([data, ...this.mouzaList()]);
           this.onListMouza();

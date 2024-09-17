@@ -1,6 +1,6 @@
 import { MouzaLandSpecifics } from './mouza-land-specifics.model';
 export interface Mouza {
-  mouzaId: string;
+  mouzaId?: string;
   groupId: string;
   mouza: string;
   block: string;
