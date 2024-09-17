@@ -32,6 +32,11 @@ import { DialogMortgageFormComponent } from './modal/mortgage-form/mortgage-form
 import { DialogPartlySoldFormComponent } from './modal/partly-sold-form/partly-sold-form.dialog';
 import { Dialog } from '@angular/cdk/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { GroupMasterService } from '../../services/group-master.service';
+import { MouzaMasterService } from '../../services/mouza-master.service';
+import { Group } from '../../../../model/group.model';
+import { Mouza } from '../../../../model/mouza.model';
+import { statesCollection } from '../../../../data/states.collection';
 
 @Component({
   selector: 'app-deed-master',
@@ -56,6 +61,10 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
   styleUrl: './deed-master.component.scss',
 })
 export class DeedMasterComponent implements OnInit {
+  private readonly mouzaMasterService: MouzaMasterService =
+    inject(MouzaMasterService);
+  private readonly groupMasterService: GroupMasterService =
+    inject(GroupMasterService);
   private readonly deedMasterService: DeedMasterService =
     inject(DeedMasterService);
   private readonly fileUploadService: FileUploadService =
@@ -65,18 +74,42 @@ export class DeedMasterComponent implements OnInit {
   private readonly router: Router = inject(Router);
   private readonly dialog: Dialog = inject(Dialog);
 
+  readonly mouzaList: WritableSignal<Mouza[]> = signal([]);
+  readonly groupList: WritableSignal<Group[]> = signal([]);
+
   readonly deedList: WritableSignal<Deed[]> = signal([]);
   readonly listMode: WritableSignal<boolean> = signal(true);
   readonly updateMode: WritableSignal<boolean> = signal(false);
   readonly viewMode: WritableSignal<boolean> = signal(false);
   readonly id: WritableSignal<string> = signal('');
 
+  readonly selectedGroup: WritableSignal<Group> = signal({
+    groupId: '',
+    groupName: '',
+    state: '',
+    city: '',
+    pincode: NaN,
+  });
+
+  readonly selectedMouza: WritableSignal<Mouza> = signal({
+    mouzaId: '',
+    groupId: '',
+    mouza: '',
+    block: '',
+    jlno: NaN,
+    landSpecifics: [],
+  });
+
   private readonly fb: FormBuilder = inject(FormBuilder);
   readonly sysIsBusy: WritableSignal<boolean> = signal(true);
   readonly serverUnreachable: WritableSignal<boolean> = signal(false);
+  readonly showGroupDetails: WritableSignal<boolean> = signal(false);
+  readonly showMouzaDetails: WritableSignal<boolean> = signal(false);
 
   readonly deedForm: FormGroup<any> = this.fb.group({
     deedId: [''],
+    groupId: ['', Validators.required],
+    mouzaId: ['', Validators.required],
     deedNo: ['', Validators.required],
     deedDate: ['', Validators.required],
     totalQty: [NaN, Validators.required],
@@ -474,6 +507,96 @@ export class DeedMasterComponent implements OnInit {
     });
   }
 
+  setGroupList(): void {
+    this.sysIsBusy.set(true);
+    this.groupMasterService.getGroupList().subscribe({
+      next: (data) => {
+        this.groupList.set(data);
+      },
+      error: () => {
+        this.serverUnreachable.set(true);
+      },
+      complete: () => {
+        this.sysIsBusy.set(false);
+      },
+    });
+  }
+
+  setMouzaList(): void {
+    this.sysIsBusy.set(true);
+    this.mouzaMasterService.getMouzaList().subscribe({
+      next: (data) => {
+        this.mouzaList.set(data);
+      },
+      error: () => {
+        this.serverUnreachable.set(true);
+      },
+      complete: () => {
+        this.sysIsBusy.set(false);
+      },
+    });
+  }
+
+  /**
+   * Returns the name of the given state code from statesCollection.
+   * If the code is not found, the given code is returned as is.
+   * @param stateCode the state code to find the name for
+   * @returns the name of the given state code or the code itself if not found
+   */
+  getStateName(stateCode: string): string {
+    return (
+      statesCollection.find((state) => state.code === stateCode)?.name ||
+      stateCode
+    );
+  }
+
+  /**
+   * Returns the name of the given groupId from groupList.
+   * If the id is not found, the given id is returned as is.
+   * @param groupId the group id to find the name for
+   * @returns the name of the given group id or the id itself if not found
+   */
+  getGroupName(groupId: string): string {
+    return (
+      this.groupList().find((group) => group.groupId === groupId)?.groupName ||
+      groupId
+    );
+  }
+
+  onGroupChange(): void {
+    const group = this.groupList().find(
+      (data) => data.groupId === this.form['groupId'].value
+    );
+    if (group) {
+      group.state = this.getStateName(group.state);
+      this.selectedGroup.set(group);
+    } else
+      this.selectedGroup.set({
+        groupId: '',
+        groupName: '',
+        state: '',
+        city: '',
+        pincode: NaN,
+      });
+  }
+
+  onMouzaChange(): void {
+    const mouza = this.mouzaList().find(
+      (data) => data.mouzaId === this.form['mouzaId'].value
+    );
+    if (mouza) {
+      this.selectedMouza.set(mouza);
+    } else
+      this.selectedMouza.set({
+        mouzaId: '',
+        groupId: '',
+        mouza: '',
+        block: '',
+        jlno: NaN,
+        landSpecifics: [],
+      });
+  }
+
   onNewDeed(): void {
     this.router.navigate(['master', 'deed', 'new']);
     this.formResetHelper();
@@ -517,6 +640,8 @@ export class DeedMasterComponent implements OnInit {
 
     if (deed) {
       this.formPatchHelper(deed);
+      this.onGroupChange();
+      this.onMouzaChange();
     } else {
       this.deedMasterService.getDeed(deedId).subscribe({
         next: (data) => {
@@ -527,6 +652,8 @@ export class DeedMasterComponent implements OnInit {
         },
         complete: () => {
           this.sysIsBusy.set(false);
+          this.onGroupChange();
+          this.onMouzaChange();
         },
       });
     }
@@ -536,6 +663,8 @@ export class DeedMasterComponent implements OnInit {
 
   formResetHelper(): void {
     this.deedForm.reset();
+    this.showGroupDetails.set(false);
+    this.showMouzaDetails.set(false);
     this.oldFileInfoArray.scanCopyFile = [];
     this.oldFileInfoArray.mutationFile = [];
     this.oldFileInfoArray.conversionFile = [];
@@ -774,6 +903,8 @@ export class DeedMasterComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.setGroupList();
+    this.setMouzaList();
     this.setDeedList();
 
     if (this.route.children[0]) {

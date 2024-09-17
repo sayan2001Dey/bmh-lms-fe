@@ -3,6 +3,8 @@ import { PartlySoldData } from "./partly-sold-data.model";
 
 export interface Deed {
   deedId?: string;
+  groupId: string;
+  mouzaId: string;
   deedNo: string;
   deedDate: string;
 
