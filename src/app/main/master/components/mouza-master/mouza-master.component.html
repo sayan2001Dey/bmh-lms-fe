@@ -172,10 +172,19 @@
                     <mat-label>RS Dag No. (New)</mat-label>
                     <input formControlName="newLrDag" [readonly]="viewMode()" matInput />
                   </mat-form-field>
+                  
+                  <mat-form-field class="mx-2">
+                    <mat-label>Max Qty.</mat-label>
+                    <input type="number" min="1" formControlName="maxQty" [readonly]="viewMode()" matInput />
+                  </mat-form-field>
 
                   <mat-form-field class="mx-2">
-                    <mat-label>Qty.</mat-label>
-                    <input type="number" min="1" formControlName="qty" [readonly]="viewMode()" matInput />
+                    <mat-label>Land Type</mat-label>
+                    <mat-select formControlName="landType">
+                      <mat-option value="Sali">Sali</mat-option>
+                      <mat-option value="Bastu">Bastu</mat-option>
+                      <mat-option value="Pukur">Pukur</mat-option>
+                    </mat-select>
                   </mat-form-field>
                 </form>
 
