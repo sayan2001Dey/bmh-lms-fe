@@ -37,6 +37,7 @@ import { MouzaMasterService } from '../../services/mouza-master.service';
 import { Group } from '../../../../model/group.model';
 import { Mouza } from '../../../../model/mouza.model';
 import { statesCollection } from '../../../../data/states.collection';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @Component({
   selector: 'app-deed-master',
@@ -56,6 +57,7 @@ import { statesCollection } from '../../../../data/states.collection';
     MatSelectModule,
     MatListModule,
     ReactiveFormsModule,
+    MatExpansionModule,
   ],
   templateUrl: './deed-master.component.html',
   styleUrl: './deed-master.component.scss',
