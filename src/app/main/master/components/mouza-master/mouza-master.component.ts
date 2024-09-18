@@ -159,7 +159,8 @@ export class MouzaMasterComponent implements OnInit {
     initialValues: MouzaLandSpecifics = {
       oldRsDag: '',
       newLrDag: '',
-      qty: NaN,
+      maxQty: NaN,
+      landType: '',
     }
   ): void {
     this.landSpecifics.update((formsArray: FormGroup[]) => {
@@ -167,7 +168,8 @@ export class MouzaMasterComponent implements OnInit {
         this.fb.group({
           oldRsDag: [initialValues.oldRsDag, [Validators.required]],
           newLrDag: [initialValues.newLrDag, [Validators.required]],
-          qty: [initialValues.qty, [Validators.required, Validators.min(1)]],
+          maxQty: [initialValues.maxQty, [Validators.required, Validators.min(1)]],
+          landType: [initialValues.landType, [Validators.required]],
         })
       );
       return formsArray;
