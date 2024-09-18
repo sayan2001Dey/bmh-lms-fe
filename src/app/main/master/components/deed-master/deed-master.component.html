@@ -115,189 +115,6 @@
         }
 
         <section class="mb-3">
-          <h5 class="font-weight-normal py-2">Area</h5>
-
-          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-            <mat-form-field appearance="outline">
-              <mat-label>Group</mat-label>
-              <mat-select
-                formControlName="groupId"
-                (ngModelChange)="onGroupChange()"
-                required
-              >
-                @for (group of groupList(); track $index) {
-                <mat-option [value]="group.groupId">
-                  {{ group.groupName }}
-                  <span class="text-muted">
-                    {{ "(" + group.groupId + ")" }}
-                  </span>
-                </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-            <div class="d-flex align-items-center">
-              <button
-                type="button"
-                class="mb-4"
-                mat-button
-                (click)="showGroupDetails.set(!showGroupDetails())"
-              >
-                <mat-icon>
-                  {{ showGroupDetails() ? "visibility_off" : "visibility" }}
-                </mat-icon>
-                {{ showGroupDetails() ? "Hide" : "Show" }} group details
-              </button>
-            </div>
-          </div>
-
-          @if(showGroupDetails()) {
-          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-            <mat-form-field appearance="outline">
-              <mat-label>State</mat-label>
-              <input [value]="selectedGroup().state" disabled matInput />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>City/Area</mat-label>
-              <input [value]="selectedGroup().city" disabled matInput />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Pincode</mat-label>
-              <input
-                type="number"
-                [value]="selectedGroup().pincode"
-                disabled
-                matInput
-              />
-            </mat-form-field>
-          </div>
-          }
-
-          <h5 class="font-weight-normal py-2">Mouza</h5>
-          <mat-card appearance="outlined" class="p-3">
-            <div class="d-flex align-items-center mb-3">
-              <h5 class="me-4 text-green">1.</h5>
-              <div class="flex-grow-1 mb-2">
-                <mat-divider
-                  style="
-                    --mat-divider-width: 0.15rem;
-                    --mat-divider-color: green;
-                    border-radius: 1rem;
-                  "
-                />
-              </div>
-            </div>
-
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-              <mat-form-field appearance="outline">
-                <mat-label>Mouza</mat-label>
-                <mat-select
-                  formControlName="mouzaId"
-                  (ngModelChange)="onMouzaChange()"
-                  required
-                >
-                  @for (mouza of mouzaList(); track $index) { @if (mouza.groupId
-                  === selectedGroup().groupId){
-                  <mat-option [value]="mouza.mouzaId">
-                    {{ mouza.mouza }}
-                    <span class="text-muted">
-                      {{ "(" + mouza.mouzaId + ")" }}
-                    </span>
-                  </mat-option>
-                  } }
-                </mat-select>
-              </mat-form-field>
-              <div class="d-flex align-items-center">
-                <button
-                  type="button"
-                  class="mb-4"
-                  mat-button
-                  (click)="showMouzaDetails.set(!showMouzaDetails())"
-                >
-                  <mat-icon>
-                    {{ showMouzaDetails() ? "visibility_off" : "visibility" }}
-                  </mat-icon>
-                  {{ showMouzaDetails() ? "Hide" : "Show" }} mouza details
-                </button>
-              </div>
-            </div>
-
-            @if(showMouzaDetails()) {
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-              <mat-form-field appearance="outline">
-                <mat-label>Block</mat-label>
-                <input [value]="selectedMouza().block" disabled matInput />
-              </mat-form-field>
-
-              <mat-form-field appearance="outline">
-                <mat-label>JL No.</mat-label>
-                <input
-                  type="number"
-                  [value]="selectedMouza().jlno"
-                  disabled
-                  matInput
-                />
-              </mat-form-field>
-            </div>
-            }
-            <h5 class="font-regular py-2">Land Specifics</h5>
-            <div class="row">
-              <div>
-                <div class="d-flex flex-nowrap align-items-center">
-                  <span class="h5 p-2 py-3 mb-auto"> {{ 1 }}. </span>
-
-                  <form>
-                    <mat-form-field class="mx-2">
-                      <mat-label>RS Dag No. (Old)</mat-label>
-                      <mat-select />
-                    </mat-form-field>
-
-                    <mat-form-field class="mx-2">
-                      <mat-label>RS Dag No. (New)</mat-label>
-                      <mat-select />
-                    </mat-form-field>
-
-                    <mat-form-field class="mx-2">
-                      <mat-label>Max Qty.</mat-label>
-                      <input type="number" matInput readonly="true"/>
-                    </mat-form-field>
-
-                    <mat-form-field class="mx-2">
-                      <mat-label>Qty.</mat-label>
-                      <input type="number" matInput />
-                    </mat-form-field>
-                  </form>
-
-                  <span class="mt-2 mb-auto">
-                    <button mat-icon-button type="button">
-                      <mat-icon [class]="true ? '' : 'text-red'">
-                        do_not_disturb_on
-                      </mat-icon>
-                    </button>
-                  </span>
-                </div>
-                <button
-                  mat-button
-                  type="button"
-                  class="btn-sp2"
-                  [disabled]="viewMode()"
-                >
-                  <mat-icon>add</mat-icon> Add dag no.
-                </button>
-              </div>
-            </div>
-          </mat-card>
-
-          <div class="mt-4">
-            <button type="button" class="mb-4" mat-stroked-button>
-              <mat-icon> add </mat-icon>
-              Add mouza
-            </button>
-          </div>
-        </section>
-
-        <section class="mb-3">
           <h5 class="font-regular my-3">Deed Details</h5>
           <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
             <div>
@@ -455,6 +272,190 @@
                 />
               </mat-card>
             </div>
+          </div>
+        </section>
+
+        <section class="mb-3">
+          <h5 class="font-weight-normal py-2">Area</h5>
+
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+            <mat-form-field appearance="outline">
+              <mat-label>Group</mat-label>
+              <mat-select
+                formControlName="groupId"
+                (ngModelChange)="onGroupChange()"
+                required
+              >
+                @for (group of groupList(); track $index) {
+                <mat-option [value]="group.groupId">
+                  {{ group.groupName }}
+                  <span class="text-muted">
+                    {{ "(" + group.groupId + ")" }}
+                  </span>
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <div class="d-flex align-items-center">
+              <button
+                type="button"
+                class="mb-4"
+                mat-button
+                (click)="showGroupDetails.set(!showGroupDetails())"
+              >
+                <mat-icon>
+                  {{ showGroupDetails() ? "visibility_off" : "visibility" }}
+                </mat-icon>
+                {{ showGroupDetails() ? "Hide" : "Show" }} group details
+              </button>
+            </div>
+          </div>
+
+          @if(showGroupDetails()) {
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+            <mat-form-field appearance="outline">
+              <mat-label>State</mat-label>
+              <input [value]="selectedGroup().state" disabled matInput />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>City/Area</mat-label>
+              <input [value]="selectedGroup().city" disabled matInput />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Pincode</mat-label>
+              <input
+                type="number"
+                [value]="selectedGroup().pincode"
+                disabled
+                matInput
+              />
+            </mat-form-field>
+          </div>
+          }
+
+          <h5 class="font-weight-normal py-2">Mouza</h5>
+          <mat-card appearance="outlined" class="p-3">
+            <div class="d-flex align-items-center mb-3">
+              <h5 class="me-4 text-green">1.</h5>
+              <div class="flex-grow-1 mb-2">
+                <mat-divider
+                  style="
+                    --mat-divider-width: 0.15rem;
+                    --mat-divider-color: green;
+                    border-radius: 1rem;
+                  "
+                />
+              </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+              <mat-form-field appearance="outline">
+                <mat-label>Mouza</mat-label>
+                <mat-select
+                  formControlName="mouzaId"
+                  (ngModelChange)="onMouzaChange()"
+                  required
+                >
+                  @for (mouza of mouzaList(); track $index) { @if (mouza.groupId
+                  === selectedGroup().groupId){
+                  <mat-option [value]="mouza.mouzaId">
+                    {{ mouza.mouza }}
+                    <span class="text-muted">
+                      {{ "(" + mouza.mouzaId + ")" }}
+                    </span>
+                  </mat-option>
+                  } }
+                </mat-select>
+              </mat-form-field>
+              <div class="d-flex align-items-center">
+                <button
+                  type="button"
+                  class="mb-4"
+                  mat-button
+                  (click)="showMouzaDetails.set(!showMouzaDetails())"
+                >
+                  <mat-icon>
+                    {{ showMouzaDetails() ? "visibility_off" : "visibility" }}
+                  </mat-icon>
+                  {{ showMouzaDetails() ? "Hide" : "Show" }} mouza details
+                </button>
+              </div>
+            </div>
+
+            @if(showMouzaDetails()) {
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+              <mat-form-field appearance="outline">
+                <mat-label>Block</mat-label>
+                <input [value]="selectedMouza().block" disabled matInput />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>JL No.</mat-label>
+                <input
+                  type="number"
+                  [value]="selectedMouza().jlno"
+                  disabled
+                  matInput
+                />
+              </mat-form-field>
+            </div>
+            }
+
+            <h5 class="font-regular py-2">Land Specifics</h5>
+            <div class="row">
+              <div>
+                <div class="d-flex flex-nowrap align-items-center">
+                  <span class="h5 p-2 py-3 mb-auto"> {{ 1 }}. </span>
+
+                  <form>
+                    <mat-form-field class="mx-2">
+                      <mat-label>RS Dag No. (Old)</mat-label>
+                      <mat-select />
+                    </mat-form-field>
+
+                    <mat-form-field class="mx-2">
+                      <mat-label>RS Dag No. (New)</mat-label>
+                      <mat-select />
+                    </mat-form-field>
+
+                    <mat-form-field class="mx-2">
+                      <mat-label>Max Qty.</mat-label>
+                      <input type="number" matInput readonly="true"/>
+                    </mat-form-field>
+
+                    <mat-form-field class="mx-2">
+                      <mat-label>Qty.</mat-label>
+                      <input type="number" matInput />
+                    </mat-form-field>
+                  </form>
+
+                  <span class="mt-2 mb-auto">
+                    <button mat-icon-button type="button">
+                      <mat-icon [class]="true ? '' : 'text-red'">
+                        do_not_disturb_on
+                      </mat-icon>
+                    </button>
+                  </span>
+                </div>
+                <button
+                  mat-button
+                  type="button"
+                  class="btn-sp2"
+                  [disabled]="viewMode()"
+                >
+                  <mat-icon>add</mat-icon> Add dag no.
+                </button>
+              </div>
+            </div>
+          </mat-card>
+
+          <div class="mt-4">
+            <button type="button" class="mb-4" mat-stroked-button>
+              <mat-icon> add </mat-icon>
+              Add mouza
+            </button>
           </div>
         </section>
 
