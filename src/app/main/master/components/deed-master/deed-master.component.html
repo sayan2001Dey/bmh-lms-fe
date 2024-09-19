@@ -351,7 +351,10 @@
               </div>
             </div>
 
-            <form [formGroup]="data.mouzaForm" class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+            <form
+              [formGroup]="data.mouzaForm"
+              class="row row-cols-1 row-cols-md-2 row-cols-lg-3"
+            >
               <mat-form-field appearance="outline">
                 <mat-label>Mouza</mat-label>
                 <mat-select
@@ -373,7 +376,11 @@
 
               <mat-form-field appearance="outline">
                 <mat-label>Block</mat-label>
-                <input [value]="mouzaData()[idx].selectedMouza.block" disabled matInput />
+                <input
+                  [value]="mouzaData()[idx].selectedMouza.block"
+                  disabled
+                  matInput
+                />
               </mat-form-field>
 
               <mat-form-field appearance="outline">
@@ -390,44 +397,105 @@
             <h5 class="font-regular py-2">Land Specifics</h5>
             <div class="row">
               <div>
-                @for (item of data.landSpecifics; track 'landSpecifics-'+$index; let landSpecificsIndex = $index) {
+                @for (item of data.landSpecifics; track 'landSpecifics-'+$index;
+                let landSpecificsIndex = $index) {
                 <div class="d-flex flex-nowrap align-items-center">
-                  <span class="h5 p-2 py-3 mb-auto">
-                    {{ $index + 1 }}.
-                  </span>
+                  <span class="h5 p-2 py-3 mb-auto"> {{ $index + 1 }}. </span>
 
                   <form [formGroup]="item">
                     <mat-form-field class="mx-2">
                       <mat-label>RS Dag No. (Old)</mat-label>
-                      <mat-select formControlName="oldRsDag"/>
+                      <mat-select
+                        formControlName="oldRsDag"
+                        (selectionChange)="
+                          onChangeOldRsDag(idx, landSpecificsIndex)
+                        "
+                      >
+                        @for (landSpecificsItems of
+                        data.selectedMouza.landSpecifics; track $index) {
+                        <mat-option [value]="landSpecificsItems.oldRsDag">{{
+                          landSpecificsItems.oldRsDag
+                        }}</mat-option>
+                        }
+                      </mat-select>
                     </mat-form-field>
 
                     <mat-form-field class="mx-2">
-                      <mat-label>RS Dag No. (New)</mat-label>
-                      <mat-select formControlName="newLrDag"/>
+                      <mat-label>LR Dag No. (New)</mat-label>
+                      <mat-select
+                        formControlName="newLrDag"
+                        (selectionChange)="
+                          onChangeNewLrDag(idx, landSpecificsIndex)
+                        "
+                      >
+                        @for (landSpecificsItems of
+                        data.selectedMouza.landSpecifics; track $index) {
+                        <mat-option [value]="landSpecificsItems.newLrDag">{{
+                          landSpecificsItems.newLrDag
+                        }}</mat-option>
+                        }
+                      </mat-select>
                     </mat-form-field>
 
                     <mat-form-field class="mx-2">
                       <mat-label>Max Qty.</mat-label>
-                      <input type="number" min="1" formControlName="maxQty" readonly="true" matInput />
+                      <input
+                        type="number"
+                        min="1"
+                        formControlName="maxQty"
+                        readonly="true"
+                        matInput
+                      />
                     </mat-form-field>
 
                     <mat-form-field class="mx-2">
                       <mat-label>Land Type</mat-label>
-                      <input formControlName="landType" readonly="true" matInput />
+                      <input
+                        formControlName="landType"
+                        readonly="true"
+                        matInput
+                      />
+                    </mat-form-field>
+
+                    <mat-form-field class="mx-2">
+                      <mat-label>Qty.</mat-label>
+                      <input
+                        type="number"
+                        min="1"
+                        [max]="
+                          data.landSpecifics[landSpecificsIndex].value.maxQty
+                        "
+                        formControlName="qty"
+                        matInput
+                      />
                     </mat-form-field>
                   </form>
 
                   <span class="mt-2 mb-auto">
-                    <button mat-icon-button type="button" (click)="onRemoveLandSpecifics(idx, landSpecificsIndex)" [disabled]="data.landSpecifics.length < 2 || viewMode()">
-                      <mat-icon [class]="data.landSpecifics.length < 2 ? '' : 'text-red'">
+                    <button
+                      mat-icon-button
+                      type="button"
+                      (click)="onRemoveLandSpecifics(idx, landSpecificsIndex)"
+                      [disabled]="data.landSpecifics.length < 2 || viewMode()"
+                    >
+                      <mat-icon
+                        [class]="
+                          data.landSpecifics.length < 2 ? '' : 'text-red'
+                        "
+                      >
                         do_not_disturb_on
                       </mat-icon>
                     </button>
                   </span>
                 </div>
                 }
-                <button mat-button type="button" class="btn-sp2" (click)="onAddLandSpecifics(idx)" [disabled]="viewMode()">
+                <button
+                  mat-button
+                  type="button"
+                  class="btn-sp2"
+                  (click)="onAddLandSpecifics(idx)"
+                  [disabled]="viewMode()"
+                >
                   <mat-icon>add</mat-icon> Add land specifics
                 </button>
               </div>
@@ -1137,7 +1205,6 @@
                 ></mat-datepicker-toggle>
                 <mat-datepicker #datePicker12></mat-datepicker>
               </mat-form-field>
-
             </div>
           </div>
         </section>
@@ -1332,7 +1399,13 @@
         <div class="row">
           <mat-form-field appearance="outline">
             <mat-label>Legal Matters Description</mat-label>
-            <textarea rows="8" formControlName="leDescription" required matInput [readonly]="viewMode()"></textarea>
+            <textarea
+              rows="8"
+              formControlName="leDescription"
+              required
+              matInput
+              [readonly]="viewMode()"
+            ></textarea>
           </mat-form-field>
         </div>
 

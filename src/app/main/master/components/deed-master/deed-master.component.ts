@@ -38,6 +38,7 @@ import { Group } from '../../../../model/group.model';
 import { Mouza } from '../../../../model/mouza.model';
 import { statesCollection } from '../../../../data/states.collection';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { max } from 'rxjs';
 
 @Component({
   selector: 'app-deed-master',
@@ -513,6 +514,7 @@ export class DeedMasterComponent implements OnInit {
             newLrDag: ['', Validators.required],
             maxQty: [NaN, Validators.required],
             landType: ['', Validators.required],
+            qty: [NaN, Validators.required],
           }),
         ],
       });
@@ -675,6 +677,7 @@ export class DeedMasterComponent implements OnInit {
           newLrDag: ['', Validators.required],
           maxQty: [NaN, Validators.required],
           landType: ['', Validators.required],
+          qty: [NaN, Validators.required],
         })
       );
       return data;
@@ -693,6 +696,54 @@ export class DeedMasterComponent implements OnInit {
       data[idx].landSpecifics.splice(landSpecificsIndex, 1);
       return data;
     });
+  }
+
+  /**
+   * Updates the land specific form values with the corresponding values from the land specifics in the selected mouza.
+   * @param {number} idx - The index of the mouza data to update the land specific form values for.
+   * @param {number} landSpecificsIndex - The index of the land specific form to update the values for.
+   * @returns {void} No return value.
+   */
+  onChangeOldRsDag(idx: number, landSpecificsIndex: number): void {
+    const data = this.mouzaData();
+    const fieldVal =
+      data[idx].landSpecifics[landSpecificsIndex].controls['oldRsDag'].value;
+    const allLandSpecifics = data[idx].selectedMouza.landSpecifics;
+    for (const landSpecifics of allLandSpecifics) {
+      if (fieldVal === landSpecifics.oldRsDag) {
+        data[idx].landSpecifics[landSpecificsIndex].patchValue({
+          newLrDag: landSpecifics.newLrDag,
+          maxQty: landSpecifics.maxQty,
+          landType: landSpecifics.landType,
+        });
+        break;
+      }
+    }
+    this.mouzaData.set(data);
+  }
+
+  /**
+   * Updates the land specific form values with the corresponding values from the land specifics in the selected mouza.
+   * @param {number} idx - The index of the mouza data to update the land specific form values for.
+   * @param {number} landSpecificsIndex - The index of the land specific form to update the values for.
+   * @returns {void} No return value.
+   */
+  onChangeNewLrDag(idx: number, landSpecificsIndex: number): void {
+    const data = this.mouzaData();
+    const fieldVal =
+      data[idx].landSpecifics[landSpecificsIndex].controls['newLrDag'].value;
+    const allLandSpecifics = data[idx].selectedMouza.landSpecifics;
+    for (const landSpecifics of allLandSpecifics) {
+      if (fieldVal === landSpecifics.newLrDag) {
+        data[idx].landSpecifics[landSpecificsIndex].patchValue({
+          oldRsDag: landSpecifics.oldRsDag,
+          maxQty: landSpecifics.maxQty,
+          landType: landSpecifics.landType,
+        });
+        break;
+      }
+    }
+    this.mouzaData.set(data);
   }
 
   onNewDeed(): void {
