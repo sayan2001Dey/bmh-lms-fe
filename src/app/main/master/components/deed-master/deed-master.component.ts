@@ -93,20 +93,11 @@ export class DeedMasterComponent implements OnInit {
     pincode: NaN,
   });
 
-  readonly selectedMouza: WritableSignal<Mouza> = signal({
-    mouzaId: '',
-    groupId: '',
-    mouza: '',
-    block: '',
-    jlno: NaN,
-    landSpecifics: [],
-  });
-
   readonly mouzaData: WritableSignal<
     {
       mouzaForm: FormGroup;
       selectedMouza: Mouza;
-      landSpecificsArr: FormGroup[];
+      landSpecifics: FormGroup[];
     }[]
   > = signal([]);
 
@@ -114,7 +105,6 @@ export class DeedMasterComponent implements OnInit {
   readonly sysIsBusy: WritableSignal<boolean> = signal(true);
   readonly serverUnreachable: WritableSignal<boolean> = signal(false);
   readonly showGroupDetails: WritableSignal<boolean> = signal(false);
-  readonly showMouzaDetails: WritableSignal<boolean> = signal(false);
 
   readonly deedForm: FormGroup<any> = this.fb.group({
     deedId: [''],
@@ -515,7 +505,7 @@ export class DeedMasterComponent implements OnInit {
           jlno: NaN,
           landSpecifics: [],
         },
-        landSpecificsArr: [
+        landSpecifics: [
           this.fb.group({
             oldRsDag: ['', Validators.required],
             newLrDag: ['', Validators.required],
@@ -599,6 +589,11 @@ export class DeedMasterComponent implements OnInit {
     );
   }
 
+  /**
+   * Updates the selectedGroup property with the group data from groupList that matches
+   * the groupId in the form. If no group is found, selectedGroup is set to an empty object.
+   * @returns void
+   */
   onGroupChange(): void {
     const group = this.groupList().find(
       (data) => data.groupId === this.form['groupId'].value
@@ -616,28 +611,86 @@ export class DeedMasterComponent implements OnInit {
       });
   }
 
+  /**
+   * Updates the selectedMouza property of the mouza at the given index in mouzaData.
+   * If idx is undefined, null or negative, all mouza in mouzaData are updated.
+   * @param idx the index of the mouza in mouzaData to update
+   * @returns void
+   */
   onMouzaChange(idx?: number): void {
-    if(idx == undefined){
-
+    if (idx == undefined || idx == null || idx < 0) {
+      for (let i = 0; i < this.mouzaData().length; i++) {
+        this.mouzaChangeHelper(i);
+      }
+    } else {
+      this.mouzaChangeHelper(idx);
     }
-    // const mouza = this.mouzaList().find(
-    //   (data) => data.mouzaId === this.form['mouzaId'].value
-    // );
+  }
 
-    // if (mouza) {
-    //   this.mouzaData.update((data) => {
-    //     data[idx].selectedMouza = mouza;
-    //     return data;
-    //   });
-    // } else
-    //   this.selectedMouza.set({
-    //     mouzaId: '',
-    //     groupId: '',
-    //     mouza: '',
-    //     block: '',
-    //     jlno: NaN,
-    //     landSpecifics: [],
-    //   });
+  /**
+   * Helper function to set the selectedMouza property of the mouza at the given index in mouzaData.
+   * If the mouza is not found in mouzaList, it sets selectedMouza to a default mouza object.
+   * @param idx the index of the mouza in mouzaData to update
+   * @returns void
+   */
+  mouzaChangeHelper(idx: number): void {
+    const mouza = this.mouzaList().find(
+      (data) =>
+        data.mouzaId ===
+        this.mouzaData()[idx].mouzaForm.controls['mouzaId'].value
+    );
+
+    if (mouza) {
+      this.mouzaData.update((data) => {
+        data[idx].selectedMouza = mouza;
+        return data;
+      });
+    } else {
+      this.mouzaData.update((data) => {
+        data[idx].selectedMouza = {
+          mouzaId: '',
+          groupId: '',
+          mouza: '',
+          block: '',
+          jlno: NaN,
+          landSpecifics: [],
+        };
+        return data;
+      });
+    }
+  }
+
+  /**
+   * Adds a new land specific form to the land specifics list of the mouza data at the given index.
+   * @param {number} idx - The index of the mouza data to add the land specific to.
+   * @returns {void} No return value.
+   */
+  onAddLandSpecifics(idx: number): void {
+    this.mouzaData.update((data) => {
+      data[idx].landSpecifics.push(
+        this.fb.group({
+          oldRsDag: ['', Validators.required],
+          newLrDag: ['', Validators.required],
+          maxQty: [NaN, Validators.required],
+          landType: ['', Validators.required],
+        })
+      );
+      return data;
+    });
+  }
+
+  /**
+   * Removes the land specific at the specified index from the land specifics list.
+   *
+   * @param {number} idx - The index of the mouza data to remove the land specific from.
+   * @param {number} landSpecificsIndex - The index of the land specific to remove.
+   * @returns {void} No return value.
+   */
+  onRemoveLandSpecifics(idx: number, landSpecificsIndex: number): void {
+    this.mouzaData.update((data) => {
+      data[idx].landSpecifics.splice(landSpecificsIndex, 1);
+      return data;
+    });
   }
 
   onNewDeed(): void {
@@ -707,7 +760,6 @@ export class DeedMasterComponent implements OnInit {
   formResetHelper(): void {
     this.deedForm.reset();
     this.showGroupDetails.set(false);
-    this.showMouzaDetails.set(false);
     this.oldFileInfoArray.scanCopyFile = [];
     this.oldFileInfoArray.mutationFile = [];
     this.oldFileInfoArray.conversionFile = [];

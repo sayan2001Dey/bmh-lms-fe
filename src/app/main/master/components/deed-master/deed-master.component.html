@@ -336,10 +336,10 @@
           }
 
           <h5 class="font-weight-normal py-2">Mouza</h5>
-          @for(data of mouzaData(); track $index) {
+          @for(data of mouzaData(); track $index; let idx = $index) {
           <mat-card appearance="outlined" class="p-3 mb-3">
             <div class="d-flex align-items-center mb-3">
-              <h4 class="me-4 text-green">{{ $index + 1 }}.</h4>
+              <h4 class="me-4 text-green">{{ idx + 1 }}.</h4>
               <div class="flex-grow-1 mb-2">
                 <mat-divider
                   style="
@@ -351,12 +351,12 @@
               </div>
             </div>
 
-            <form class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+            <form [formGroup]="data.mouzaForm" class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
               <mat-form-field appearance="outline">
                 <mat-label>Mouza</mat-label>
                 <mat-select
                   formControlName="mouzaId"
-                  (ngModelChange)="onMouzaChange($index)"
+                  (ngModelChange)="onMouzaChange(idx)"
                   required
                 >
                   @for (mouza of mouzaList(); track $index) { @if (mouza.groupId
@@ -370,83 +370,65 @@
                   } }
                 </mat-select>
               </mat-form-field>
-              <div class="d-flex align-items-center">
-                <button
-                  type="button"
-                  class="mb-4"
-                  mat-button
-                  (click)="showMouzaDetails.set(!showMouzaDetails())"
-                >
-                  <mat-icon>
-                    {{ showMouzaDetails() ? "visibility_off" : "visibility" }}
-                  </mat-icon>
-                  {{ showMouzaDetails() ? "Hide" : "Show" }} mouza details
-                </button>
-              </div>
-            </form>
 
-            @if(showMouzaDetails()) {
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
               <mat-form-field appearance="outline">
                 <mat-label>Block</mat-label>
-                <input [value]="selectedMouza().block" disabled matInput />
+                <input [value]="mouzaData()[idx].selectedMouza.block" disabled matInput />
               </mat-form-field>
 
               <mat-form-field appearance="outline">
                 <mat-label>JL No.</mat-label>
                 <input
                   type="number"
-                  [value]="selectedMouza().jlno"
+                  [value]="mouzaData()[idx].selectedMouza.jlno"
                   disabled
                   matInput
                 />
               </mat-form-field>
-            </div>
-            }
+            </form>
 
             <h5 class="font-regular py-2">Land Specifics</h5>
             <div class="row">
               <div>
+                @for (item of data.landSpecifics; track 'landSpecifics-'+$index; let landSpecificsIndex = $index) {
                 <div class="d-flex flex-nowrap align-items-center">
-                  <span class="h5 p-2 py-3 mb-auto"> {{ 1 }}. </span>
+                  <span class="h5 p-2 py-3 mb-auto">
+                    {{ $index + 1 }}.
+                  </span>
 
-                  <form>
+                  <form [formGroup]="item">
                     <mat-form-field class="mx-2">
                       <mat-label>RS Dag No. (Old)</mat-label>
-                      <mat-select />
+                      <input formControlName="oldRsDag" [readonly]="viewMode()" matInput />
                     </mat-form-field>
 
                     <mat-form-field class="mx-2">
                       <mat-label>RS Dag No. (New)</mat-label>
-                      <mat-select />
+                      <input formControlName="newLrDag" [readonly]="viewMode()" matInput />
                     </mat-form-field>
 
                     <mat-form-field class="mx-2">
                       <mat-label>Max Qty.</mat-label>
-                      <input type="number" matInput readonly="true" />
+                      <input type="number" min="1" formControlName="maxQty" readonly="true" matInput />
                     </mat-form-field>
 
                     <mat-form-field class="mx-2">
-                      <mat-label>Qty.</mat-label>
-                      <input type="number" matInput />
+                      <mat-label>Land Type</mat-label>
+                      <input formControlName="landType" readonly="true" matInput />
                     </mat-form-field>
                   </form>
 
                   <span class="mt-2 mb-auto">
-                    <button mat-icon-button type="button">
-                      <mat-icon [class]="true ? '' : 'text-red'">
+                    <button mat-icon-button type="button" (click)="onRemoveLandSpecifics(idx, landSpecificsIndex)" [disabled]="data.landSpecifics.length < 2 || viewMode()">
+                      <mat-icon [class]="data.landSpecifics.length < 2 ? '' : 'text-red'">
                         do_not_disturb_on
                       </mat-icon>
                     </button>
                   </span>
                 </div>
-                <button
-                  mat-button
-                  type="button"
-                  class="btn-sp2"
-                  [disabled]="viewMode()"
-                >
-                  <mat-icon>add</mat-icon> Add Dag No.
+                }
+                <button mat-button type="button" class="btn-sp2" (click)="onAddLandSpecifics(idx)" [disabled]="viewMode()">
+                  <mat-icon>add</mat-icon> Add land specifics
                 </button>
               </div>
             </div>
