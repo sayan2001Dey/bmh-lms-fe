@@ -124,10 +124,12 @@ export class DeedMasterComponent implements OnInit {
     remarks: ['', Validators.required],
     khazanaStatus: ['', Validators.required],
     tax: [NaN, Validators.required],
-    dueDate: ['', Validators.required],
+    taxDueDate: ['', Validators.required],
+    lastUpDate: ['', Validators.required],
     legalMatters: ['', Validators.required],
     ledueDate: ['', Validators.required],
     lelastDate: ['', Validators.required],
+    leDescription: ['', Validators.required],
     mortgaged: [false],
     partlySold: [false],
   });
