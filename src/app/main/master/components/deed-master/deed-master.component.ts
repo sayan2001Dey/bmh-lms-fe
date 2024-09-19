@@ -102,6 +102,14 @@ export class DeedMasterComponent implements OnInit {
     landSpecifics: [],
   });
 
+  readonly mouzaData: WritableSignal<
+    {
+      mouzaForm: FormGroup;
+      selectedMouza: Mouza;
+      landSpecificsArr: FormGroup[];
+    }[]
+  > = signal([]);
+
   private readonly fb: FormBuilder = inject(FormBuilder);
   readonly sysIsBusy: WritableSignal<boolean> = signal(true);
   readonly serverUnreachable: WritableSignal<boolean> = signal(false);
@@ -111,7 +119,6 @@ export class DeedMasterComponent implements OnInit {
   readonly deedForm: FormGroup<any> = this.fb.group({
     deedId: [''],
     groupId: ['', Validators.required],
-    mouzaId: ['', Validators.required],
     deedNo: ['', Validators.required],
     deedDate: ['', Validators.required],
     totalQty: [NaN, Validators.required],
@@ -494,6 +501,33 @@ export class DeedMasterComponent implements OnInit {
     return true;
   }
 
+  onAddMouza(): void {
+    this.mouzaData.update((data) => {
+      data.push({
+        mouzaForm: this.fb.group({
+          mouzaId: ['', Validators.required],
+        }),
+        selectedMouza: {
+          mouzaId: '',
+          groupId: '',
+          mouza: '',
+          block: '',
+          jlno: NaN,
+          landSpecifics: [],
+        },
+        landSpecificsArr: [
+          this.fb.group({
+            oldRsDag: ['', Validators.required],
+            newLrDag: ['', Validators.required],
+            maxQty: [NaN, Validators.required],
+            landType: ['', Validators.required],
+          }),
+        ],
+      });
+      return data;
+    });
+  }
+
   setDeedList(): void {
     this.sysIsBusy.set(true);
     this.deedMasterService.getDeedList().subscribe({
@@ -582,21 +616,28 @@ export class DeedMasterComponent implements OnInit {
       });
   }
 
-  onMouzaChange(): void {
-    const mouza = this.mouzaList().find(
-      (data) => data.mouzaId === this.form['mouzaId'].value
-    );
-    if (mouza) {
-      this.selectedMouza.set(mouza);
-    } else
-      this.selectedMouza.set({
-        mouzaId: '',
-        groupId: '',
-        mouza: '',
-        block: '',
-        jlno: NaN,
-        landSpecifics: [],
-      });
+  onMouzaChange(idx?: number): void {
+    if(idx == undefined){
+
+    }
+    // const mouza = this.mouzaList().find(
+    //   (data) => data.mouzaId === this.form['mouzaId'].value
+    // );
+
+    // if (mouza) {
+    //   this.mouzaData.update((data) => {
+    //     data[idx].selectedMouza = mouza;
+    //     return data;
+    //   });
+    // } else
+    //   this.selectedMouza.set({
+    //     mouzaId: '',
+    //     groupId: '',
+    //     mouza: '',
+    //     block: '',
+    //     jlno: NaN,
+    //     landSpecifics: [],
+    //   });
   }
 
   onNewDeed(): void {

@@ -336,9 +336,10 @@
           }
 
           <h5 class="font-weight-normal py-2">Mouza</h5>
-          <mat-card appearance="outlined" class="p-3">
+          @for(data of mouzaData(); track $index) {
+          <mat-card appearance="outlined" class="p-3 mb-3">
             <div class="d-flex align-items-center mb-3">
-              <h5 class="me-4 text-green">1.</h5>
+              <h4 class="me-4 text-green">{{ $index + 1 }}.</h4>
               <div class="flex-grow-1 mb-2">
                 <mat-divider
                   style="
@@ -350,12 +351,12 @@
               </div>
             </div>
 
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+            <form class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
               <mat-form-field appearance="outline">
                 <mat-label>Mouza</mat-label>
                 <mat-select
                   formControlName="mouzaId"
-                  (ngModelChange)="onMouzaChange()"
+                  (ngModelChange)="onMouzaChange($index)"
                   required
                 >
                   @for (mouza of mouzaList(); track $index) { @if (mouza.groupId
@@ -382,7 +383,7 @@
                   {{ showMouzaDetails() ? "Hide" : "Show" }} mouza details
                 </button>
               </div>
-            </div>
+            </form>
 
             @if(showMouzaDetails()) {
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
@@ -422,7 +423,7 @@
 
                     <mat-form-field class="mx-2">
                       <mat-label>Max Qty.</mat-label>
-                      <input type="number" matInput readonly="true"/>
+                      <input type="number" matInput readonly="true" />
                     </mat-form-field>
 
                     <mat-form-field class="mx-2">
@@ -450,9 +451,15 @@
               </div>
             </div>
           </mat-card>
+          }
 
           <div class="mt-4">
-            <button type="button" class="mb-4" mat-stroked-button>
+            <button
+              type="button"
+              class="mb-4"
+              mat-stroked-button
+              (click)="onAddMouza()"
+            >
               <mat-icon> add </mat-icon>
               Add mouza
             </button>
