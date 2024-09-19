@@ -399,12 +399,12 @@
                   <form [formGroup]="item">
                     <mat-form-field class="mx-2">
                       <mat-label>RS Dag No. (Old)</mat-label>
-                      <input formControlName="oldRsDag" [readonly]="viewMode()" matInput />
+                      <mat-select formControlName="oldRsDag"/>
                     </mat-form-field>
 
                     <mat-form-field class="mx-2">
                       <mat-label>RS Dag No. (New)</mat-label>
-                      <input formControlName="newLrDag" [readonly]="viewMode()" matInput />
+                      <mat-select formControlName="newLrDag"/>
                     </mat-form-field>
 
                     <mat-form-field class="mx-2">
