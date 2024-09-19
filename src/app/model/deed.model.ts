@@ -22,7 +22,8 @@ export interface Deed {
   remarks: string;
   khazanaStatus: string;
   tax: number;
-  dueDate: string;
+  taxDueDate: string;
+  lastUpDate: string;
 
   legalMatters: string;
   ledueDate: string;
@@ -37,6 +38,7 @@ export interface Deed {
   mutationFile?: string[];
   conversionFile?: string[];
   documentFile?: string[];
-  hcdocumentFile?: string[]; //TODO: remove(probably) need confirmation
+  vestedFile?: string[];
+  areaMapFile?: string[];
   parchaFile?: string[];
 }

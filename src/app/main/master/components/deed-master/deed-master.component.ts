@@ -222,9 +222,10 @@ export class DeedMasterComponent implements OnInit {
     const data = this.formData;
 
     data.deedDate = this.formatDateForBackend(data.deedDate);
-    data.dueDate = this.formatDateForBackend(data.dueDate);
     data.ledueDate = this.formatDateForBackend(data.ledueDate);
     data.lelastDate = this.formatDateForBackend(data.lelastDate);
+    data.taxDueDate = this.formatDateForBackend(data.taxDueDate);
+    data.lastUpDate = this.formatDateForBackend(data.lastUpDate);
 
     if (data.mortgaged) data.mortgagedData = this.mortgagedData();
     else data.mortgaged = false;
@@ -817,7 +818,8 @@ export class DeedMasterComponent implements OnInit {
     this.oldFileInfoArray.mutationFile = [];
     this.oldFileInfoArray.conversionFile = [];
     this.oldFileInfoArray.documentFile = [];
-    this.oldFileInfoArray.hcdocumentFile = [];
+    this.oldFileInfoArray.vestedFile = [];
+    this.oldFileInfoArray.areaMapFile = [];
     this.oldFileInfoArray.parchaFile = [];
   }
 
@@ -825,7 +827,8 @@ export class DeedMasterComponent implements OnInit {
     this.deedForm.patchValue(deed);
     this.deedForm.patchValue({
       deedDate: this.getDateFromString(deed.deedDate!),
-      dueDate: this.getDateFromString(deed.dueDate!),
+      taxDueDate: this.getDateFromString(deed.taxDueDate!),
+      lastUpDate: this.getDateFromString(deed.lastUpDate!),
       ledueDate: this.getDateFromString(deed.ledueDate!),
       lelastDate: this.getDateFromString(deed.lelastDate!),
     });
@@ -862,9 +865,17 @@ export class DeedMasterComponent implements OnInit {
         });
       });
     }
-    if (deed.hcdocumentFile) {
-      deed.hcdocumentFile.forEach((fileName: string) => {
-        this.oldFileInfoArray.hcdocumentFile.push({
+    if (deed.vestedFile) {
+      deed.vestedFile.forEach((fileName: string) => {
+        this.oldFileInfoArray.vestedFile.push({
+          fileName,
+          markedForDeletion: false,
+        });
+      });
+    }
+    if (deed.areaMapFile) {
+      deed.areaMapFile.forEach((fileName: string) => {
+        this.oldFileInfoArray.areaMapFile.push({
           fileName,
           markedForDeletion: false,
         });
@@ -945,6 +956,8 @@ export class DeedMasterComponent implements OnInit {
     conversionFile: [],
     documentFile: [],
     hcdocumentFile: [],
+    vestedFile: [],
+    areaMapFile: [],
     parchaFile: [],
   };
 
@@ -954,6 +967,8 @@ export class DeedMasterComponent implements OnInit {
     conversionFileRAW: [],
     documentFileRAW: [],
     hcdocumentFileRAW: [],
+    vestedFileRAW: [],
+    areaMapFileRAW: [],
     parchaFileRAW: [],
   };
 
@@ -963,6 +978,8 @@ export class DeedMasterComponent implements OnInit {
     conversionFile: [],
     documentFile: [],
     hcdocumentFile: [],
+    vestedFile: [],
+    areaMapFile: [],
     parchaFile: [],
   };
 
