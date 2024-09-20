@@ -975,6 +975,9 @@ export class DeedMasterComponent implements OnInit {
         });
       });
     }
+
+    this.onGroupChange();
+    this.onMouzaChange();
   }
 
   onListDeed() {
