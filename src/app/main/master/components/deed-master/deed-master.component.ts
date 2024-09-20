@@ -592,6 +592,7 @@ export class DeedMasterComponent implements OnInit {
     this.groupMasterService.getGroupList().subscribe({
       next: (data) => {
         this.groupList.set(data);
+        this.onGroupChange();
       },
       error: () => {
         this.serverUnreachable.set(true);
@@ -607,6 +608,7 @@ export class DeedMasterComponent implements OnInit {
     this.mouzaMasterService.getMouzaList().subscribe({
       next: (data) => {
         this.mouzaList.set(data);
+        this.onMouzaChange();
       },
       error: () => {
         this.serverUnreachable.set(true);
