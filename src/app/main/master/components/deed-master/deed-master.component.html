@@ -410,6 +410,7 @@
                         (selectionChange)="
                           onChangeOldRsDag(idx, landSpecificsIndex)
                         "
+                        [disabled]="viewMode()"
                       >
                         @for (landSpecificsItems of
                         data.selectedMouza.landSpecifics; track $index) {
@@ -509,6 +510,7 @@
               class="mb-4"
               mat-stroked-button
               (click)="onAddMouza()"
+              [disabled]="viewMode()"
             >
               <mat-icon> add </mat-icon>
               Add mouza

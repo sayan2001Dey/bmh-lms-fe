@@ -1,7 +1,10 @@
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import {
   Component,
+  effect,
+  EffectRef,
   inject,
+  OnDestroy,
   OnInit,
   signal,
   WritableSignal,
@@ -62,7 +65,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
   templateUrl: './deed-master.component.html',
   styleUrl: './deed-master.component.scss',
 })
-export class DeedMasterComponent implements OnInit {
+export class DeedMasterComponent implements OnInit, OnDestroy {
   private readonly mouzaMasterService: MouzaMasterService =
     inject(MouzaMasterService);
   private readonly groupMasterService: GroupMasterService =
@@ -82,7 +85,36 @@ export class DeedMasterComponent implements OnInit {
   readonly deedList: WritableSignal<Deed[]> = signal([]);
   readonly listMode: WritableSignal<boolean> = signal(true);
   readonly updateMode: WritableSignal<boolean> = signal(false);
+
   readonly viewMode: WritableSignal<boolean> = signal(false);
+  readonly viewModeEffectRef: EffectRef = effect(() => {
+    if (this.viewMode()) {
+      this.deedForm.controls['groupId'].disable();
+      this.deedForm.controls['landStatus'].disable();
+      this.deedForm.controls['conversionLandStatus'].disable();
+      this.deedForm.controls['mortgaged'].disable();
+      this.deedForm.controls['partlySold'].disable();
+      for (const mouzaDataItem of this.mouzaData()) {
+        mouzaDataItem.mouzaForm.disable();
+        mouzaDataItem.landSpecifics.forEach((landSpecifics) => {
+          landSpecifics.disable();
+        });
+      }
+    } else {
+      for (const mouzaDataItem of this.mouzaData()) {
+        this.deedForm.controls['groupId'].enable();
+        this.deedForm.controls['landStatus'].enable();
+        this.deedForm.controls['conversionLandStatus'].enable();
+        this.deedForm.controls['mortgaged'].enable();
+        this.deedForm.controls['partlySold'].enable();
+        mouzaDataItem.mouzaForm.enable();
+        mouzaDataItem.landSpecifics.forEach((landSpecifics) => {
+          landSpecifics.enable();
+        });
+      }
+    }
+  });
+
   readonly id: WritableSignal<string> = signal('');
 
   readonly selectedGroup: WritableSignal<Group> = signal({
@@ -903,14 +935,14 @@ export class DeedMasterComponent implements OnInit {
           jlno: NaN,
           landSpecifics: [],
         },
-        landSpecifics: deedMouza.landSpecifics.map((lsd)=>
+        landSpecifics: deedMouza.landSpecifics.map((lsd) =>
           this.fb.group({
             oldRsDag: [lsd.oldRsDag, Validators.required],
             newLrDag: [lsd.newLrDag, Validators.required],
             maxQty: [lsd.maxQty, Validators.required],
             landType: [lsd.landType, Validators.required],
             qty: [lsd.qty, Validators.required],
-          }),
+          })
         ),
       });
     }
@@ -1181,4 +1213,8 @@ export class DeedMasterComponent implements OnInit {
   }
   // TODO: if we click on nav item while in new or update etc. i need to go back to list mode. but its not happening
   // I think i need to make my own framework and ditch angular huh!!!!!!!!!!!!
+
+  ngOnDestroy(): void {
+    this.viewModeEffectRef.destroy();
+  }
 }
