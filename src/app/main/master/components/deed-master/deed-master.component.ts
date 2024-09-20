@@ -839,8 +839,6 @@ export class DeedMasterComponent implements OnInit {
 
     if (deed) {
       this.formPatchHelper(deed);
-      this.onGroupChange();
-      this.onMouzaChange();
     } else {
       this.deedMasterService.getDeed(deedId).subscribe({
         next: (data) => {
@@ -851,8 +849,6 @@ export class DeedMasterComponent implements OnInit {
         },
         complete: () => {
           this.sysIsBusy.set(false);
-          this.onGroupChange();
-          this.onMouzaChange();
         },
       });
     }
