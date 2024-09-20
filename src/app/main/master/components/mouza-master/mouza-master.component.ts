@@ -229,15 +229,15 @@ export class MouzaMasterComponent implements OnInit {
         alertMsg += '\n Field ' + controlName + ' is invalid.';
       }
     }
-    
+
     const lsFormGroups = this.landSpecifics();
-    
+
     if (!lsFormGroups.length)
-      alertMsg += '\n Land Specifics must have at least 1 row of data.'
+      alertMsg += '\n Land Specifics must have atleast 1 row of data.'
 
     for (let i = 0; i < lsFormGroups.length; i++) {
       for (const controlName in lsFormGroups[i].controls) {
-        if (controlName === 'qty' && lsFormGroups[i].value.qty < 1)
+        if (controlName === 'maxQty' && lsFormGroups[i].value.qty < 1)
           alertMsg += `\n Value of field ${controlName} on row ${i+1} of Land Specifics can not be less than 1.`;
         else if (lsFormGroups[i].controls[controlName].invalid) {
           alertMsg += `\n Field ${controlName} on row ${i+1} of Land Specifics is invalid.`;

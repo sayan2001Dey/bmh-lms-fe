@@ -218,13 +218,22 @@ export class DeedMasterComponent implements OnInit {
    * @return {Object} The prepared form data.
    */
   get preparedFormData(): Deed {
-    const data = this.formData;
+    const data: Deed = this.formData;
 
     data.deedDate = this.formatDateForBackend(data.deedDate);
     data.ledueDate = this.formatDateForBackend(data.ledueDate);
     data.lelastDate = this.formatDateForBackend(data.lelastDate);
     data.taxDueDate = this.formatDateForBackend(data.taxDueDate);
     data.lastUpDate = this.formatDateForBackend(data.lastUpDate);
+
+    data.mouza = this.mouzaData().map((mouzaItem) => {
+      return {
+        mouzaId: mouzaItem.mouzaForm.value.mouzaId,
+        landSpecifics: mouzaItem.landSpecifics.map((landSpecificsItem) => {
+          return landSpecificsItem.value
+        }),
+      };
+    });
 
     if (data.mortgaged) data.mortgagedData = this.mortgagedData();
     else data.mortgaged = false;
@@ -485,6 +494,48 @@ export class DeedMasterComponent implements OnInit {
     for (const controlName in this.form) {
       if (this.form[controlName].invalid) {
         alertMsg += '\n Field ' + controlName + ' is invalid.';
+      }
+    }
+    const mouzaData = this.mouzaData();
+    if (!mouzaData.length) {
+      alertMsg += '\n Mouza details must have atleast 1 row of data.';
+    }
+
+    for (let i = 0; i < mouzaData.length; i++) {
+      const mouzaDataItem = mouzaData[i];
+      const landSpecificsArr = mouzaDataItem.landSpecifics;
+
+      if (mouzaDataItem.mouzaForm.controls['mouzaId'].invalid)
+        alertMsg += `\n Mouza ID field of mouza details  ${i + 1} is invalid.`;
+
+      if (!landSpecificsArr.length)
+        alertMsg += `\n Land Specifics must have atleast 1 row of data in mouza details ${
+          i + 1
+        }.`;
+
+      for (let j = 0; j < landSpecificsArr.length; j++) {
+        const landSpecifics = landSpecificsArr[j];
+        for (const controlName in landSpecifics.controls) {
+          if (controlName === 'qty') {
+            if (landSpecifics.value.qty < 1)
+              alertMsg += `\n Value of field ${controlName} on row ${
+                j + 1
+              } of Land Specifics in mouza details ${
+                i + 1
+              } can not be less than 1.`;
+            else if (landSpecifics) {
+              alertMsg += `\n Value of field ${controlName} on row ${
+                j + 1
+              } of Land Specifics in mouza details ${
+                i + 1
+              } can not be more than maxQty.`;
+            }
+          } else if (landSpecifics.controls[controlName].invalid) {
+            alertMsg += `\n Field ${controlName} on row ${
+              j + 1
+            } of Land Specifics in mouza details ${i + 1} is invalid.`;
+          }
+        }
       }
     }
     if (alertMsg.length) {

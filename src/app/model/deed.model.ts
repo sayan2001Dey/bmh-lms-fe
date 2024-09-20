@@ -1,10 +1,11 @@
 import { MortgageData } from "./mortgage-data.model";
+import { MouzaLandSpecifics } from "./mouza-land-specifics.model";
 import { PartlySoldData } from "./partly-sold-data.model";
 
 export interface Deed {
   deedId?: string;
   groupId: string;
-  mouzaId: string;
+  mouza: DeedMouza[];
   deedNo: string;
   deedDate: string;
 
@@ -13,7 +14,6 @@ export interface Deed {
   mutedQty: number;
   unMutedQty: number;
   landStatus: string;
-  landType: string;
   conversionLandStatus: string;
 
   deedLoc: string;
@@ -41,4 +41,13 @@ export interface Deed {
   vestedFile?: string[];
   areaMapFile?: string[];
   parchaFile?: string[];
+}
+
+export interface DeedMouza {
+  mouzaId: string;
+  landSpecifics: DeedLandSpecifics[];
+}
+
+export interface DeedLandSpecifics extends MouzaLandSpecifics {
+  qty: number;
 }
