@@ -117,7 +117,6 @@ export class DeedMasterComponent implements OnInit {
     mutedQty: [NaN, Validators.required],
     unMutedQty: [NaN, Validators.required],
     landStatus: ['', Validators.required],
-    landType: ['', Validators.required],
     conversionLandStatus: ['', Validators.required],
     deedLoc: ['', Validators.required],
     photoLoc: ['', Validators.required],
