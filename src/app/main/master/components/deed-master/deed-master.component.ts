@@ -523,7 +523,7 @@ export class DeedMasterComponent implements OnInit {
               } of Land Specifics in mouza details ${
                 i + 1
               } can not be less than 1.`;
-            else if (landSpecifics) {
+            else if (landSpecifics.value.qty > landSpecifics.value.maxQty) {
               alertMsg += `\n Value of field ${controlName} on row ${
                 j + 1
               } of Land Specifics in mouza details ${
