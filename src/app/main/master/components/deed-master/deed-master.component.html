@@ -590,9 +590,8 @@
                 <p class="text-center my-2">Vested Attachments Upload</p>
 
                 @if((fileInfoArray.vestedFile &&
-                fileInfoArray.vestedFile.length) ||
-                (oldFileInfoArray.vestedFile &&
-                oldFileInfoArray.vestedFile.length)) { @if
+                fileInfoArray.vestedFile.length) || (oldFileInfoArray.vestedFile
+                && oldFileInfoArray.vestedFile.length)) { @if
                 (oldFileInfoArray.vestedFile &&
                 oldFileInfoArray.vestedFile.length) {
                 <mat-card appearance="outlined" class="text-secondary">
@@ -1340,14 +1339,35 @@
 
         <section class="mb-3">
           <h5 class="font-regular">Area Map</h5>
-          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-            <div class="mb-2">
-              <div class="img-view w-100">
-                <mat-icon class="icon-img">wallpaper</mat-icon>
+          <div style="overflow: clip">
+            <div class="d-flex" style="overflow-x: scroll; width: auto">
+              <div class="wtf ml-0">
+                <div class="mb-2 d-flex">
+                  <h1 class="text-green">1.</h1>
+                  <div class="img-view w-100">
+                    <mat-icon class="icon-img">wallpaper</mat-icon>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <!-- <div>
+              <div class="wtf">
+                <div class="mb-2 d-flex">
+                  <h1 class="text-green">2.</h1>
+                  <div class="img-view w-100">
+                    <mat-icon class="icon-img">wallpaper</mat-icon>
+                  </div>
+                </div>
+              </div>
+              <div class="wtf ml-0">
+                <div class="mb-2 d-flex">
+                  <h1 class="text-green">3.</h1>
+                  <div class="img-view w-100">
+                    <mat-icon class="icon-img">wallpaper</mat-icon>
+                  </div>
+                </div>
+              </div>
+
+              <!-- <div>
               <mat-card class="px-2 py-1" appearance="outlined">
                 <p class="text-center my-2">
                   History Chain Attachment Documents
@@ -1473,6 +1493,15 @@
                 />
               </mat-card>
             </div> -->
+            </div>
+            <button
+                  type="button"
+                  mat-stroked-button
+                  class="mt-2 mb-1"
+                  [disabled]="viewMode()"
+                >
+                  <mat-icon>upload</mat-icon> Upload Area Maps
+                </button>
           </div>
         </section>
 
