@@ -15,7 +15,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Deed } from '../../../../model/deed.model';
+import { Deed, DeedMouza } from '../../../../model/deed.model';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatCardModule } from '@angular/material/card';
@@ -38,7 +38,6 @@ import { Group } from '../../../../model/group.model';
 import { Mouza } from '../../../../model/mouza.model';
 import { statesCollection } from '../../../../data/states.collection';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { max } from 'rxjs';
 
 @Component({
   selector: 'app-deed-master',
@@ -230,7 +229,7 @@ export class DeedMasterComponent implements OnInit {
       return {
         mouzaId: mouzaItem.mouzaForm.value.mouzaId,
         landSpecifics: mouzaItem.landSpecifics.map((landSpecificsItem) => {
-          return landSpecificsItem.value
+          return landSpecificsItem.value;
         }),
       };
     });
@@ -864,6 +863,8 @@ export class DeedMasterComponent implements OnInit {
   formResetHelper(): void {
     this.deedForm.reset();
     this.showGroupDetails.set(false);
+    this.mouzaData.set([]);
+    this.onAddMouza();
     this.oldFileInfoArray.scanCopyFile = [];
     this.oldFileInfoArray.mutationFile = [];
     this.oldFileInfoArray.conversionFile = [];
@@ -882,6 +883,41 @@ export class DeedMasterComponent implements OnInit {
       ledueDate: this.getDateFromString(deed.ledueDate!),
       lelastDate: this.getDateFromString(deed.lelastDate!),
     });
+
+    const deedMouzaArr: DeedMouza[] = deed.mouza || [];
+    const mouzaDataArr: {
+      mouzaForm: FormGroup;
+      selectedMouza: Mouza;
+      landSpecifics: FormGroup[];
+    }[] = [];
+
+    for (let i = 0; i < deedMouzaArr.length; i++) {
+      const deedMouza = deedMouzaArr[i];
+      mouzaDataArr.push({
+        mouzaForm: this.fb.group({
+          mouzaId: [deedMouza.mouzaId, Validators.required],
+        }),
+        selectedMouza: {
+          mouzaId: '',
+          groupId: '',
+          mouza: '',
+          block: '',
+          jlno: NaN,
+          landSpecifics: [],
+        },
+        landSpecifics: deedMouza.landSpecifics.map((lsd)=>
+          this.fb.group({
+            oldRsDag: [lsd.oldRsDag, Validators.required],
+            newLrDag: [lsd.newLrDag, Validators.required],
+            maxQty: [lsd.maxQty, Validators.required],
+            landType: [lsd.landType, Validators.required],
+            qty: [lsd.qty, Validators.required],
+          }),
+        ),
+      });
+    }
+
+    this.mouzaData.set(mouzaDataArr);
 
     if (deed.scanCopyFile) {
       deed.scanCopyFile.forEach((fileName: string) => {
@@ -1143,5 +1179,5 @@ export class DeedMasterComponent implements OnInit {
     this.deedForm.controls['deedId'].disable();
   }
   // TODO: if we click on nav item while in new or update etc. i need to go back to list mode. but its not happening
-  // I think i need to make my own framework and ditch angular  huh!!!!!!!!!!!!
+  // I think i need to make my own framework and ditch angular huh!!!!!!!!!!!!
 }
