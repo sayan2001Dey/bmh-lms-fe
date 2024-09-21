@@ -34,7 +34,16 @@ mat-icon {
   transform: scale(3);
 }
 
-.wtf {
+.area-map-wrapper-container {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  width: calc(100%);
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+}
+
+.area-map {
   margin-left: 2rem;
   width: 25rem;
 }
