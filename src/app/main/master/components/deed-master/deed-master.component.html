@@ -962,16 +962,16 @@
         </section>
 
         <section class="mb-3">
-          <div class="d-flex justify-content-between align-items-center flex-wrap">
-            <h5 class="font-regular mb-3">Area Map</h5>
-            <!-- TODO:Fooo -->
-            <button mat-stroked-button class="ml-2" [matTooltip]="true ? 'Grid View' : 'List View'" (click)="viewMode()">
-              <mat-icon>grid_view</mat-icon>
+          <div class="d-flex justify-content-between flex-wrap mb-3">
+            <h5 class="font-regular">Area Map</h5>
+            <button mat-icon-button class="ml-2"
+              [matTooltip]="areaMapGridView() ? 'Switch to list view' : 'Switch to grid view'"
+              (click)="areaMapGridView.set(!areaMapGridView())">
+              <mat-icon class="text-green">{{ areaMapGridView() ? "grid_view" : "list_view" }}</mat-icon>
             </button>
           </div>
           <div class="area-map-wrapper-container">
-            <div [class]="'area-map-wrapper mb-2' + ''">
-              <!-- TODO: flex-wrap use when someone toggles the grid or scroll view -->
+            <div [class]="'area-map-wrapper mb-2' + (areaMapGridView() ? ' flex-wrap' : '')">
               <div class="area-map">
                 <div class="mb-2 d-flex">
                   <h2 class="text-green">1.</h2>
@@ -1125,20 +1125,16 @@
                 >
                   <mat-icon>upload</mat-icon> Upload Files
                 </button>
-                <input
-                  type="file"
-                  accept=".pdf, image/jpeg, image/png"
-                  class="d-none"
-                  (change)="onClickUploadFiles($event, 'hcdocumentFile')"
-                  multiple
-                  #historyChainAttachments
-                />
+                
               </mat-card>
             </div> -->
 
-          <button type="button" mat-stroked-button class="mt-2 mb-1" [disabled]="viewMode()">
+          <button type="button" mat-stroked-button class="mt-2 mb-1" (click)="areaMapAttachments.click()"
+            [disabled]="viewMode()">
             <mat-icon>upload</mat-icon> Upload Area Maps
           </button>
+          <input type="file" accept=".pdf, image/jpeg, image/png" class="d-none"
+            (change)="onClickUploadFiles($event, 'areaMapFile')" multiple #areaMapAttachments />
         </section>
 
         <section class="mb-3">

@@ -87,6 +87,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
   readonly deedList: WritableSignal<Deed[]> = signal([]);
   readonly listMode: WritableSignal<boolean> = signal(true);
   readonly updateMode: WritableSignal<boolean> = signal(false);
+  readonly areaMapGridView: WritableSignal<boolean> = signal(false);
 
   readonly viewMode: WritableSignal<boolean> = signal(false);
   readonly viewModeEffectRef: EffectRef = effect(() => {
@@ -834,6 +835,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
 
   onNewDeed(): void {
     this.router.navigate(['master', 'deed', 'new']);
+    this.areaMapGridView.set(false);
     this.formResetHelper();
     this.listMode.set(false);
     this.updateMode.set(false);
@@ -866,6 +868,8 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
 
   deedFormPatchValueOptimized(deedId: string): void {
     this.formResetHelper();
+    this.areaMapGridView.set(false);
+
     this.id.set(deedId);
     this.sysIsBusy.set(true);
 
