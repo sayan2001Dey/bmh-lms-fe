@@ -41,6 +41,7 @@ import { Group } from '../../../../model/group.model';
 import { Mouza } from '../../../../model/mouza.model';
 import { statesCollection } from '../../../../data/states.collection';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-deed-master',
@@ -61,6 +62,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatListModule,
     ReactiveFormsModule,
     MatExpansionModule,
+    MatTooltipModule,
   ],
   templateUrl: './deed-master.component.html',
   styleUrl: './deed-master.component.scss',

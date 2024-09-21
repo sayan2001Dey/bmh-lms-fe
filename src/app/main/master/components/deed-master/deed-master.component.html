@@ -962,9 +962,16 @@
         </section>
 
         <section class="mb-3">
-          <h5 class="font-regular">Area Map</h5>
+          <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <h5 class="font-regular mb-3">Area Map</h5>
+            <!-- TODO:Fooo -->
+            <button mat-stroked-button class="ml-2" [matTooltip]="true ? 'Grid View' : 'List View'" (click)="viewMode()">
+              <mat-icon>grid_view</mat-icon>
+            </button>
+          </div>
           <div class="area-map-wrapper-container">
-            <div class="d-flex">
+            <div [class]="'area-map-wrapper mb-2' + ''">
+              <!-- TODO: flex-wrap use when someone toggles the grid or scroll view -->
               <div class="area-map">
                 <div class="mb-2 d-flex">
                   <h2 class="text-green">1.</h2>

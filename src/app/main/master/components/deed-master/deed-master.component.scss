@@ -43,6 +43,11 @@ mat-icon {
   scroll-snap-type: x mandatory;
 }
 
+.area-map-wrapper {
+  display: flex;
+  align-items: center;
+}
+
 .area-map {
   margin-left: 2rem;
   width: 25rem;
