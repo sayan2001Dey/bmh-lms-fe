@@ -88,6 +88,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
   readonly listMode: WritableSignal<boolean> = signal(true);
   readonly updateMode: WritableSignal<boolean> = signal(false);
   readonly areaMapGridView: WritableSignal<boolean> = signal(false);
+  readonly areaMapExistingFileUrls: WritableSignal<string[]> = signal([]);
 
   readonly viewMode: WritableSignal<boolean> = signal(false);
   readonly viewModeEffectRef: EffectRef = effect(() => {
@@ -1131,6 +1132,11 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
       .add(() => {
         this.sysIsBusy.set(false);
       });
+  }
+
+
+  getAreaMapFileUrl(fileName: string): string {
+    return "";
   }
 
   /**

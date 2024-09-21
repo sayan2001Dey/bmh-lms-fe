@@ -972,41 +972,17 @@
           </div>
           <div class="area-map-wrapper-container">
             <div [class]="'area-map-wrapper mb-2' + (areaMapGridView() ? ' flex-wrap' : '')">
+              @for(fileInfo of oldFileInfoArray.areaMapFile; track
+                    $index+'hcd-'+fileInfo.fileName) {
               <div class="area-map">
                 <div class="mb-2 d-flex">
                   <h2 class="text-green">1.</h2>
-                  <div class="img-view w-100">
+                  <iframe [src]="getAreaMapFileUrl(fileInfo.fileName)" class="img-view w-100">
                     <mat-icon class="icon-img">wallpaper</mat-icon>
-                  </div>
+                  </iframe>
                 </div>
               </div>
-
-              <div class="area-map">
-                <div class="mb-2 d-flex">
-                  <h2 class="text-green">2.</h2>
-                  <div class="img-view w-100">
-                    <mat-icon class="icon-img">wallpaper</mat-icon>
-                  </div>
-                </div>
-              </div>
-
-              <div class="area-map ml-0">
-                <div class="mb-2 d-flex">
-                  <h2 class="text-green">3.</h2>
-                  <div class="img-view w-100">
-                    <mat-icon class="icon-img">wallpaper</mat-icon>
-                  </div>
-                </div>
-              </div>
-
-              <div class="area-map ml-0">
-                <div class="mb-2 d-flex">
-                  <h2 class="text-green">4.</h2>
-                  <div class="img-view w-100">
-                    <mat-icon class="icon-img">wallpaper</mat-icon>
-                  </div>
-                </div>
-              </div>
+            }
             </div>
           </div>
           <!-- <div>
