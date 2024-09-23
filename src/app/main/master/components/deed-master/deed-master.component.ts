@@ -1276,7 +1276,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
     const onloadHandler = (e: any) => {
       this.fileObj[key + 'RAW'].push(e.target?.result as string);
     };
-
+    // TODO: add area map logic also add remove logic in removal fn
     if (e.target.files)
       for (let index = 0; index < e.target.files.length; index++) {
         const reader = new FileReader();

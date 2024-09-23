@@ -1034,8 +1034,8 @@
                   </div>
                   }
                   @if (oldFileInfoArray.areaMapFile[$index].markedForDeletion) {
-                    Marked For Deletion
-                    <!-- TODO -->
+                  Marked For Deletion
+                  <!-- TODO -->
                   }
                 </div>
                 <button mat-icon-button class="btn-area-map-remove" [matTooltip]="oldFileInfoArray.areaMapFile[$index].markedForDeletion
@@ -1052,8 +1052,33 @@
               }
             </div>
           </div>
-          @if(true) {
+          @if(areaMapNewFileUrls().length > 0) {
           <h6 class="mt-3">New Uploads</h6>
+          <div [class]="'area-map-wrapper mb-2' + (areaMapGridView() ? ' flex-wrap' : '')">
+            @for(item of areaMapNewFileUrls(); track $index+'amn-'+areaMapNewFileUrls) {
+            <div class="area-map">
+              <div class="mb-3 d-flex content">
+                <h2 class="text-green">{{$index +1}}.</h2>
+                @if(item.type == "application/pdf"){
+                <object [data]="item.url | areaMapSafe" class="img-view w-100" type="application/pdf">
+                </object>
+                } @else if(item.type.startsWith("image")) {
+                <img [src]="item.url | areaMapSafe" class="img-view w-100 object-fit-contain" />
+                } @else {
+                <div class="img-view w-100">
+                  <mat-icon class="icon-img text-green">
+                    running_with_errors
+                  </mat-icon>
+                </div>
+                }
+              </div>
+              <button mat-icon-button class="btn-area-map-remove" matTooltip="Remove Area Map"
+                (click)="removeFiles('areaMapFile', $index)">
+                <mat-icon>do_not_disturb_on</mat-icon>
+              </button>
+            </div>
+            }
+          </div>
           }
           <!-- <div class="area-map-wrapper-container">
             <div [class]="'area-map-wrapper mb-2' + (areaMapGridView() ? ' flex-wrap' : '')">
