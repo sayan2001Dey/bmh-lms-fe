@@ -385,9 +385,9 @@
                 <mat-label>Seller Type</mat-label>
                 <mat-select formControlName="sellerType" (selectionChange)="onSellerTypeChange()" required>
                   @for (sellerType of sellerTypes(); track $index) {
-                    <mat-option [value]="sellerType.value">
-                      {{ sellerType.name }}
-                    </mat-option>
+                  <mat-option [value]="sellerType.value">
+                    {{ sellerType.name }}
+                  </mat-option>
                   }
                 </mat-select>
               </mat-form-field>
@@ -402,7 +402,8 @@
                 </mat-form-field>
                 @if(addSellerBtnVisible()){
                 <span class="mt-2 mb-auto">
-                  <button mat-icon-button type="button" (click)="onRemoveSeller($index)" [disabled]="this.sellerForms.length < 2 || viewMode()">
+                  <button mat-icon-button type="button" (click)="onRemoveSeller($index)"
+                    [disabled]="this.sellerForms.length < 2 || viewMode()">
                     <mat-icon [class]="this.sellerForms.length < 2 ? '' : 'text-red'">
                       do_not_disturb_on
                     </mat-icon>
@@ -1022,18 +1023,24 @@
               <div class="area-map">
                 <div class="mb-3 d-flex">
                   <h2 class="text-green">{{$index +1}}.</h2>
-                  <div class="img-view w-100 object-fit-contain">
-                    @if(item.type == "application/pdf"){
-                      <object [data]="item.url | areaMapSafe" type="application/pdf">
-                      </object>
-                    } @else if(item.url.startsWith("image/")) {
-                      <img [src]="item.url | areaMapSafe" class="img-fluid" />
-                    } @else {
-                      <mat-icon class="icon-img text-green">
-                        running_with_errors
-                      </mat-icon>
-                    }
+                  @if(item.type == "application/pdf"){
+                  <object [data]="item.url | areaMapSafe" class="img-view w-100" type="application/pdf">
+                  </object>
+                  } @else if(item.type.startsWith("image/")) {
+                  <img [src]="item.url | areaMapSafe" class="img-view w-100 img-fluid" />
+                  } @else {
+                  <div class="img-view w-100">
+                    <mat-icon class="icon-img text-green">
+                      running_with_errors
+                    </mat-icon>
                   </div>
+                  }
+                  <!-- (click)="onDeleteAreaMap($index)" -->
+                  <button mat-icon-button matTooltip="Remove Map">
+                    <mat-icon class='text-red'>
+                      do_not_disturb_on
+                    </mat-icon>
+                  </button>
                 </div>
               </div>
               }

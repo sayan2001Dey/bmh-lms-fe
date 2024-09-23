@@ -97,6 +97,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
   readonly areaMapExistingFileUrls: WritableSignal<
     { url: string; type: string }[]
   > = signal([]);
+  readonly errorLoadingOldFileUrls: WritableSignal<boolean[]> = signal([]);
   readonly areaMapNewFileUrls: WritableSignal<{ url: string; type: string }[]> =
     signal([]);
 
@@ -108,6 +109,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
       this.deedForm.controls['conversionLandStatus'].disable();
       this.deedForm.controls['mortgaged'].disable();
       this.deedForm.controls['partlySold'].disable();
+      this.deedForm.controls['sellerType'].disable();
       for (const mouzaDataItem of this.mouzaData()) {
         mouzaDataItem.mouzaForm.disable();
         mouzaDataItem.landSpecifics.forEach((landSpecifics) => {
@@ -121,6 +123,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
         this.deedForm.controls['conversionLandStatus'].enable();
         this.deedForm.controls['mortgaged'].enable();
         this.deedForm.controls['partlySold'].enable();
+        this.deedForm.controls['sellerType'].enable();
         mouzaDataItem.mouzaForm.enable();
         mouzaDataItem.landSpecifics.forEach((landSpecifics) => {
           landSpecifics.enable();
@@ -998,6 +1001,10 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
   }
 
   formPatchHelper(deed: Partial<Deed>): void {
+    let i = deed.sellers?.length || 1;
+    if (i > 0) while (--i) this.onAddSeller();
+    //Careful
+
     this.deedForm.patchValue(deed);
     this.deedForm.patchValue({
       deedDate: this.getDateFromString(deed.deedDate!),
@@ -1238,11 +1245,14 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
         this.retryAreaMapFileLoad.set(false);
 
         const tempUrlArr: { url: string; type: string }[] = [];
+        const errLoadingUrlArr: boolean[] = [];
         blobArr.forEach((blob: Blob) => {
           const url = window.URL.createObjectURL(blob);
           tempUrlArr.push({ url, type: blob.type });
+          errLoadingUrlArr.push(false);
         });
         this.areaMapExistingFileUrls.set(tempUrlArr);
+        this.errorLoadingOldFileUrls.set(errLoadingUrlArr);
       },
       error: (err) => {
         this.retryAreaMapFileLoad.set(true);
@@ -1257,6 +1267,13 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
         window.URL.revokeObjectURL(item.url);
       }
     );
+  }
+
+  errorLoadingOldFileUrl(idx: number): void {
+    this.errorLoadingOldFileUrls.update((data)=>{
+      data[idx] = false;
+      return data;
+    })
   }
 
   /**
