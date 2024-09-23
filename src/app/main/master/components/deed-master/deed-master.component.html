@@ -377,6 +377,50 @@
         </section>
 
         <section class="mb-3">
+          <h5 class="font-weight-normal py-2">Seller Info</h5>
+
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+            <div>
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Seller Type</mat-label>
+                <mat-select formControlName="sellerType" (selectionChange)="onSellerTypeChange()" required>
+                  @for (sellerType of sellerTypes(); track $index) {
+                    <mat-option [value]="sellerType.value">
+                      {{ sellerType.name }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <h6 class="font-regular">Seller List</h6>
+              @for (seller of sellerFormControls; track 'seller-'+$index) {
+              <div class="d-flex flex-nowrap align-items-center">
+                <span class="h5 p-2 py-3 mb-auto">
+                  {{ $index + 1 }}.</span>
+                <mat-form-field>
+                  <mat-label>Seller</mat-label>
+                  <input [formControl]="seller" [readonly]="viewMode()" matInput />
+                </mat-form-field>
+                @if(addSellerBtnVisible()){
+                <span class="mt-2 mb-auto">
+                  <button mat-icon-button type="button" (click)="onRemoveSeller($index)" [disabled]="this.sellerForms.length < 2 || viewMode()">
+                    <mat-icon [class]="this.sellerForms.length < 2 ? '' : 'text-red'">
+                      do_not_disturb_on
+                    </mat-icon>
+                  </button>
+                </span>
+                }
+              </div>
+              }
+              @if(addSellerBtnVisible()){
+              <button mat-button type="button" class="btn-sp2" (click)="onAddSeller()" [disabled]="viewMode()">
+                <mat-icon>add</mat-icon> Add Seller
+              </button>
+              }
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-3">
           <h5 class="font-regular my-3">Quantity Info</h5>
           <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
             <div>
@@ -963,7 +1007,7 @@
 
         <section class="mb-3">
           <div class="d-flex justify-content-between flex-wrap mb-3">
-            <h5 class="font-regular">Area Map</h5>
+            <h5 class="font-regular">Area Maps</h5>
             <button mat-icon-button class="ml-2"
               [matTooltip]="areaMapGridView() ? 'Switch to list view' : 'Switch to grid view'"
               (click)="areaMapGridView.set(!areaMapGridView())">
@@ -972,19 +1016,47 @@
           </div>
           <div class="area-map-wrapper-container">
             <div [class]="'area-map-wrapper mb-2' + (areaMapGridView() ? ' flex-wrap' : '')">
-              @for(fileInfo of oldFileInfoArray.areaMapFile; track
-                    $index+'hcd-'+fileInfo.fileName) {
+              @for(item of areaMapExistingFileUrls(); track "ame-"+$index){
+              <!-- @for(fileInfo of oldFileInfoArray.areaMapFile; track
+              $index+'am-'+fileInfo.fileName) { -->
+              <div class="area-map">
+                <div class="mb-3 d-flex">
+                  <h2 class="text-green">{{$index +1}}.</h2>
+                  <div class="img-view w-100 object-fit-contain">
+                    @if(item.type == "application/pdf"){
+                      <object [data]="item.url | areaMapSafe" type="application/pdf">
+                      </object>
+                    } @else if(item.url.startsWith("image/")) {
+                      <img [src]="item.url | areaMapSafe" class="img-fluid" />
+                    } @else {
+                      <mat-icon class="icon-img text-green">
+                        running_with_errors
+                      </mat-icon>
+                    }
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+          @if(true) {
+          <h6 class="mt-3">New Uploads</h6>
+          }
+          <!-- <div class="area-map-wrapper-container">
+            <div [class]="'area-map-wrapper mb-2' + (areaMapGridView() ? ' flex-wrap' : '')">
+              @for(fileName of fileInfoArray.areaMapFile; track $index+'am-'+fileName) {
+                @if()
               <div class="area-map">
                 <div class="mb-2 d-flex">
-                  <h2 class="text-green">1.</h2>
-                  <iframe [src]="getAreaMapFileUrl(fileInfo.fileName)" class="img-view w-100">
+                  <h2 class="text-green">{{$index +1}}.</h2>
+                  <iframe [src]="areaMapNewFileUrls()[$index] || ''" class="img-view w-100">
                     <mat-icon class="icon-img">wallpaper</mat-icon>
                   </iframe>
                 </div>
               </div>
-            }
+              }
             </div>
-          </div>
+          </div> -->
           <!-- <div>
               <mat-card class="px-2 py-1" appearance="outlined">
                 <p class="text-center my-2">
@@ -1101,7 +1173,7 @@
                 >
                   <mat-icon>upload</mat-icon> Upload Files
                 </button>
-                
+
               </mat-card>
             </div> -->
 

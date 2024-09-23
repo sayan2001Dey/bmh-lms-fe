@@ -1,3 +1,4 @@
+import { SellerType } from './seller-type.model';
 import { MortgageData } from "./mortgage-data.model";
 import { MouzaLandSpecifics } from "./mouza-land-specifics.model";
 import { PartlySoldData } from "./partly-sold-data.model";
@@ -8,6 +9,9 @@ export interface Deed {
   mouza: DeedMouza[];
   deedNo: string;
   deedDate: string;
+
+  SellerType: string;
+  sellers: string[];
 
   totalQty: number;
   purQty: number;

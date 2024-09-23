@@ -12,7 +12,9 @@ import {
 import { DeedMasterService } from '../../services/deed-master.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
+  FormArray,
   FormBuilder,
+  FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
@@ -42,6 +44,9 @@ import { Mouza } from '../../../../model/mouza.model';
 import { statesCollection } from '../../../../data/states.collection';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { forkJoin, Observable } from 'rxjs';
+import { AreaMapSafePipe } from './pipe/area-map-safe.pipe';
+import { SellerType } from '../../../../model/seller-type.model';
 
 @Component({
   selector: 'app-deed-master',
@@ -63,15 +68,16 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     ReactiveFormsModule,
     MatExpansionModule,
     MatTooltipModule,
+    AreaMapSafePipe,
   ],
   templateUrl: './deed-master.component.html',
   styleUrl: './deed-master.component.scss',
 })
 export class DeedMasterComponent implements OnInit, OnDestroy {
-  private readonly mouzaMasterService: MouzaMasterService =
-    inject(MouzaMasterService);
   private readonly groupMasterService: GroupMasterService =
     inject(GroupMasterService);
+  private readonly mouzaMasterService: MouzaMasterService =
+    inject(MouzaMasterService);
   private readonly deedMasterService: DeedMasterService =
     inject(DeedMasterService);
   private readonly fileUploadService: FileUploadService =
@@ -81,14 +87,18 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
   private readonly router: Router = inject(Router);
   private readonly dialog: Dialog = inject(Dialog);
 
-  readonly mouzaList: WritableSignal<Mouza[]> = signal([]);
   readonly groupList: WritableSignal<Group[]> = signal([]);
+  readonly mouzaList: WritableSignal<Mouza[]> = signal([]);
 
   readonly deedList: WritableSignal<Deed[]> = signal([]);
   readonly listMode: WritableSignal<boolean> = signal(true);
   readonly updateMode: WritableSignal<boolean> = signal(false);
   readonly areaMapGridView: WritableSignal<boolean> = signal(false);
-  readonly areaMapExistingFileUrls: WritableSignal<string[]> = signal([]);
+  readonly areaMapExistingFileUrls: WritableSignal<
+    { url: string; type: string }[]
+  > = signal([]);
+  readonly areaMapNewFileUrls: WritableSignal<{ url: string; type: string }[]> =
+    signal([]);
 
   readonly viewMode: WritableSignal<boolean> = signal(false);
   readonly viewModeEffectRef: EffectRef = effect(() => {
@@ -147,6 +157,8 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
     groupId: ['', Validators.required],
     deedNo: ['', Validators.required],
     deedDate: ['', Validators.required],
+    sellerType: ['within-group', Validators.required],
+    sellers: this.fb.array([]),
     totalQty: [NaN, Validators.required],
     purQty: [NaN, Validators.required],
     mutedQty: [NaN, Validators.required],
@@ -171,6 +183,39 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
 
   mortgagedData: WritableSignal<MortgageData[]> = signal([]);
   partlySoldData: WritableSignal<PartlySoldData[]> = signal([]);
+  sellerTypes: WritableSignal<SellerType[]> = signal([
+    {
+      name: 'Within Group',
+      value: 'within-group',
+    },
+    {
+      name: 'Other',
+      value: 'other',
+    },
+  ]);
+
+  sellerType: WritableSignal<string> = signal('within-group');
+  addSellerBtnVisible: WritableSignal<boolean> = signal(true);
+  /**
+   * DO NOT TRY TO FETCH THE VALUE OF addSellerBtnVisible IN THIS EFFECT.
+   *
+   * IT MAY CAUSE AN INFINITE RECURSION.
+   * I DID NOT TRY THOUGH. (^_^)?
+   */
+  sellerTypeEffect: EffectRef = effect(
+    () => {
+      if (this.sellerType() === 'within-group') {
+        while (this.sellerForms.length > 1)
+          this.onRemoveSeller(this.sellerForms.length - 1);
+        this.addSellerBtnVisible.set(false);
+      } else {
+        this.addSellerBtnVisible.set(true);
+      }
+    },
+    {
+      allowSignalWrites: true,
+    }
+  );
 
   readonly displayedColumns: WritableSignal<string[]> = signal([
     'slno',
@@ -204,6 +249,14 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
 
   get formData(): Deed {
     return this.deedForm.value;
+  }
+
+  get sellerForms() {
+    return this.form['sellers'] as FormArray;
+  }
+
+  get sellerFormControls() {
+    return this.sellerForms.controls as FormControl[];
   }
 
   /**
@@ -277,6 +330,29 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
     else data.partlySold = false;
 
     return data;
+  }
+
+  /**
+   * Adds a new seller form control to the sellerForms array.
+   *
+   * @return {void} No return value.
+   */
+  onAddSeller(value: string = ''): void {
+    this.sellerForms.push(this.fb.control(value, Validators.required));
+  }
+
+  /**
+   * Removes a seller from the sellerForms array if there is more than one seller.
+   *
+   * @param {number} idx - The index of the seller to be removed.
+   * @return {void} No return value.
+   */
+  onRemoveSeller(idx: number): void {
+    if (this.sellerForms.length > 1) this.sellerForms.removeAt(idx);
+  }
+
+  onSellerTypeChange(): void {
+    this.sellerType.set(this.form['sellerType'].value);
   }
 
   /**
@@ -901,6 +977,13 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
     this.deedForm.reset();
     this.showGroupDetails.set(false);
     this.mouzaData.set([]);
+    this.sellerForms.clear();
+    this.onAddSeller();
+    this.deedForm.patchValue({
+      sellerType: 'within-group',
+      mortgaged: false,
+      partlySold: false,
+    });
     this.onAddMouza();
     this.oldFileInfoArray.scanCopyFile = [];
     this.oldFileInfoArray.mutationFile = [];
@@ -909,6 +992,9 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
     this.oldFileInfoArray.vestedFile = [];
     this.oldFileInfoArray.areaMapFile = [];
     this.oldFileInfoArray.parchaFile = [];
+    this.destroyAreaMapObjs();
+    this.areaMapExistingFileUrls.set([]);
+    this.areaMapNewFileUrls.set([]);
   }
 
   formPatchHelper(deed: Partial<Deed>): void {
@@ -1015,6 +1101,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
 
     this.onGroupChange();
     this.onMouzaChange();
+    this.areaMapOldFileUrlsInit();
   }
 
   onListDeed() {
@@ -1134,9 +1221,42 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
       });
   }
 
+  readonly retryAreaMapFileLoad: WritableSignal<boolean> = signal(false);
+  areaMapOldFileUrlsInit(): void {
+    const tempObsArr: Observable<Blob>[] = [];
 
-  getAreaMapFileUrl(fileName: string): string {
-    return "";
+    this.oldFileInfoArray.areaMapFile.forEach(
+      (fileInfo: { fileName: string; markedForDeletion: boolean }) => {
+        tempObsArr.push(
+          this.fileUploadService.getFile('areaMapFile', fileInfo.fileName)
+        );
+      }
+    );
+
+    forkJoin(tempObsArr).subscribe({
+      next: (blobArr: Blob[]) => {
+        this.retryAreaMapFileLoad.set(false);
+
+        const tempUrlArr: { url: string; type: string }[] = [];
+        blobArr.forEach((blob: Blob) => {
+          const url = window.URL.createObjectURL(blob);
+          tempUrlArr.push({ url, type: blob.type });
+        });
+        this.areaMapExistingFileUrls.set(tempUrlArr);
+      },
+      error: (err) => {
+        this.retryAreaMapFileLoad.set(true);
+        console.log(err);
+      },
+    });
+  }
+
+  destroyAreaMapObjs(): void {
+    this.areaMapExistingFileUrls().forEach(
+      (item: { url: string; type: string }) => {
+        window.URL.revokeObjectURL(item.url);
+      }
+    );
   }
 
   /**
@@ -1228,5 +1348,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.viewModeEffectRef.destroy();
+    this.sellerTypeEffect.destroy();
+    this.destroyAreaMapObjs();
   }
 }
