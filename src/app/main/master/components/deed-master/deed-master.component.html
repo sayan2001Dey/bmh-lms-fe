@@ -377,6 +377,50 @@
         </section>
 
         <section class="mb-3">
+          <h5 class="font-weight-normal py-2">Seller Info</h5>
+
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+            <div>
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Seller Type</mat-label>
+                <mat-select formControlName="sellerType" (selectionChange)="onSellerTypeChange()" required>
+                  @for (sellerType of sellerTypes(); track $index) {
+                    <mat-option [value]="sellerType.value">
+                      {{ sellerType.name }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <h6 class="font-regular">Seller List</h6>
+              @for (seller of sellerFormControls; track 'seller-'+$index) {
+              <div class="d-flex flex-nowrap align-items-center">
+                <span class="h5 p-2 py-3 mb-auto">
+                  {{ $index + 1 }}.</span>
+                <mat-form-field>
+                  <mat-label>Seller</mat-label>
+                  <input [formControl]="seller" [readonly]="viewMode()" matInput />
+                </mat-form-field>
+                @if(addSellerBtnVisible()){
+                <span class="mt-2 mb-auto">
+                  <button mat-icon-button type="button" (click)="onRemoveSeller($index)" [disabled]="this.sellerForms.length < 2 || viewMode()">
+                    <mat-icon [class]="this.sellerForms.length < 2 ? '' : 'text-red'">
+                      do_not_disturb_on
+                    </mat-icon>
+                  </button>
+                </span>
+                }
+              </div>
+              }
+              @if(addSellerBtnVisible()){
+              <button mat-button type="button" class="btn-sp2" (click)="onAddSeller()" [disabled]="viewMode()">
+                <mat-icon>add</mat-icon> Add Seller
+              </button>
+              }
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-3">
           <h5 class="font-regular my-3">Quantity Info</h5>
           <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
             <div>
