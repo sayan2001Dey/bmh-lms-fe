@@ -51,4 +51,26 @@ mat-icon {
 .area-map {
   margin-left: 2rem;
   width: 25rem;
+  position: relative;
+}
+
+.btn-area-map-remove {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #ffffff99;
+  backdrop-filter: blur(2px);
+  padding: 0;
+  padding-top: 2px;
+  padding-left: 2px;
+  height: 2rem;
+  width: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.area-map-marked-for-deletion {
+  opacity: 0.5;
 }

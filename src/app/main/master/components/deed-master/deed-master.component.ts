@@ -97,7 +97,6 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
   readonly areaMapExistingFileUrls: WritableSignal<
     { url: string; type: string }[]
   > = signal([]);
-  readonly errorLoadingOldFileUrls: WritableSignal<boolean[]> = signal([]);
   readonly areaMapNewFileUrls: WritableSignal<{ url: string; type: string }[]> =
     signal([]);
 
@@ -1245,14 +1244,11 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
         this.retryAreaMapFileLoad.set(false);
 
         const tempUrlArr: { url: string; type: string }[] = [];
-        const errLoadingUrlArr: boolean[] = [];
         blobArr.forEach((blob: Blob) => {
           const url = window.URL.createObjectURL(blob);
           tempUrlArr.push({ url, type: blob.type });
-          errLoadingUrlArr.push(false);
         });
         this.areaMapExistingFileUrls.set(tempUrlArr);
-        this.errorLoadingOldFileUrls.set(errLoadingUrlArr);
       },
       error: (err) => {
         this.retryAreaMapFileLoad.set(true);
@@ -1267,13 +1263,6 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
         window.URL.revokeObjectURL(item.url);
       }
     );
-  }
-
-  errorLoadingOldFileUrl(idx: number): void {
-    this.errorLoadingOldFileUrls.update((data)=>{
-      data[idx] = false;
-      return data;
-    })
   }
 
   /**

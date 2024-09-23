@@ -1018,16 +1018,14 @@
           <div class="area-map-wrapper-container">
             <div [class]="'area-map-wrapper mb-2' + (areaMapGridView() ? ' flex-wrap' : '')">
               @for(item of areaMapExistingFileUrls(); track "ame-"+$index){
-              <!-- @for(fileInfo of oldFileInfoArray.areaMapFile; track
-              $index+'am-'+fileInfo.fileName) { -->
               <div class="area-map">
-                <div class="mb-3 d-flex">
+                <div class="mb-3 d-flex content">
                   <h2 class="text-green">{{$index +1}}.</h2>
                   @if(item.type == "application/pdf"){
                   <object [data]="item.url | areaMapSafe" class="img-view w-100" type="application/pdf">
                   </object>
-                  } @else if(item.type.startsWith("image/")) {
-                  <img [src]="item.url | areaMapSafe" class="img-view w-100 img-fluid" />
+                  } @else if(item.type.startsWith("image")) {
+                  <img [src]="item.url | areaMapSafe" class="img-view w-100 object-fit-contain" />
                   } @else {
                   <div class="img-view w-100">
                     <mat-icon class="icon-img text-green">
@@ -1035,13 +1033,21 @@
                     </mat-icon>
                   </div>
                   }
-                  <!-- (click)="onDeleteAreaMap($index)" -->
-                  <button mat-icon-button matTooltip="Remove Map">
-                    <mat-icon class='text-red'>
-                      do_not_disturb_on
-                    </mat-icon>
-                  </button>
+                  @if (oldFileInfoArray.areaMapFile[$index].markedForDeletion) {
+                    Marked For Deletion
+                    <!-- TODO -->
+                  }
                 </div>
+                <button mat-icon-button class="btn-area-map-remove" [matTooltip]="oldFileInfoArray.areaMapFile[$index].markedForDeletion
+                  ? 'Restore Area Map' : 'Remove Area Map'" (click)="removeFromPreviousUploads('areaMapFile', $index)">
+                  <mat-icon>
+                    {{
+                    oldFileInfoArray.areaMapFile[$index].markedForDeletion
+                    ? "undo"
+                    : "do_not_disturb_on"
+                    }}
+                  </mat-icon>
+                </button>
               </div>
               }
             </div>
