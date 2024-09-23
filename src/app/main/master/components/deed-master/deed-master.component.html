@@ -963,7 +963,7 @@
 
         <section class="mb-3">
           <div class="d-flex justify-content-between flex-wrap mb-3">
-            <h5 class="font-regular">Area Map</h5>
+            <h5 class="font-regular">Area Maps</h5>
             <button mat-icon-button class="ml-2"
               [matTooltip]="areaMapGridView() ? 'Switch to list view' : 'Switch to grid view'"
               (click)="areaMapGridView.set(!areaMapGridView())">
@@ -972,19 +972,47 @@
           </div>
           <div class="area-map-wrapper-container">
             <div [class]="'area-map-wrapper mb-2' + (areaMapGridView() ? ' flex-wrap' : '')">
-              @for(fileInfo of oldFileInfoArray.areaMapFile; track
-                    $index+'hcd-'+fileInfo.fileName) {
+              @for(item of areaMapExistingFileUrls(); track "ame-"+$index){
+              <!-- @for(fileInfo of oldFileInfoArray.areaMapFile; track
+              $index+'am-'+fileInfo.fileName) { -->
+              <div class="area-map">
+                <div class="mb-3 d-flex">
+                  <h2 class="text-green">{{$index +1}}.</h2>
+                  <div class="img-view w-100 object-fit-contain">
+                    @if(item.type == "application/pdf"){
+                      <object [data]="item.url | areaMapSafe" type="application/pdf">
+                      </object>
+                    } @else if(item.url.startsWith("image/")) {
+                      <img [src]="item.url | areaMapSafe" class="img-fluid" />
+                    } @else {
+                      <mat-icon class="icon-img text-green">
+                        running_with_errors
+                      </mat-icon>
+                    }
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+          @if(true) {
+          <h6 class="mt-3">New Uploads</h6>
+          }
+          <!-- <div class="area-map-wrapper-container">
+            <div [class]="'area-map-wrapper mb-2' + (areaMapGridView() ? ' flex-wrap' : '')">
+              @for(fileName of fileInfoArray.areaMapFile; track $index+'am-'+fileName) {
+                @if()
               <div class="area-map">
                 <div class="mb-2 d-flex">
-                  <h2 class="text-green">1.</h2>
-                  <iframe [src]="getAreaMapFileUrl(fileInfo.fileName)" class="img-view w-100">
+                  <h2 class="text-green">{{$index +1}}.</h2>
+                  <iframe [src]="areaMapNewFileUrls()[$index] || ''" class="img-view w-100">
                     <mat-icon class="icon-img">wallpaper</mat-icon>
                   </iframe>
                 </div>
               </div>
-            }
+              }
             </div>
-          </div>
+          </div> -->
           <!-- <div>
               <mat-card class="px-2 py-1" appearance="outlined">
                 <p class="text-center my-2">
@@ -1101,7 +1129,7 @@
                 >
                   <mat-icon>upload</mat-icon> Upload Files
                 </button>
-                
+
               </mat-card>
             </div> -->
 

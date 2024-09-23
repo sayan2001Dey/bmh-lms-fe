@@ -6,6 +6,7 @@ import {
   inject,
   OnDestroy,
   OnInit,
+  SecurityContext,
   signal,
   WritableSignal,
 } from '@angular/core';
@@ -42,6 +43,9 @@ import { Mouza } from '../../../../model/mouza.model';
 import { statesCollection } from '../../../../data/states.collection';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { forkJoin, Observable } from 'rxjs';
+import { DomSanitizer } from '@angular/platform-browser';
+import { AreaMapSafePipe } from './pipe/area-map-safe.pipe';
 
 @Component({
   selector: 'app-deed-master',
@@ -63,6 +67,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     ReactiveFormsModule,
     MatExpansionModule,
     MatTooltipModule,
+    AreaMapSafePipe,
   ],
   templateUrl: './deed-master.component.html',
   styleUrl: './deed-master.component.scss',
@@ -88,7 +93,8 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
   readonly listMode: WritableSignal<boolean> = signal(true);
   readonly updateMode: WritableSignal<boolean> = signal(false);
   readonly areaMapGridView: WritableSignal<boolean> = signal(false);
-  readonly areaMapExistingFileUrls: WritableSignal<string[]> = signal([]);
+  readonly areaMapExistingFileUrls: WritableSignal<{ url: string, type: string }[]> = signal([]);
+  readonly areaMapNewFileUrls: WritableSignal<{ url: string, type: string }[]> = signal([]);
 
   readonly viewMode: WritableSignal<boolean> = signal(false);
   readonly viewModeEffectRef: EffectRef = effect(() => {
@@ -909,6 +915,9 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
     this.oldFileInfoArray.vestedFile = [];
     this.oldFileInfoArray.areaMapFile = [];
     this.oldFileInfoArray.parchaFile = [];
+    this.destroyAreaMapObjs();
+    this.areaMapExistingFileUrls.set([]);
+    this.areaMapNewFileUrls.set([]);
   }
 
   formPatchHelper(deed: Partial<Deed>): void {
@@ -1015,6 +1024,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
 
     this.onGroupChange();
     this.onMouzaChange();
+    this.areaMapOldFileUrlsInit();
   }
 
   onListDeed() {
@@ -1134,9 +1144,40 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
       });
   }
 
+  readonly retryAreaMapFileLoad: WritableSignal<boolean> = signal(false)
+  areaMapOldFileUrlsInit(): void {
+    const tempObsArr: Observable<Blob>[] = [];
 
-  getAreaMapFileUrl(fileName: string): string {
-    return "";
+    this.oldFileInfoArray.areaMapFile.forEach(
+      (fileInfo: { fileName: string; markedForDeletion: boolean }) => {
+        tempObsArr.push(
+          this.fileUploadService.getFile('areaMapFile', fileInfo.fileName)
+        );
+      }
+    );
+
+    forkJoin(tempObsArr).subscribe({
+      next: (blobArr: Blob[]) => {
+        this.retryAreaMapFileLoad.set(false);
+
+        const tempUrlArr: { url: string, type: string }[] = [];
+        blobArr.forEach((blob: Blob) => {
+          const url = window.URL.createObjectURL(blob);
+          tempUrlArr.push({url, type: blob.type});
+        });
+        this.areaMapExistingFileUrls.set(tempUrlArr);
+      },
+      error: (err) => {
+        this.retryAreaMapFileLoad.set(true);
+        console.log(err);
+      },
+    });
+  }
+
+  destroyAreaMapObjs(): void {
+    this.areaMapExistingFileUrls().forEach((item: { url: string, type: string }) => {
+      window.URL.revokeObjectURL(item.url);
+    });
   }
 
   /**
@@ -1228,5 +1269,6 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.viewModeEffectRef.destroy();
+    this.destroyAreaMapObjs();
   }
 }
