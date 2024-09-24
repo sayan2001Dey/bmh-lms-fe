@@ -34,22 +34,48 @@
 
       <section class="container mb-3">
         <h6 class="font-regular my-3">Deed Details</h6>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-          <mat-form-field appearance="outline">
-            <mat-label>Deed No.</mat-label>
-            <mat-select>
-              <!-- TODO: implement formControlName="deedId" -->
-              @for (deed of deedList(); track 'deed-'+$index) {
-                <mat-option [value]="deed.deedId">{{deed.deedNo}}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
+        <div class="row">
+          <div>
+            @for (item of []; track 'deeds-'+$index) {
+            <div class="d-flex flex-nowrap align-items-center">
+              <span class="h5 p-2 py-3 mb-auto">
+                {{ $index + 1 }}.
+              </span>
+
+              <form [formGroup]="item">
+                <mat-form-field appearance="outline">
+                  <mat-label>Deed No.</mat-label>
+                  <mat-select>
+                    <!-- TODO: implement formControlName="deedId" -->
+                    @for (deed of deedList(); track 'deed-'+$index) {
+                      <mat-option [value]="deed.deedId">{{deed.deedNo}}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
 
 
-          <mat-form-field appearance="outline">
-            <mat-label>Date of Deed</mat-label>
-            <input matInput formControlName="deedDate" readonly />
-          </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Date of Deed</mat-label>
+                  <input matInput formControlName="deedDate" readonly />
+                </mat-form-field>
+              </form>
+
+              <span class="mt-2 mb-auto">
+                <button mat-icon-button type="button">
+                  <mat-icon class="text-red">
+                    do_not_disturb_on
+                  </mat-icon>
+                  <!-- <mat-icon [class]="landSpecifics().length < 2 ? '' : 'text-red'">
+                    do_not_disturb_on
+                  </mat-icon> -->
+                </button>
+              </span>
+            </div>
+            }
+            <button mat-button type="button" class="btn-sp2" [disabled]="viewMode()">
+              <mat-icon>add</mat-icon> Add Deeds
+            </button>
+          </div>
         </div>
       </section>
 
