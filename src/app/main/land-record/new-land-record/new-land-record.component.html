@@ -133,7 +133,7 @@
       </section>
 
       <section class="container mb-3">
-        <h5 class="font-weight-normal py-2">Seller Info</h5>
+        <!-- <h5 class="font-weight-normal py-2">Seller Info</h5>
 
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <div>
@@ -173,14 +173,25 @@
             </button>
             }
           </div>
-        </div>
+        </div> -->
 
         <h6 class="font-regular my-3">Deed Details</h6>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-          <mat-form-field appearance="outline">
+          <!-- <mat-form-field appearance="outline">
             <mat-label>Deed No.</mat-label>
             <input matInput formControlName="deedNo" [readonly]="viewMode()" />
+          </mat-form-field> -->
+
+          <mat-form-field appearance="outline">
+            <mat-label>Main Deed</mat-label>
+            <input matInput formControlName="mainDeedId" [readonly]="viewMode()" />
+            <mat-select>
+              @for (deed of deedList(); track 'deed-'+$index) {
+                <mat-option [value]="deed.deedId">{{deed.deedNo}}</mat-option>
+              }
+            </mat-select>
           </mat-form-field>
+
 
           <mat-form-field appearance="outline">
             <mat-label>Date of Deed</mat-label>
