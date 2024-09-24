@@ -1,11 +1,7 @@
 import {
   Component,
-  CreateEffectOptions,
-  EffectRef,
-  OnDestroy,
   OnInit,
   WritableSignal,
-  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -21,12 +17,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import {
-  FormArray,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
-  FormControl,
 } from '@angular/forms';
 
 import { State } from '../../../model/state.model';
@@ -43,7 +37,6 @@ import { Mouza } from '../../../model/mouza.model';
 import { MouzaMasterService } from '../../master/services/mouza-master.service';
 import { Company } from '../../../model/company.model';
 import { CompanyMasterService } from '../../master/services/company-master.service';
-import { SellerType } from '../../../model/seller-type.model';
 import { DialogMortgageFormComponent } from '../../master/components/deed-master/modal/mortgage-form/mortgage-form.dialog';
 import { DialogPartlySoldFormComponent } from '../../master/components/deed-master/modal/partly-sold-form/partly-sold-form.dialog';
 
@@ -71,7 +64,7 @@ import { DialogPartlySoldFormComponent } from '../../master/components/deed-mast
   templateUrl: './new-land-record.component.html',
   styleUrl: './new-land-record.component.scss',
 })
-export class NewLandRecordComponent implements OnInit, OnDestroy {
+export class NewLandRecordComponent implements OnInit {
   private readonly fb: FormBuilder = inject(FormBuilder);
   private readonly route: ActivatedRoute = inject(ActivatedRoute);
 
@@ -121,39 +114,6 @@ export class NewLandRecordComponent implements OnInit, OnDestroy {
     mortgaged: [false, Validators.required],
     partlySold: [false, Validators.required],
   });
-  sellerTypes: WritableSignal<SellerType[]> = signal([
-    {
-      name: 'Within Group',
-      value: 'within-group',
-    },
-    {
-      name: 'Other',
-      value: 'other',
-    },
-  ]);
-
-  sellerType: WritableSignal<string> = signal('within-group');
-  addSellerBtnVisible: WritableSignal<boolean> = signal(true);
-  /**
-   * DO NOT TRY TO FETCH THE VALUE OF addSellerBtnVisible IN THIS EFFECT.
-   *
-   * IT MAY CAUSE AN INFINITE RECURSION.
-   * I DID NOT TRY THOUGH. (^_^)?
-   */
-  sellerTypeEffect: EffectRef = effect(
-    () => {
-      if (this.sellerType() === 'within-group') {
-        while (this.sellerForms.length > 1)
-          this.onRemoveSeller(this.sellerForms.length - 1);
-        this.addSellerBtnVisible.set(false);
-      } else {
-        this.addSellerBtnVisible.set(true);
-      }
-    },
-    {
-      allowSignalWrites: true,
-    }
-  );
 
   mortgagedData: WritableSignal<MortgageData[]> = signal([]);
   partlySoldData: WritableSignal<PartlySoldData[]> = signal([]);
@@ -176,14 +136,6 @@ export class NewLandRecordComponent implements OnInit, OnDestroy {
 
   get form() {
     return this.newLandRecordForm.controls;
-  }
-
-  get sellerForms() {
-    return this.form['sellers'] as FormArray;
-  }
-
-  get sellerFormControls() {
-    return this.sellerForms.controls as FormControl[];
   }
 
   /**
@@ -354,29 +306,6 @@ export class NewLandRecordComponent implements OnInit, OnDestroy {
       statesCollection.find((state) => state.code === stateCode)?.name ||
       stateCode
     );
-  }
-
-  /**
-   * Adds a new seller form control to the sellerForms array.
-   *
-   * @return {void} No return value.
-   */
-  onAddSeller(value: string = ''): void {
-    this.sellerForms.push(this.fb.control(value, Validators.required));
-  }
-
-  /**
-   * Removes a seller from the sellerForms array if there is more than one seller.
-   *
-   * @param {number} idx - The index of the seller to be removed.
-   * @return {void} No return value.
-   */
-  onRemoveSeller(idx: number): void {
-    if (this.sellerForms.length > 1) this.sellerForms.removeAt(idx);
-  }
-
-  onSellerTypeChange(): void {
-    this.sellerType.set(this.form['sellerType'].value);
   }
 
   /**
@@ -760,7 +689,6 @@ export class NewLandRecordComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.onAddSeller();
     this.setGroupList();
     this.setMouzaList();
     this.setCompanyList();
@@ -801,11 +729,6 @@ export class NewLandRecordComponent implements OnInit, OnDestroy {
               dueDate: this.getDateFromString(data['dueDate']),
               ledueDate: this.getDateFromString(data['ledueDate']),
               lelastDate: this.getDateFromString(data['lelastDate']),
-            });
-            //seller ?
-            this.sellerFormControls.pop();
-            data.sellers.forEach((seller: string) => {
-              this.onAddSeller(seller);
             });
             if (data.scanCopyFile) {
               data.scanCopyFile.forEach((fileName: string) => {
@@ -871,9 +794,5 @@ export class NewLandRecordComponent implements OnInit, OnDestroy {
         this.newLandRecordForm.controls['landType'].disable();
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.sellerTypeEffect.destroy();
   }
 }
