@@ -62,7 +62,7 @@
                 {{ $index + 1 }}.
               </span>
 
-              <form>
+              <form class="d-flex align-items-center">
                 <!-- [formGroup]="item" -->
                 <mat-form-field class="mx-2">
                   <mat-label>Deed No.</mat-label>
@@ -74,20 +74,18 @@
                   </mat-select>
                 </mat-form-field>
 
-                <mat-form-field class="mx-2">
-                  <mat-label>Deed Type</mat-label>
-                  <mat-select>
-                    <!-- TODO: implement formControlName="deedId" -->
-                    @for (deed of deedList(); track 'deed-'+$index) {
-                    <mat-option [value]="deed.deedId">{{deed.deedNo}}</mat-option>
-                    }
-                  </mat-select>
+                <mat-form-field class="mx-1 deed-order-input">
+                  <mat-label>Order</mat-label>
+                  <input type="number" min="1" matInput>
                 </mat-form-field>
 
-                <mat-form-field class="mx-2">
-                  <mat-label>Order</mat-label>
-                  <input type="number" matInput>
-                </mat-form-field>
+                <div class="mx-2 mb-4">
+                  <mat-button-toggle-group  aria-label="Deed Type" matToolTip="Deed Type">
+                    <mat-button-toggle value="main-deed">Main Deed</mat-button-toggle>
+                    <mat-button-toggle value="chain-deed">Chain Deed</mat-button-toggle>
+                  </mat-button-toggle-group>
+                </div>
+
               </form>
 
               <span class="mt-2 mb-auto">
@@ -189,8 +187,6 @@
 
       <section class="container mb-3">
         <h5 class="font-regular py-2">Additional Details</h5>
-
-        <h6 class="font-regular">Area Map</h6>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <div>
             <mat-card class="px-2 py-1" appearance="outlined">
