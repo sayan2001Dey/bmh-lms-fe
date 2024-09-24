@@ -90,8 +90,6 @@ export class NewLandRecordComponent implements OnInit {
     purQty: ['', Validators.required],
     mutedQty: ['', Validators.required],
     unMutedQty: ['', Validators.required],
-    landStatus: ['Vested', Validators.required],
-    conversionLandStus: ['Converted', Validators.required],
     deedLoc: ['', Validators.required],
     photoLoc: ['', Validators.required],
     govtRec: ['', Validators.required],
@@ -693,11 +691,8 @@ export class NewLandRecordComponent implements OnInit {
         this.disableFileRemoval.set(true);
         this.newLandRecordForm.controls['companyId'].disable();
         this.newLandRecordForm.controls['deedName'].disable();
-        this.newLandRecordForm.controls['landStatus'].disable();
-        this.newLandRecordForm.controls['conversionLandStus'].disable();
         this.newLandRecordForm.controls['mortgaged'].disable();
         this.newLandRecordForm.controls['partlySold'].disable();
-        this.newLandRecordForm.controls['landType'].disable();
       }
     });
   }
