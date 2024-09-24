@@ -18,6 +18,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import {
+  AbstractControl,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
@@ -113,7 +114,13 @@ export class NewLandRecordComponent implements OnInit {
 
   mortgagedData: WritableSignal<MortgageData[]> = signal([]);
   partlySoldData: WritableSignal<PartlySoldData[]> = signal([]);
-  chainDeedData: WritableSignal<ChainDeedData[]> = signal([]);
+  chainDeedForms: WritableSignal<FormGroup[]> = signal([
+    this.fb.group({
+      deedId: ['', Validators.required],
+      deedType: ['chain-deed', Validators.required],
+      order: [NaN, Validators.required],
+    }),
+  ]);
 
   mortgagedDisplayedColumns: string[] = [
     'slno',
@@ -133,6 +140,56 @@ export class NewLandRecordComponent implements OnInit {
 
   get form() {
     return this.newLandRecordForm.controls;
+  }
+
+  get chainDeedFormsArray(): {
+    [key: string]: AbstractControl<any, any>;
+  }[] {
+    return this.chainDeedForms().map((formGroup) => formGroup.controls);
+  }
+
+  get chainDeedDataArray(): ChainDeedData[] {
+    return this.chainDeedForms().map((formGroup) => formGroup.value);
+  }
+
+  chainDeedForm(index: number): {
+    [key: string]: AbstractControl<any, any>;
+  } {
+    return this.chainDeedForms()[index].controls;
+  }
+
+  chainDeedData(index: number): ChainDeedData {
+    return this.chainDeedForms()[index].value;
+  }
+
+  onAddChainDeed(
+    initialValues: ChainDeedData = {
+      deedId: '',
+      deedType: 'chain-deed',
+      order: NaN,
+    }
+  ): void {
+    this.chainDeedForms.update((formsArray: FormGroup[]) => {
+      formsArray.push(
+        this.fb.group({
+          deedId: [initialValues.deedId, Validators.required],
+          deedType: [initialValues.deedType, Validators.required],
+          order: [
+            initialValues.order,
+            [Validators.required, Validators.min(1)],
+          ],
+        })
+      );
+      return formsArray;
+    });
+  }
+
+  onRemoveChainDeed(index: number): void {
+    const oldFormsArray: FormGroup[] = this.chainDeedForms();
+    if (oldFormsArray.length > 1) {
+      oldFormsArray.splice(index, 1);
+      this.chainDeedForms.set(oldFormsArray);
+    }
   }
 
   /**
