@@ -39,6 +39,7 @@ import { DialogPartlySoldFormComponent } from '../../master/components/deed-mast
 import { Deed } from '../../../model/deed.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { ChainDeedData } from '../../../model/chain-deed-data.model';
 
 @Component({
   selector: 'app-new-land-record',
@@ -112,6 +113,7 @@ export class NewLandRecordComponent implements OnInit {
 
   mortgagedData: WritableSignal<MortgageData[]> = signal([]);
   partlySoldData: WritableSignal<PartlySoldData[]> = signal([]);
+  chainDeedData: WritableSignal<ChainDeedData[]> = signal([]);
 
   mortgagedDisplayedColumns: string[] = [
     'slno',

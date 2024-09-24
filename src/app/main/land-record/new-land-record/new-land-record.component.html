@@ -45,13 +45,15 @@
             </mat-select>
           </mat-form-field>
 
-          <div>
+          <div class="mt-1">
             <mat-button-toggle-group formControlName="deedType" aria-label="Deed Type" matToolTip="Deed Type">
               <mat-button-toggle value="main-deed">Main Deed</mat-button-toggle>
               <mat-button-toggle value="chain-deed">Chain Deed</mat-button-toggle>
             </mat-button-toggle-group>
           </div>
         </div>
+
+        @if(form["deedType"].value === 'chain-deed') {
         <div class="row">
           <div>
             @for (item of [{},{}]; track 'deeds-'+$index) {
@@ -105,6 +107,7 @@
             </button>
           </div>
         </div>
+        }
       </section>
 
       <section class="container mb-3">
