@@ -71,17 +71,20 @@
                   </mat-select>
                 </mat-form-field>
 
-                <mat-form-field class="mx-1 deed-order-input">
+                <div class="mx-2">
+                  <mat-form-field>
+                    <mat-label>Deed Type</mat-label>
+                    <mat-select formControlName="deedType" required>
+                      <mat-option value="Main Deed">Main Deed</mat-option>
+                      <mat-option value="Chain Deed">Chain Deed</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                <mat-form-field class="mx-2 deed-order-input">
                   <mat-label>Order</mat-label>
                   <input formControlName="order" type="number" min="1" matInput>
                 </mat-form-field>
-
-                <div class="mx-2 mb-4">
-                  <mat-button-toggle-group formControlName="deedType" aria-label="Deed Type" matToolTip="Deed Type">
-                    <mat-button-toggle value="main-deed">Main Deed</mat-button-toggle>
-                    <mat-button-toggle value="chain-deed">Chain Deed</mat-button-toggle>
-                  </mat-button-toggle-group>
-                </div>
               </form>
 
               <span class="mt-2 mb-auto">
