@@ -84,8 +84,7 @@
 
           <mat-form-field appearance="outline">
             <mat-label>Main Deed</mat-label>
-            <input matInput formControlName="mainDeedId" [readonly]="viewMode()" />
-            <mat-select>
+            <mat-select formControlName="mainDeedId">
               @for (deed of deedList(); track 'deed-'+$index) {
                 <mat-option [value]="deed.deedId">{{deed.deedNo}}</mat-option>
               }
