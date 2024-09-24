@@ -33,30 +33,58 @@
       </section>
 
       <section class="container mb-3">
-        <h6 class="font-regular my-3">Deed Details</h6>
+        <h5 class="font-regular my-3">Deed Details</h5>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+          <mat-form-field appearance="outline" class="mx-2">
+            <mat-label>Deed No.</mat-label>
+            <mat-select formControlName="deedId">
+              <!-- TODO: implement formControlName="deedId" -->
+              @for (deed of deedList(); track 'deed-'+$index) {
+              <mat-option [value]="deed.deedId">{{deed.deedNo}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <div>
+            <mat-button-toggle-group formControlName="deedType" aria-label="Deed Type" matToolTip="Deed Type">
+              <mat-button-toggle value="main-deed">Main Deed</mat-button-toggle>
+              <mat-button-toggle value="chain-deed">Chain Deed</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+        </div>
         <div class="row">
           <div>
-            @for (item of []; track 'deeds-'+$index) {
+            @for (item of [{},{}]; track 'deeds-'+$index) {
             <div class="d-flex flex-nowrap align-items-center">
               <span class="h5 p-2 py-3 mb-auto">
                 {{ $index + 1 }}.
               </span>
 
-              <form [formGroup]="item">
-                <mat-form-field appearance="outline">
+              <form>
+                <!-- [formGroup]="item" -->
+                <mat-form-field class="mx-2">
                   <mat-label>Deed No.</mat-label>
                   <mat-select>
                     <!-- TODO: implement formControlName="deedId" -->
                     @for (deed of deedList(); track 'deed-'+$index) {
-                      <mat-option [value]="deed.deedId">{{deed.deedNo}}</mat-option>
+                    <mat-option [value]="deed.deedId">{{deed.deedNo}}</mat-option>
                     }
                   </mat-select>
                 </mat-form-field>
 
+                <mat-form-field class="mx-2">
+                  <mat-label>Deed Type</mat-label>
+                  <mat-select>
+                    <!-- TODO: implement formControlName="deedId" -->
+                    @for (deed of deedList(); track 'deed-'+$index) {
+                    <mat-option [value]="deed.deedId">{{deed.deedNo}}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
 
-                <mat-form-field appearance="outline">
-                  <mat-label>Date of Deed</mat-label>
-                  <input matInput formControlName="deedDate" readonly />
+                <mat-form-field class="mx-2">
+                  <mat-label>Order</mat-label>
+                  <input type="number" matInput>
                 </mat-form-field>
               </form>
 
@@ -147,7 +175,8 @@
 
             <mat-form-field appearance="outline" class="w-100">
               <mat-label>Last Updated Date</mat-label>
-              <input matInput formControlName="dueDate" [matDatepicker]="datePicker2" placeholder="DD/MM/YYYY" (focus)="datePicker2.open()" readonly />
+              <input matInput formControlName="dueDate" [matDatepicker]="datePicker2" placeholder="DD/MM/YYYY"
+                (focus)="datePicker2.open()" readonly />
               <mat-datepicker-toggle matSuffix [for]="datePicker2" [disabled]="viewMode()"></mat-datepicker-toggle>
               <mat-datepicker #datePicker2></mat-datepicker>
             </mat-form-field>
@@ -206,9 +235,9 @@
                         <mat-icon>
                           {{
                           fileInfo.markedForDeletion
-                            ? "undo"
-                            : "do_not_disturb_on"
-                        }}
+                          ? "undo"
+                          : "do_not_disturb_on"
+                          }}
                         </mat-icon>
                       </button>
                       }
@@ -230,7 +259,8 @@
                         {{ $index + 1 }}. </b>
                       {{ fileInfo }}</span>
                     @if(!viewMode()) {
-                    <button mat-icon-button class="mt-1" (click)="removeFiles('hcdocumentFile', $index)" [disabled]="disableFileRemoval()">
+                    <button mat-icon-button class="mt-1" (click)="removeFiles('hcdocumentFile', $index)"
+                      [disabled]="disableFileRemoval()">
                       <mat-icon>do_not_disturb_on</mat-icon>
                     </button>
                     }
@@ -246,14 +276,16 @@
               </mat-card>
               }
 
-              <button type="button" mat-stroked-button class="mt-2 mb-1" (click)="historyChainAttachments.click()" [disabled]="viewMode()">
+              <button type="button" mat-stroked-button class="mt-2 mb-1" (click)="historyChainAttachments.click()"
+                [disabled]="viewMode()">
                 <mat-icon>upload</mat-icon> Upload Files
               </button>
-              <input type="file" accept=".pdf, image/jpeg, image/png" class="d-none" (change)="onClickUploadFiles($event, 'hcdocumentFile')" multiple #historyChainAttachments />
+              <input type="file" accept=".pdf, image/jpeg, image/png" class="d-none"
+                (change)="onClickUploadFiles($event, 'hcdocumentFile')" multiple #historyChainAttachments />
             </mat-card>
           </div>
         </div>
-        
+
 
         <h6 class="font-regular mb-3">History/ Chain Tree</h6>
         <div class="row">
@@ -308,7 +340,7 @@
               <mat-cell mat-cell *matCellDef="let element; let i = index">
                 {{
                 i + 1
-              }}
+                }}
               </mat-cell>
             </ng-container>
 
@@ -377,7 +409,8 @@
           </div>
           @if (!viewMode()) {
           <div>
-            <button mat-stroked-button type="button" class="my-2 me-auto" (click)="onAddPartlySold()" [disabled]="viewMode()">
+            <button mat-stroked-button type="button" class="my-2 me-auto" (click)="onAddPartlySold()"
+              [disabled]="viewMode()">
               <mat-icon>add</mat-icon>
               Add
             </button>
@@ -391,7 +424,7 @@
               <mat-cell mat-cell *matCellDef="let element; let i = index">
                 {{
                 i + 1
-              }}
+                }}
               </mat-cell>
             </ng-container>
 
@@ -459,7 +492,8 @@
           {{ updateMode() ? "Save Changes" : "Submit" }}
         </button>
         } @else {
-        <button mat-stroked-button type="submit" class="btn-sp btn-sp-final mt-4 mb-3 me-2 ms-auto" routerLink="/land-record/update/{{ id }}">
+        <button mat-stroked-button type="submit" class="btn-sp btn-sp-final mt-4 mb-3 me-2 ms-auto"
+          routerLink="/land-record/update/{{ id }}">
           <mat-icon>arrow_forward</mat-icon>
           Go to Update Page
         </button>

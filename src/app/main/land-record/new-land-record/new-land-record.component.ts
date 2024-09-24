@@ -37,6 +37,8 @@ import { CompanyMasterService } from '../../master/services/company-master.servi
 import { DialogMortgageFormComponent } from '../../master/components/deed-master/modal/mortgage-form/mortgage-form.dialog';
 import { DialogPartlySoldFormComponent } from '../../master/components/deed-master/modal/partly-sold-form/partly-sold-form.dialog';
 import { Deed } from '../../../model/deed.model';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @Component({
   selector: 'app-new-land-record',
@@ -58,6 +60,8 @@ import { Deed } from '../../../model/deed.model';
     MatTableModule,
     RouterLink,
     ReactiveFormsModule,
+    MatTooltipModule,
+    MatButtonToggleModule,
   ],
   templateUrl: './new-land-record.component.html',
   styleUrl: './new-land-record.component.scss',
@@ -85,7 +89,8 @@ export class NewLandRecordComponent implements OnInit {
 
   newLandRecordForm: FormGroup = this.fb.group({
     companyId: ['', Validators.required],
-    mainDeedId: ['', Validators.required],
+    deedId: ['', Validators.required],
+    deedType: ['main-deed', Validators.required],
     totalQty: ['', Validators.required],
     purQty: ['', Validators.required],
     mutedQty: ['', Validators.required],
@@ -636,49 +641,9 @@ export class NewLandRecordComponent implements OnInit {
               ledueDate: this.getDateFromString(data['ledueDate']),
               lelastDate: this.getDateFromString(data['lelastDate']),
             });
-            if (data.scanCopyFile) {
-              data.scanCopyFile.forEach((fileName: string) => {
-                this.oldFileInfoArray.scanCopyFile.push({
-                  fileName,
-                  markedForDeletion: false,
-                });
-              });
-            }
-            if (data.mutationFile) {
-              data.mutationFile.forEach((fileName: string) => {
-                this.oldFileInfoArray.mutationFile.push({
-                  fileName,
-                  markedForDeletion: false,
-                });
-              });
-            }
-            if (data.conversionFile) {
-              data.conversionFile.forEach((fileName: string) => {
-                this.oldFileInfoArray.conversionFile.push({
-                  fileName,
-                  markedForDeletion: false,
-                });
-              });
-            }
-            if (data.documentFile) {
-              data.documentFile.forEach((fileName: string) => {
-                this.oldFileInfoArray.documentFile.push({
-                  fileName,
-                  markedForDeletion: false,
-                });
-              });
-            }
             if (data.hcdocumentFile) {
               data.hcdocumentFile.forEach((fileName: string) => {
                 this.oldFileInfoArray.hcdocumentFile.push({
-                  fileName,
-                  markedForDeletion: false,
-                });
-              });
-            }
-            if (data.parchaFile) {
-              data.parchaFile.forEach((fileName: string) => {
-                this.oldFileInfoArray.parchaFile.push({
                   fileName,
                   markedForDeletion: false,
                 });
@@ -692,6 +657,7 @@ export class NewLandRecordComponent implements OnInit {
         this.newLandRecordForm.controls['companyId'].disable();
         this.newLandRecordForm.controls['deedName'].disable();
         this.newLandRecordForm.controls['mortgaged'].disable();
+        this.newLandRecordForm.controls['deedType'].disable();
         this.newLandRecordForm.controls['partlySold'].disable();
       }
     });
