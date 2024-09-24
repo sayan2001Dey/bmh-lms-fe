@@ -195,19 +195,8 @@
 
           <mat-form-field appearance="outline">
             <mat-label>Date of Deed</mat-label>
-            <input matInput formControlName="deedDate" [matDatepicker]="datePicker1" placeholder="DD/MM/YYYY" (focus)="datePicker1.open()" readonly />
-            <mat-datepicker-toggle matSuffix [for]="datePicker1" [disabled]="viewMode()"></mat-datepicker-toggle>
-            <mat-datepicker #datePicker1></mat-datepicker>
+            <input matInput readonly />
           </mat-form-field>
-
-          <div>
-            <mat-card appearance="outlined" class="m-auto p-2">
-              <mat-radio-group formControlName="deedName" aria-label="Select an option" class="m-auto">
-                <mat-radio-button value="Main Deed">Main Deed</mat-radio-button>
-                <mat-radio-button value="Chain Deed" class="m-2">Chain Deed</mat-radio-button>
-              </mat-radio-group>
-            </mat-card>
-          </div>
         </div>
       </section>
 
