@@ -1,3 +1,4 @@
+import { DeedMasterService } from './../../master/services/deed-master.service';
 import {
   Component,
   OnInit,
@@ -39,6 +40,7 @@ import { Company } from '../../../model/company.model';
 import { CompanyMasterService } from '../../master/services/company-master.service';
 import { DialogMortgageFormComponent } from '../../master/components/deed-master/modal/mortgage-form/mortgage-form.dialog';
 import { DialogPartlySoldFormComponent } from '../../master/components/deed-master/modal/partly-sold-form/partly-sold-form.dialog';
+import { Deed } from '../../../model/deed.model';
 
 @Component({
   selector: 'app-new-land-record',
@@ -75,6 +77,8 @@ export class NewLandRecordComponent implements OnInit {
     inject(MouzaMasterService);
   private readonly companyMasterService: CompanyMasterService =
     inject(CompanyMasterService);
+  private readonly deedMasterService: DeedMasterService =
+    inject(DeedMasterService);
 
   private readonly dialog: Dialog = inject(Dialog);
   states: WritableSignal<State[]> = signal(statesCollection);
@@ -179,48 +183,6 @@ export class NewLandRecordComponent implements OnInit {
     }, 0);
   }
 
-  readonly selectedGroup: WritableSignal<Group> = signal({
-    groupId: '',
-    groupName: '',
-    state: '',
-    city: '',
-    pincode: NaN,
-  });
-
-  readonly groupList: WritableSignal<Group[]> = signal([]);
-
-  setGroupList(): void {
-    this.sysIsBusy.set(true);
-    this.groupMasterService.getGroupList().subscribe({
-      next: (data) => {
-        this.groupList.set(data);
-      },
-      error: () => {
-        this.serverUnreachable.set(true);
-      },
-      complete: () => {
-        this.sysIsBusy.set(false);
-      },
-    });
-  }
-
-  onGroupChange(): void {
-    const group = this.groupList().find(
-      (data) => data.groupId === this.form['groupId'].value
-    );
-    if (group) {
-      group.state = this.getStateName(group.state);
-      this.selectedGroup.set(group);
-    } else
-      this.selectedGroup.set({
-        groupId: '',
-        groupName: '',
-        state: '',
-        city: '',
-        pincode: NaN,
-      });
-  }
-
   readonly selectedMouza: WritableSignal<Mouza> = signal({
     mouzaId: '',
     groupId: '',
@@ -266,6 +228,7 @@ export class NewLandRecordComponent implements OnInit {
   }
 
   readonly companyList: WritableSignal<Company[]> = signal<Company[]>([]);
+  readonly deedList: WritableSignal<Deed[]> = signal<Deed[]>([]);
 
   setCompanyList(): void {
     this.sysIsBusy.set(true);
@@ -282,17 +245,19 @@ export class NewLandRecordComponent implements OnInit {
     });
   }
 
-  /**
-   * Returns the name of the given groupId from groupList.
-   * If the id is not found, the given id is returned as is.
-   * @param groupId the group id to find the name for
-   * @returns the name of the given group id or the id itself if not found
-   */
-  getGroupName(groupId: string): string {
-    return (
-      this.groupList().find((group) => group.groupId === groupId)?.groupName ||
-      groupId
-    );
+  setDeedList(): void {
+    this.sysIsBusy.set(true);
+    this.deedMasterService.getDeedList().subscribe({
+      next: (data: Deed[]) => {
+        this.deedList.set(data);
+      },
+      error: () => {
+        this.serverUnreachable.set(true);
+      },
+      complete: () => {
+        this.sysIsBusy.set(false);
+      },
+    });
   }
 
   /**
@@ -689,9 +654,9 @@ export class NewLandRecordComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.setGroupList();
     this.setMouzaList();
     this.setCompanyList();
+    this.setDeedList();
 
     this.route.url.subscribe((data) => {
       this.updateMode.set(data[0].path == 'update');
