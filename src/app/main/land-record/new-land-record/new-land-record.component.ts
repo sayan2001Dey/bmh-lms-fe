@@ -30,13 +30,9 @@ import { statesCollection } from '../../../data/states.collection';
 import { LandRecordsService } from '../land-records.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
-import { MortgageData } from '../../../model/mortgage-data.model';
-import { PartlySoldData } from '../../../model/partly-sold-data.model';
 import { Dialog } from '@angular/cdk/dialog';
 import { Company } from '../../../model/company.model';
 import { CompanyMasterService } from '../../master/services/company-master.service';
-import { DialogMortgageFormComponent } from '../../master/components/deed-master/modal/mortgage-form/mortgage-form.dialog';
-import { DialogPartlySoldFormComponent } from '../../master/components/deed-master/modal/partly-sold-form/partly-sold-form.dialog';
 import { Deed } from '../../../model/deed.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -93,7 +89,7 @@ export class NewLandRecordComponent implements OnInit {
     companyId: ['', Validators.required],
     deedId: ['', Validators.required],
     deedType: ['main-deed', Validators.required],
-    remarks: [''], 
+    remarks: [''],
     historyChain: ['', Validators.required],
   });
 
@@ -276,7 +272,7 @@ export class NewLandRecordComponent implements OnInit {
 
     if (data.deedType === 'chain-deed')
       chainDeedData = this.chainDeedDataArray;
-    
+
     data.chainDeedData = chainDeedData;
 
     return data;
