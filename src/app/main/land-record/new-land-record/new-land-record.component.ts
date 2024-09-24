@@ -93,27 +93,10 @@ export class NewLandRecordComponent implements OnInit {
     companyId: ['', Validators.required],
     deedId: ['', Validators.required],
     deedType: ['main-deed', Validators.required],
-    totalQty: ['', Validators.required],
-    purQty: ['', Validators.required],
-    mutedQty: ['', Validators.required],
-    unMutedQty: ['', Validators.required],
-    deedLoc: ['', Validators.required],
-    photoLoc: ['', Validators.required],
-    govtRec: ['', Validators.required],
-    remarks: [''],
-    khazanaStatus: ['', Validators.required],
-    tax: ['', Validators.required],
-    dueDate: ['', Validators.required],
-    legalMatters: ['', Validators.required],
-    ledueDate: ['', Validators.required],
-    lelastDate: ['', Validators.required],
+    remarks: [''], 
     historyChain: ['', Validators.required],
-    mortgaged: [false, Validators.required],
-    partlySold: [false, Validators.required],
   });
 
-  mortgagedData: WritableSignal<MortgageData[]> = signal([]);
-  partlySoldData: WritableSignal<PartlySoldData[]> = signal([]);
   chainDeedForms: WritableSignal<FormGroup[]> = signal([
     this.fb.group({
       deedId: ['', Validators.required],
@@ -217,9 +200,10 @@ export class NewLandRecordComponent implements OnInit {
    * @return {number} The total quantity sold.
    */
   get partlySoldQty(): number {
-    return this.partlySoldData().reduce((accumulator: number, current: any) => {
-      return accumulator + (parseFloat(current.qty) || 0);
-    }, 0);
+    // return this.partlySoldData().reduce((accumulator: number, current: any) => {
+    //   return accumulator + (parseFloat(current.qty) || 0);
+    // }, 0);
+    return 0;
   }
 
   /**
@@ -228,9 +212,10 @@ export class NewLandRecordComponent implements OnInit {
    * @return {number} The total mortgaged quantity.
    */
   get mortgagedQty(): number {
-    return this.mortgagedData().reduce((accumulator: number, current: any) => {
-      return accumulator + (parseFloat(current.mortQty) || 0);
-    }, 0);
+    // return this.mortgagedData().reduce((accumulator: number, current: any) => {
+    //   return accumulator + (parseFloat(current.mortQty) || 0);
+    // }, 0);
+    return 0;
   }
 
   readonly companyList: WritableSignal<Company[]> = signal<Company[]>([]);
@@ -287,16 +272,12 @@ export class NewLandRecordComponent implements OnInit {
   get preparedForm(): Object {
     const data = this.newLandRecordForm.value;
 
-    data.deedDate = this.formatDateForBackend(data.deedDate);
-    data.dueDate = this.formatDateForBackend(data.dueDate);
-    data.ledueDate = this.formatDateForBackend(data.ledueDate);
-    data.lelastDate = this.formatDateForBackend(data.lelastDate);
+    let chainDeedData: ChainDeedData[] = [];
 
-    if (data.mortgaged || data.mortgaged === 'true')
-      data.mortgagedData = this.mortgagedData();
-
-    if (data.partlySold || data.partlySold === 'true')
-      data.partlySoldData = this.partlySoldData();
+    if (data.deedType === 'chain-deed')
+      chainDeedData = this.chainDeedDataArray;
+    
+    data.chainDeedData = chainDeedData;
 
     return data;
   }
@@ -428,192 +409,6 @@ export class NewLandRecordComponent implements OnInit {
   }
 
   /**
-   * Adds a new mortgaged record to the mortgagedData array.
-   *
-   * @returns void
-   */
-  onAddMortgaged(): void {
-    const dialogRef = this.dialog.open<MortgageData>(
-      DialogMortgageFormComponent,
-      {
-        maxWidth: '25rem',
-        backdropClass: 'light-blur-backdrop',
-        disableClose: true,
-        data: {
-          remainingQty: this.remainingQty,
-          purQty: this.purQty,
-        },
-      }
-    );
-
-    dialogRef.backdropClick.subscribe(() => {
-      if (
-        window.confirm(
-          '⚠  CAUTION: ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
-        )
-      )
-        dialogRef.close();
-    });
-
-    dialogRef.closed.subscribe((res: MortgageData | undefined) => {
-      if (res)
-        this.mortgagedData.set([
-          ...this.mortgagedData(),
-          {
-            ...res,
-            mortDate: this.formatDateForBackend(res.mortDate),
-            mortDateStr: new Date(res.mortDate).toLocaleDateString(),
-          },
-        ]);
-    });
-  }
-
-  /**
-   * Adds a new partly sold record to the partlySoldData array if the form is valid.
-   *
-   * @return {void} This function does not return anything.
-   */
-  onAddPartlySold(): void {
-    const dialogRef = this.dialog.open<PartlySoldData>(
-      DialogPartlySoldFormComponent,
-      {
-        maxWidth: '25rem',
-        backdropClass: 'light-blur-backdrop',
-        disableClose: true,
-        data: {
-          remainingQty: this.remainingQty,
-          purQty: this.purQty,
-        },
-      }
-    );
-
-    dialogRef.backdropClick.subscribe(() => {
-      if (
-        window.confirm(
-          '⚠ CAUTION: ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
-        )
-      )
-        dialogRef.close();
-    });
-
-    dialogRef.closed.subscribe((res: PartlySoldData | undefined) => {
-      if (res)
-        this.partlySoldData.set([
-          ...this.partlySoldData(),
-          {
-            ...res,
-            date: this.formatDateForBackend(res.date),
-            dateStr: new Date(res.date).toLocaleDateString(),
-          },
-        ]);
-    });
-  }
-
-  /**
-   * Removes the mortgaged record at the specified index.
-   *
-   * @param idx - The index of the mortgaged record to remove.
-   * @returns void
-   */
-  onDeleteMortgaged(idx: number): void {
-    this.mortgagedData.set(this.mortgagedData().filter((_, i) => i != idx));
-  }
-
-  /**
-   * Edits the mortgaged data at the specified index.
-   *
-   * @param {number} idx - The index of the mortgaged data to edit.
-   * @return {void} This function does not return anything.
-   */
-  onEditMortgaged(idx: number): void {
-    const dialogRef = this.dialog.open<MortgageData>(
-      DialogMortgageFormComponent,
-      {
-        maxWidth: '25rem',
-        backdropClass: 'light-blur-backdrop',
-        disableClose: true,
-        data: {
-          data: this.mortgagedData()[idx],
-          remainingQty: this.remainingQty,
-          purQty: this.purQty,
-        },
-      }
-    );
-
-    dialogRef.backdropClick.subscribe(() => {
-      if (
-        window.confirm(
-          '⚠ CAUTION: ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
-        )
-      )
-        dialogRef.close();
-    });
-
-    dialogRef.closed.subscribe((res: MortgageData | undefined) => {
-      const newMortgagedData: MortgageData[] = this.mortgagedData();
-      if (res)
-        newMortgagedData[idx] = {
-          ...res,
-          mortDate: this.formatDateForBackend(res.mortDate),
-          mortDateStr: new Date(res.mortDate).toLocaleDateString(),
-        };
-      this.mortgagedData.set([...newMortgagedData]);
-    });
-  }
-
-  /**
-   * Deletes the partly sold data at the specified index.
-   *
-   * @param {number} idx - The index of the partly sold data to delete.
-   * @return {void} No return value.
-   */
-  onDeletePartlySold(idx: number): void {
-    this.partlySoldData.set(this.partlySoldData().filter((_, i) => i != idx));
-  }
-
-  /**
-   * Updates the form with the details of a partly sold record at the specified index.
-   *
-   * @param {number} idx - The index of the partly sold record to edit.
-   * @return {void} This function does not return anything.
-   */
-  onEditPartlySold(idx: number): void {
-    const dialogRef = this.dialog.open<PartlySoldData>(
-      DialogPartlySoldFormComponent,
-      {
-        maxWidth: '25rem',
-        backdropClass: 'light-blur-backdrop',
-        disableClose: true,
-        data: {
-          data: this.partlySoldData()[idx],
-          remainingQty: this.remainingQty,
-          purQty: this.purQty,
-        },
-      }
-    );
-
-    dialogRef.backdropClick.subscribe(() => {
-      if (
-        window.confirm(
-          '⚠ CAUTION: ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
-        )
-      )
-        dialogRef.close();
-    });
-
-    dialogRef.closed.subscribe((res: PartlySoldData | undefined) => {
-      const newPartlySoldData: PartlySoldData[] = this.partlySoldData();
-      if (res)
-        newPartlySoldData[idx] = {
-          ...res,
-          date: this.formatDateForBackend(res.date),
-          dateStr: new Date(res.date).toLocaleDateString(),
-        };
-      this.partlySoldData.set([...newPartlySoldData]);
-    });
-  }
-
-  /**
    * Opens a new window to display the specified file from the attachments directory.
    *
    * @param {string} fieldName - The name of the field containing the file.
@@ -667,33 +462,19 @@ export class NewLandRecordComponent implements OnInit {
       this.updateMode.set(data[0].path == 'update');
       this.viewMode.set(data[0].path == 'view');
       if (this.updateMode() || this.viewMode()) {
-        if (this.viewMode()) {
-          this.partlySoldDisplayedColumns.pop();
-          this.mortgagedDisplayedColumns.pop();
-        }
         this.route.params.subscribe((data) => {
           this.id = data['id'];
           this.landRecordsService.getLandRecord(this.id).subscribe((data) => {
             console.log(data);
             this.newLandRecordForm.patchValue(data);
-            this.mortgagedData.set(
-              data['mortgagedData'].map((data: MortgageData): MortgageData => {
-                return {
-                  ...data,
-                  mortDateStr: new Date(data.mortDate).toLocaleDateString(),
-                };
-              })
-            );
-            this.partlySoldData.set(
-              data['partlySoldData'].map(
-                (data: PartlySoldData): PartlySoldData => {
-                  return {
-                    ...data,
-                    dateStr: new Date(data.date).toLocaleDateString(),
-                  };
-                }
-              )
-            );
+            if(data.chainDeedData && data.chainDeedData.length) {
+              //reset
+              this.chainDeedForms.set([]);
+              data.chainDeedData.forEach((item: ChainDeedData) => {
+                this.onAddChainDeed(item);
+              });
+            }
+            this.chainDeedForms
             this.newLandRecordForm.patchValue({
               deedDate: this.getDateFromString(data['deedDate']),
               dueDate: this.getDateFromString(data['dueDate']),

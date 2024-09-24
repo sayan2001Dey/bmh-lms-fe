@@ -35,10 +35,9 @@
       <section class="container mb-3">
         <h5 class="font-regular my-3">Deed Details</h5>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-          <mat-form-field appearance="outline" class="mx-2">
+          <mat-form-field appearance="outline">
             <mat-label>Deed No.</mat-label>
             <mat-select formControlName="deedId">
-              <!-- TODO: implement formControlName="deedId" -->
               @for (deed of deedList(); track 'deed-'+$index) {
               <mat-option [value]="deed.deedId">{{deed.deedNo}}</mat-option>
               }
@@ -107,73 +106,25 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <mat-form-field appearance="outline">
             <mat-label>Total Qty</mat-label>
-            <input type="number" matInput formControlName="totalQty" [readonly]="viewMode()" />
+            <input type="number" matInput [readonly]="viewMode()" />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>Purchased Qty</mat-label>
-            <input type="number" matInput formControlName="purQty" [readonly]="viewMode()" />
+            <input type="number" matInput [readonly]="viewMode()" />
           </mat-form-field>
 
           <div>
             <mat-form-field class="w-100" appearance="outline">
               <mat-label>Mutated Qty</mat-label>
-              <input type="number" matInput formControlName="mutedQty" [readonly]="viewMode()" />
+              <input type="number" matInput [readonly]="viewMode()" />
             </mat-form-field>
           </div>
 
           <div>
             <mat-form-field class="w-100" appearance="outline">
               <mat-label>Un-mutated Qty</mat-label>
-              <input type="number" matInput formControlName="unMutedQty" [readonly]="viewMode()" />
-            </mat-form-field>
-          </div>
-        </div>
-      </section>
-
-      <section class="container mb-3">
-        <h5 class="font-regular py-2">Location & Status</h5>
-
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-          <div>
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Location of Deed</mat-label>
-              <input matInput [readonly]="viewMode()" formControlName="deedLoc" />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Location of Photocopy</mat-label>
-              <input matInput [readonly]="viewMode()" formControlName="photoLoc" />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Status as per Govt. Records</mat-label>
-              <input matInput [readonly]="viewMode()" formControlName="govtRec" />
-            </mat-form-field>
-          </div>
-
-          <div>
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Remarks</mat-label>
-              <textarea matInput [readonly]="viewMode()" formControlName="remarks" placeholder="Remarks..."></textarea>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Khazana Status</mat-label>
-              <input matInput [readonly]="viewMode()" formControlName="khazanaStatus" />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Property Tax</mat-label>
-              <input type="number" matInput formControlName="tax" [readonly]="viewMode()" />
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Last Updated Date</mat-label>
-              <input matInput formControlName="dueDate" [matDatepicker]="datePicker2" placeholder="DD/MM/YYYY"
-                (focus)="datePicker2.open()" readonly />
-              <mat-datepicker-toggle matSuffix [for]="datePicker2" [disabled]="viewMode()"></mat-datepicker-toggle>
-              <mat-datepicker #datePicker2></mat-datepicker>
+              <input type="number" matInput [readonly]="viewMode()" />
             </mat-form-field>
           </div>
         </div>
@@ -293,184 +244,19 @@
             <mat-icon>list</mat-icon> Choose Existing Deed as Chain Deed
           </button>
         </div>
-
-        <div class="mx-1 d-flex">
-          <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
-            <mat-slide-toggle formControlName="mortgaged" labelPosition="before">
-              <span class="h6"> Mortgaged ? </span>
-            </mat-slide-toggle>
-          </mat-card>
-        </div>
-
-        @if(form['mortgaged'].value) {
-        <mat-card appearance="outlined" class="mx-1 p-2 mb-2">
-          <div class="mx-1 d-flex">
-            <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
-              <div>Purchased Qty:
-                {{ purQty }}
-              </div>
-              <div>Mortgaged Qty:
-                {{ mortgagedQty }}
-              </div>
-              <div>Remaining Qty:
-                {{ remainingQty }}
-              </div>
-            </mat-card>
-          </div>
-          @if (!viewMode()) {
-          <div>
-            <button mat-stroked-button type="button" class="my-2 me-auto" (click)="onAddMortgaged()">
-              <mat-icon>add</mat-icon>
-              Add
-            </button>
-          </div>
-          } @if(mortgagedData().length) { @if (!viewMode()) {
-          <mat-divider></mat-divider>
-          }
-          <mat-table [dataSource]="mortgagedData()">
-            <ng-container matColumnDef="slno">
-              <mat-header-cell mat-header-cell *matHeaderCellDef>No.</mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let element; let i = index">
-                {{
-                i + 1
-                }}
-              </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="party">
-              <mat-header-cell *matHeaderCellDef>To Whom</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.party }}
-              </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="mortQty">
-              <mat-header-cell *matHeaderCellDef>Mortgaged Qty.</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.mortQty }}
-              </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="mortDateStr">
-              <mat-header-cell *matHeaderCellDef>Mortgage Date</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.mortDateStr }}
-              </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="actions">
-              <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
-              <mat-cell *matCellDef="let i = index">
-                <button mat-icon-button (click)="onEditMortgaged(i)" [disabled]="viewMode()">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button (click)="onDeleteMortgaged(i)" [disabled]="viewMode()">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </mat-cell>
-            </ng-container>
-
-            <mat-header-row *matHeaderRowDef="mortgagedDisplayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: mortgagedDisplayedColumns"></mat-row>
-          </mat-table>
-          }
-        </mat-card>
-        }
-
-        <div class="mx-1 d-flex">
-          <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
-            <mat-slide-toggle formControlName="partlySold" labelPosition="before">
-              <span class="h6"> Partly sold ? </span>
-            </mat-slide-toggle>
-          </mat-card>
-        </div>
-
-        @if(form['partlySold'].value) {
-        <mat-card appearance="outlined" class="mx-1 p-2 mb-2">
-          <div class="mx-1 d-flex">
-            <mat-card class="mb-2 w-auto p-2 me-auto" appearance="outlined">
-              <div>Purchased Qty:
-                {{ purQty }}
-              </div>
-              <div>Sold Qty:
-                {{ partlySoldQty }}
-              </div>
-              <div>Existing Qty:
-                {{ remainingQty }}
-              </div>
-            </mat-card>
-          </div>
-          @if (!viewMode()) {
-          <div>
-            <button mat-stroked-button type="button" class="my-2 me-auto" (click)="onAddPartlySold()"
-              [disabled]="viewMode()">
-              <mat-icon>add</mat-icon>
-              Add
-            </button>
-          </div>
-          } @if(this.partlySoldData().length) { @if (!viewMode()) {
-          <mat-divider></mat-divider>
-          }
-          <mat-table [dataSource]="partlySoldData()">
-            <ng-container matColumnDef="slno">
-              <mat-header-cell mat-header-cell *matHeaderCellDef>No.</mat-header-cell>
-              <mat-cell mat-cell *matCellDef="let element; let i = index">
-                {{
-                i + 1
-                }}
-              </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="sale">
-              <mat-header-cell *matHeaderCellDef>To Whom</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.sale }}
-              </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="dateStr">
-              <mat-header-cell *matHeaderCellDef>Date of Sale</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.dateStr }}
-              </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="qty">
-              <mat-header-cell *matHeaderCellDef>Qty.</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.qty }}
-              </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="deedLink">
-              <mat-header-cell *matHeaderCellDef>Deed to be Linked</mat-header-cell>
-              <mat-cell *matCellDef="let row">
-                {{ row.deedLink }}
-              </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="actions">
-              <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
-              <mat-cell *matCellDef="let i = index">
-                <button mat-icon-button (click)="onEditPartlySold(i)" [disabled]="viewMode()">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button (click)="onDeletePartlySold(i)" [disabled]="viewMode()">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </mat-cell>
-            </ng-container>
-
-            <mat-header-row *matHeaderRowDef="partlySoldDisplayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: partlySoldDisplayedColumns"></mat-row>
-          </mat-table>
-          }
-        </mat-card>
-        }
         <div class="row m-1">
           <button type="button" mat-stroked-button class="col-auto" [disabled]="viewMode()">
             <mat-icon>list</mat-icon> Tag Deed
           </button>
+        </div>
+      </section>
+
+      <section class="container mb-3">
+        <div class="row">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Remarks</mat-label>
+            <textarea matInput [readonly]="viewMode()" formControlName="remarks" placeholder="Remarks..."></textarea>
+          </mat-form-field>
         </div>
       </section>
 
