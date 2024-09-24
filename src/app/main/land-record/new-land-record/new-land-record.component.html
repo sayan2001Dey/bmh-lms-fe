@@ -134,12 +134,6 @@
 
         <h6 class="font-regular">Area Map</h6>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-          <div class="mb-2">
-            <div class="img-view w-100">
-              <mat-icon class="icon-img">wallpaper</mat-icon>
-            </div>
-          </div>
-
           <div>
             <mat-card class="px-2 py-1" appearance="outlined">
               <p class="text-center my-2">History Chain Attachment Documents</p>
@@ -233,28 +227,7 @@
             </mat-card>
           </div>
         </div>
-
-        <h6 class="font-regular">Legal Matters</h6>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-          <mat-form-field appearance="outline">
-            <mat-label>Legal Matters</mat-label>
-            <textarea rows="1" matInput formControlName="legalMatters" placeholder="Remarks..." [readonly]="viewMode()"></textarea>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Appeal Due Date</mat-label>
-            <input matInput formControlName="ledueDate" [matDatepicker]="datePicker3" (focus)="datePicker3.open()" readonly />
-            <mat-datepicker-toggle matSuffix [for]="datePicker3" [disabled]="viewMode()"></mat-datepicker-toggle>
-            <mat-datepicker #datePicker3></mat-datepicker>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Appeal Last Date</mat-label>
-            <input matInput formControlName="lelastDate" [matDatepicker]="datePicker4" (focus)="datePicker4.open()" readonly />
-            <mat-datepicker-toggle matSuffix [for]="datePicker4" [disabled]="viewMode()"></mat-datepicker-toggle>
-            <mat-datepicker #datePicker4></mat-datepicker>
-          </mat-form-field>
-        </div>
+        
 
         <h6 class="font-regular mb-3">History/ Chain Tree</h6>
         <div class="row">
