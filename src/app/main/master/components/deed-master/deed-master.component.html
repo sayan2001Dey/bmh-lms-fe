@@ -377,6 +377,26 @@
         </section>
 
         <section class="mb-3">
+          <h5 class="font-weight-normal py-2">Ownership & Transaction</h5>
+  
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+            <mat-form-field appearance="outline">
+              <mat-label>Company Name</mat-label>
+              <mat-select formControlName="companyId" required>
+                @for (company of companyList(); track $index) {
+                <mat-option [value]="company.companyId">
+                  {{ company.companyName }}
+                  <span class="text-muted">
+                    {{ "(" + company.companyId + ")" }}
+                  </span>
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </section>
+
+        <section class="mb-3">
           <h5 class="font-weight-normal py-2">Seller Info</h5>
 
           <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">

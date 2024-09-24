@@ -47,6 +47,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { forkJoin, Observable } from 'rxjs';
 import { AreaMapSafePipe } from './pipe/area-map-safe.pipe';
 import { SellerType } from '../../../../model/seller-type.model';
+import { CompanyMasterService } from '../../services/company-master.service';
+import { Company } from '../../../../model/company.model';
 
 @Component({
   selector: 'app-deed-master',
@@ -76,6 +78,8 @@ import { SellerType } from '../../../../model/seller-type.model';
 export class DeedMasterComponent implements OnInit, OnDestroy {
   private readonly groupMasterService: GroupMasterService =
     inject(GroupMasterService);
+  private readonly companyMasterService: CompanyMasterService =
+    inject(CompanyMasterService);
   private readonly mouzaMasterService: MouzaMasterService =
     inject(MouzaMasterService);
   private readonly deedMasterService: DeedMasterService =
@@ -88,6 +92,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
   private readonly dialog: Dialog = inject(Dialog);
 
   readonly groupList: WritableSignal<Group[]> = signal([]);
+  readonly companyList: WritableSignal<Company[]> = signal([]);
   readonly mouzaList: WritableSignal<Mouza[]> = signal([]);
 
   readonly deedList: WritableSignal<Deed[]> = signal([]);
@@ -109,6 +114,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
       this.deedForm.controls['mortgaged'].disable();
       this.deedForm.controls['partlySold'].disable();
       this.deedForm.controls['sellerType'].disable();
+      this.deedForm.controls['companyId'].disable();
       for (const mouzaDataItem of this.mouzaData()) {
         mouzaDataItem.mouzaForm.disable();
         mouzaDataItem.landSpecifics.forEach((landSpecifics) => {
@@ -123,6 +129,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
         this.deedForm.controls['mortgaged'].enable();
         this.deedForm.controls['partlySold'].enable();
         this.deedForm.controls['sellerType'].enable();
+        this.deedForm.controls['companyId'].enable();
         mouzaDataItem.mouzaForm.enable();
         mouzaDataItem.landSpecifics.forEach((landSpecifics) => {
           landSpecifics.enable();
@@ -157,6 +164,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
   readonly deedForm: FormGroup<any> = this.fb.group({
     deedId: [''],
     groupId: ['', Validators.required],
+    companyId: ['', Validators.required],
     deedNo: ['', Validators.required],
     deedDate: ['', Validators.required],
     sellerType: ['within-group', Validators.required],
@@ -560,7 +568,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
             next: (data: Partial<Deed>) => {
               this.deedList.set(
                 this.deedList().map((deed) => {
-                  if (data.deedId === this.id()) {
+                  if (deed.deedId === this.id()) {
                     return data;
                   }
                   return deed;
@@ -707,6 +715,21 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
       next: (data) => {
         this.groupList.set(data);
         this.onGroupChange();
+      },
+      error: () => {
+        this.serverUnreachable.set(true);
+      },
+      complete: () => {
+        this.sysIsBusy.set(false);
+      },
+    });
+  }
+
+  setCompanyList(): void {
+    this.sysIsBusy.set(true);
+    this.companyMasterService.getCompanyList().subscribe({
+      next: (data) => {
+        this.companyList.set(data);
       },
       error: () => {
         this.serverUnreachable.set(true);
@@ -1326,6 +1349,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.setGroupList();
+    this.setCompanyList();
     this.setMouzaList();
     this.setDeedList();
 

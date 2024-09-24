@@ -31,8 +31,6 @@ import { LandRecordsService } from '../land-records.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { Dialog } from '@angular/cdk/dialog';
-import { Company } from '../../../model/company.model';
-import { CompanyMasterService } from '../../master/services/company-master.service';
 import { Deed } from '../../../model/deed.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -69,8 +67,6 @@ export class NewLandRecordComponent implements OnInit {
   private readonly route: ActivatedRoute = inject(ActivatedRoute);
 
   private readonly landRecordsService = inject(LandRecordsService);
-  private readonly companyMasterService: CompanyMasterService =
-    inject(CompanyMasterService);
   private readonly deedMasterService: DeedMasterService =
     inject(DeedMasterService);
 
@@ -214,23 +210,7 @@ export class NewLandRecordComponent implements OnInit {
     return 0;
   }
 
-  readonly companyList: WritableSignal<Company[]> = signal<Company[]>([]);
   readonly deedList: WritableSignal<Deed[]> = signal<Deed[]>([]);
-
-  setCompanyList(): void {
-    this.sysIsBusy.set(true);
-    this.companyMasterService.getCompanyList().subscribe({
-      next: (data) => {
-        this.companyList.set(data);
-      },
-      error: () => {
-        this.serverUnreachable.set(true);
-      },
-      complete: () => {
-        this.sysIsBusy.set(false);
-      },
-    });
-  }
 
   setDeedList(): void {
     this.sysIsBusy.set(true);
@@ -451,7 +431,6 @@ export class NewLandRecordComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.setCompanyList();
     this.setDeedList();
 
     this.route.url.subscribe((data) => {
