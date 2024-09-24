@@ -56,18 +56,16 @@
         @if(form["deedType"].value === 'chain-deed') {
         <div class="row">
           <div>
-            @for (item of [{},{}]; track 'deeds-'+$index) {
+            @for (item of chainDeedForms(); track 'deeds-'+$index) {
             <div class="d-flex flex-nowrap align-items-center">
               <span class="h5 p-2 py-3 mb-auto">
                 {{ $index + 1 }}.
               </span>
 
-              <form class="d-flex align-items-center">
-                <!-- [formGroup]="item" -->
+              <form [formGroup]="item" class="d-flex align-items-center">
                 <mat-form-field class="mx-2">
                   <mat-label>Deed No.</mat-label>
-                  <mat-select>
-                    <!-- TODO: implement formControlName="deedId" -->
+                  <mat-select formControlName="deedId" required>
                     @for (deed of deedList(); track 'deed-'+$index) {
                     <mat-option [value]="deed.deedId">{{deed.deedNo}}</mat-option>
                     }
@@ -76,31 +74,27 @@
 
                 <mat-form-field class="mx-1 deed-order-input">
                   <mat-label>Order</mat-label>
-                  <input type="number" min="1" matInput>
+                  <input formControlName="order" type="number" min="1" matInput>
                 </mat-form-field>
 
                 <div class="mx-2 mb-4">
-                  <mat-button-toggle-group  aria-label="Deed Type" matToolTip="Deed Type">
+                  <mat-button-toggle-group formControlName="deedType" aria-label="Deed Type" matToolTip="Deed Type">
                     <mat-button-toggle value="main-deed">Main Deed</mat-button-toggle>
                     <mat-button-toggle value="chain-deed">Chain Deed</mat-button-toggle>
                   </mat-button-toggle-group>
                 </div>
-
               </form>
 
               <span class="mt-2 mb-auto">
-                <button mat-icon-button type="button">
-                  <mat-icon class="text-red">
+                <button mat-icon-button type="button" (click)="onRemoveChainDeed($index)" [disabled]="viewMode()">
+                  <mat-icon [class]="chainDeedForms().length < 2 ? '' : 'text-red'">
                     do_not_disturb_on
                   </mat-icon>
-                  <!-- <mat-icon [class]="landSpecifics().length < 2 ? '' : 'text-red'">
-                    do_not_disturb_on
-                  </mat-icon> -->
                 </button>
               </span>
             </div>
             }
-            <button mat-button type="button" class="btn-sp2" [disabled]="viewMode()">
+            <button mat-button type="button" class="btn-sp2" (click)="onAddChainDeed()" [disabled]="viewMode()">
               <mat-icon>add</mat-icon> Add Deeds
             </button>
           </div>
