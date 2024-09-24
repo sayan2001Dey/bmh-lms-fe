@@ -32,10 +32,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MortgageData } from '../../../model/mortgage-data.model';
 import { PartlySoldData } from '../../../model/partly-sold-data.model';
 import { Dialog } from '@angular/cdk/dialog';
-import { Group } from '../../../model/group.model';
-import { GroupMasterService } from '../../master/services/group-master.service';
-import { Mouza } from '../../../model/mouza.model';
-import { MouzaMasterService } from '../../master/services/mouza-master.service';
 import { Company } from '../../../model/company.model';
 import { CompanyMasterService } from '../../master/services/company-master.service';
 import { DialogMortgageFormComponent } from '../../master/components/deed-master/modal/mortgage-form/mortgage-form.dialog';
@@ -71,10 +67,6 @@ export class NewLandRecordComponent implements OnInit {
   private readonly route: ActivatedRoute = inject(ActivatedRoute);
 
   private readonly landRecordsService = inject(LandRecordsService);
-  private readonly groupMasterService: GroupMasterService =
-    inject(GroupMasterService);
-  private readonly mouzaMasterService: MouzaMasterService =
-    inject(MouzaMasterService);
   private readonly companyMasterService: CompanyMasterService =
     inject(CompanyMasterService);
   private readonly deedMasterService: DeedMasterService =
@@ -92,12 +84,8 @@ export class NewLandRecordComponent implements OnInit {
   viewMode: WritableSignal<boolean> = signal(false);
 
   newLandRecordForm: FormGroup = this.fb.group({
-    groupId: ['', Validators.required],
-    mouzaId: ['', Validators.required],
     companyId: ['', Validators.required],
-    deedName: ['Main Deed', Validators.required],
-    deedNo: ['', Validators.required],
-    deedDate: ['', Validators.required],
+    mainDeedId: ['', Validators.required],
     totalQty: ['', Validators.required],
     purQty: ['', Validators.required],
     mutedQty: ['', Validators.required],
@@ -181,50 +169,6 @@ export class NewLandRecordComponent implements OnInit {
     return this.mortgagedData().reduce((accumulator: number, current: any) => {
       return accumulator + (parseFloat(current.mortQty) || 0);
     }, 0);
-  }
-
-  readonly selectedMouza: WritableSignal<Mouza> = signal({
-    mouzaId: '',
-    groupId: '',
-    mouza: '',
-    block: '',
-    jlno: NaN,
-    landSpecifics: [],
-  });
-
-  readonly mouzaList: WritableSignal<Mouza[]> = signal([]);
-
-  // TODO: need to get mouza by groupId also low priority
-  setMouzaList(): void {
-    this.sysIsBusy.set(true);
-    this.mouzaMasterService.getMouzaList().subscribe({
-      next: (data) => {
-        this.mouzaList.set(data);
-      },
-      error: () => {
-        this.serverUnreachable.set(true);
-      },
-      complete: () => {
-        this.sysIsBusy.set(false);
-      },
-    });
-  }
-
-  onMouzaChange(): void {
-    const mouza = this.mouzaList().find(
-      (data) => data.mouzaId === this.form['mouzaId'].value
-    );
-    if (mouza) {
-      this.selectedMouza.set(mouza);
-    } else
-      this.selectedMouza.set({
-        mouzaId: '',
-        groupId: '',
-        mouza: '',
-        block: '',
-        jlno: NaN,
-        landSpecifics: [],
-      });
   }
 
   readonly companyList: WritableSignal<Company[]> = signal<Company[]>([]);
@@ -654,7 +598,6 @@ export class NewLandRecordComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.setMouzaList();
     this.setCompanyList();
     this.setDeedList();
 
@@ -748,8 +691,6 @@ export class NewLandRecordComponent implements OnInit {
       }
       if (this.viewMode()) {
         this.disableFileRemoval.set(true);
-        this.newLandRecordForm.controls['groupId'].disable();
-        this.newLandRecordForm.controls['mouzaId'].disable();
         this.newLandRecordForm.controls['companyId'].disable();
         this.newLandRecordForm.controls['deedName'].disable();
         this.newLandRecordForm.controls['landStatus'].disable();
