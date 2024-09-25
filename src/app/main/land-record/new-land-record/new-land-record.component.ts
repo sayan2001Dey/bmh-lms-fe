@@ -82,7 +82,6 @@ export class NewLandRecordComponent implements OnInit {
   viewMode: WritableSignal<boolean> = signal(false);
 
   newLandRecordForm: FormGroup = this.fb.group({
-    companyId: ['', Validators.required],
     deedId: ['', Validators.required],
     deedType: ['main-deed', Validators.required],
     remarks: [''],
@@ -167,49 +166,6 @@ export class NewLandRecordComponent implements OnInit {
     }
   }
 
-  /**
-   * Calculates the purchased quantity or returns 0 if the value is not a number.
-   *
-   * @return {number} The purchased quantity, or 0 if the value is not a number.
-   */
-  get purQty(): number {
-    return parseFloat(this.form['purQty'].value) || 0;
-  }
-
-  /**
-   * Calculates the remaining quantity based on the purchased quantity and the quantity sold.
-   *
-   * @return {number} The remaining quantity after subtracting the quantity sold from the purchased quantity.
-   */
-  get remainingQty(): number {
-    return this.purQty - this.partlySoldQty - this.mortgagedQty;
-  }
-
-  /**
-   * Calculates the total quantity sold by summing up the quantities of all partly sold data
-   * and subtracting the quantity entered in the partly sold details form.
-   *
-   * @return {number} The total quantity sold.
-   */
-  get partlySoldQty(): number {
-    // return this.partlySoldData().reduce((accumulator: number, current: any) => {
-    //   return accumulator + (parseFloat(current.qty) || 0);
-    // }, 0);
-    return 0;
-  }
-
-  /**
-   * Calculates the total mortgaged quantity by summing up the mortgaged quantities of all mortgaged data.
-   *
-   * @return {number} The total mortgaged quantity.
-   */
-  get mortgagedQty(): number {
-    // return this.mortgagedData().reduce((accumulator: number, current: any) => {
-    //   return accumulator + (parseFloat(current.mortQty) || 0);
-    // }, 0);
-    return 0;
-  }
-
   readonly deedList: WritableSignal<Deed[]> = signal<Deed[]>([]);
 
   setDeedList(): void {
@@ -268,12 +224,6 @@ export class NewLandRecordComponent implements OnInit {
    * @return {void} This function does not return anything.
    */
   onSubmit(): void {
-    if (this.remainingQty < 0) {
-      alert(
-        '⛔ ERROR: CAN NOT SUBMIT\n\nRemaining asset quantity cannot be less than zero.'
-      );
-      return;
-    }
     if (this.newLandRecordForm.valid) {
       if (this.updateMode()) {
         this.landRecordsService.updateLandRecord(
@@ -449,13 +399,6 @@ export class NewLandRecordComponent implements OnInit {
                 this.onAddChainDeed(item);
               });
             }
-            this.chainDeedForms
-            this.newLandRecordForm.patchValue({
-              deedDate: this.getDateFromString(data['deedDate']),
-              dueDate: this.getDateFromString(data['dueDate']),
-              ledueDate: this.getDateFromString(data['ledueDate']),
-              lelastDate: this.getDateFromString(data['lelastDate']),
-            });
             if (data.hcdocumentFile) {
               data.hcdocumentFile.forEach((fileName: string) => {
                 this.oldFileInfoArray.hcdocumentFile.push({
@@ -469,11 +412,8 @@ export class NewLandRecordComponent implements OnInit {
       }
       if (this.viewMode()) {
         this.disableFileRemoval.set(true);
-        this.newLandRecordForm.controls['companyId'].disable();
-        this.newLandRecordForm.controls['deedName'].disable();
-        this.newLandRecordForm.controls['mortgaged'].disable();
+        this.newLandRecordForm.controls['deedId'].disable();
         this.newLandRecordForm.controls['deedType'].disable();
-        this.newLandRecordForm.controls['partlySold'].disable();
       }
     });
   }
