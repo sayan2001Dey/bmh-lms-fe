@@ -399,14 +399,6 @@ export class NewLandRecordComponent implements OnInit {
                 this.onAddChainDeed(item);
               });
             }
-            if (data.hcdocumentFile) {
-              data.hcdocumentFile.forEach((fileName: string) => {
-                this.oldFileInfoArray.hcdocumentFile.push({
-                  fileName,
-                  markedForDeletion: false,
-                });
-              });
-            }
           });
         });
       }
@@ -414,6 +406,12 @@ export class NewLandRecordComponent implements OnInit {
         this.disableFileRemoval.set(true);
         this.newLandRecordForm.controls['deedId'].disable();
         this.newLandRecordForm.controls['deedType'].disable();
+        // TODO: do it just do it
+        // this.chainDeedFormsArray.forEach((formGroup: FormGroup) => {
+        //   formGroup.controls['deedId'].disable();
+        //   formGroup.controls['deedType'].disable();
+        //   formGroup.controls['order'].disable();
+        // })
       }
     });
   }
