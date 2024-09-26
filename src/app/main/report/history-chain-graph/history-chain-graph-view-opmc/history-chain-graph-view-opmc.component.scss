@@ -2,8 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: #f7f7f7; /* light gray background */
+  height: 100%;
 }
 .tree ul {
   padding-top: 40px; /* increased padding */
@@ -80,9 +79,9 @@
   color: #fff; /* white text on hover */
   border: 2px solid #4caf50; /* thicker green border on hover */
 }
-.tree li a:hover+ul li::after, 
-.tree li a:hover+ul li::before, 
-.tree li a:hover+ul::before, 
+.tree li a:hover+ul li::after,
+.tree li a:hover+ul li::before,
+.tree li a:hover+ul::before,
 .tree li a:hover+ul ul::before {
   border-color: #4caf50; /* green border on hover */
 }
