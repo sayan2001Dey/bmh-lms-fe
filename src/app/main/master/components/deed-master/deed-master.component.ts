@@ -191,8 +191,8 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
     partlySold: [false],
   });
 
-  mortgagedData: WritableSignal<MortgageData[]> = signal([]);
-  partlySoldData: WritableSignal<PartlySoldData[]> = signal([]);
+  readonly mortgagedData: WritableSignal<MortgageData[]> = signal([]);
+  readonly partlySoldData: WritableSignal<PartlySoldData[]> = signal([]);
   sellerTypes: WritableSignal<SellerType[]> = signal([
     {
       name: 'Within Group',
@@ -1002,6 +1002,8 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
     this.deedForm.reset();
     this.showGroupDetails.set(false);
     this.mouzaData.set([]);
+    this.mortgagedData.set([]);
+    this.partlySoldData.set([]);
     this.sellerForms.clear();
     this.onAddSeller();
     this.deedForm.patchValue({
@@ -1070,6 +1072,25 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
     }
 
     this.mouzaData.set(mouzaDataArr);
+
+    this.mortgagedData.set(
+      (deed.mortgagedData || []).map((data: MortgageData): MortgageData => {
+        return {
+          ...data,
+          mortDateStr: new Date(data.mortDate).toLocaleDateString(),
+        };
+      })
+    );
+    this.partlySoldData.set(
+      (deed.partlySoldData || []).map(
+        (data: PartlySoldData): PartlySoldData => {
+          return {
+            ...data,
+            dateStr: new Date(data.date).toLocaleDateString(),
+          };
+        }
+      )
+    );
 
     if (deed.scanCopyFile) {
       deed.scanCopyFile.forEach((fileName: string) => {
