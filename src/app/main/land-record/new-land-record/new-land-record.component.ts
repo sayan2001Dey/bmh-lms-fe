@@ -35,6 +35,7 @@ import { Deed } from '../../../model/deed.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ChainDeedData } from '../../../model/chain-deed-data.model';
+import { HistoryChainGraphViewOPMCComponent } from "../../report/history-chain-graph/history-chain-graph-view-opmc/history-chain-graph-view-opmc.component";
 
 @Component({
   selector: 'app-new-land-record',
@@ -58,7 +59,8 @@ import { ChainDeedData } from '../../../model/chain-deed-data.model';
     ReactiveFormsModule,
     MatTooltipModule,
     MatButtonToggleModule,
-  ],
+    HistoryChainGraphViewOPMCComponent
+],
   templateUrl: './new-land-record.component.html',
   styleUrl: './new-land-record.component.scss',
 })
