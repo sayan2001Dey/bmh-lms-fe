@@ -69,7 +69,7 @@
 
               <span class="mt-2 mb-auto">
                 <button mat-icon-button type="button" (click)="onRemoveChainDeed($index)" [disabled]="viewMode()">
-                  <mat-icon [class]="chainDeedForms().length < 2 ? '' : 'text-red'">
+                  <mat-icon [class]="chainDeedForms().length < 2 ? '' : viewMode() ? '' : 'text-red'">
                     do_not_disturb_on
                   </mat-icon>
                 </button>
