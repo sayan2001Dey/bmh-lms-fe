@@ -35,7 +35,7 @@ import { Deed } from '../../../model/deed.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ChainDeedData } from '../../../model/chain-deed-data.model';
-import { HistoryChainGraphViewOPMCComponent } from "../../report/history-chain-graph/history-chain-graph-view-opmc/history-chain-graph-view-opmc.component";
+import { HistoryChainGraphComponent } from '../../report/history-chain-graph/history-chain-graph.component';
 
 @Component({
   selector: 'app-new-land-record',
@@ -59,8 +59,8 @@ import { HistoryChainGraphViewOPMCComponent } from "../../report/history-chain-g
     ReactiveFormsModule,
     MatTooltipModule,
     MatButtonToggleModule,
-    HistoryChainGraphViewOPMCComponent
-],
+    HistoryChainGraphComponent,
+  ],
   templateUrl: './new-land-record.component.html',
   styleUrl: './new-land-record.component.scss',
 })
@@ -208,8 +208,7 @@ export class NewLandRecordComponent implements OnInit {
 
     let chainDeedData: ChainDeedData[] = [];
 
-    if (data.deedType === 'chain-deed')
-      chainDeedData = this.chainDeedDataArray;
+    if (data.deedType === 'chain-deed') chainDeedData = this.chainDeedDataArray;
 
     data.chainDeedData = chainDeedData;
 
@@ -394,7 +393,7 @@ export class NewLandRecordComponent implements OnInit {
           this.landRecordsService.getLandRecord(this.id).subscribe((data) => {
             console.log(data);
             this.newLandRecordForm.patchValue(data);
-            if(data.chainDeedData && data.chainDeedData.length) {
+            if (data.chainDeedData && data.chainDeedData.length) {
               //reset
               this.chainDeedForms.set([]);
               data.chainDeedData.forEach((item: ChainDeedData) => {
@@ -410,7 +409,7 @@ export class NewLandRecordComponent implements OnInit {
         this.newLandRecordForm.controls['deedType'].disable();
         this.chainDeedForms().forEach((formGroup: FormGroup) => {
           formGroup.disable();
-        })
+        });
       }
     });
   }
