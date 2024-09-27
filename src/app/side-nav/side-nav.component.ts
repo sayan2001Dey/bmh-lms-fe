@@ -32,6 +32,7 @@ export class SideNavComponent implements OnInit {
       { title: 'Mouza Master', link: '/master/mouza', adminOnly: true },
       { title: 'Deed Master', link: '/master/deed', adminOnly: false },
       { title: 'Land Record', link: '/land-record', adminOnly: false },
+      { title: 'Get History Chain Graph', link: '/report/get-history-chain', adminOnly: false },
       // { title: 'Report', link: '/report', adminOnly: false },
     ]);
   }
