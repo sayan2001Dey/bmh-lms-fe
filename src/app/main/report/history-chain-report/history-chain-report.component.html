@@ -1,1 +1,36 @@
-<p>history-chain-report works!</p>
+<main class="container py-1">
+
+  <section class="my-5 d-flex">
+    <span class="h1 my-auto">Get history chain graph</span>
+  </section>
+
+
+    <mat-card class="p-3 m-2 mb-4 border">
+      <form>
+        <mat-form-field appearance="outline">
+          <mat-label>Deed No.</mat-label>
+          <input matInput type="search">
+
+          <button matSuffix mat-icon-button aria-label="Search" matTooltip="Search">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+      </form>
+
+      <section class="container mb-3">
+        <div class="pb-2">
+          <mat-card appearance="outlined" class="p-3 pb-5">
+            <p style="color: green;">History Chain Tree</p>
+
+            <div>
+              <button type="button" mat-flat-button>
+                <mat-icon>print</mat-icon>
+                Print
+              </button>
+            </div>
+          </mat-card>
+        </div>
+      </section>
+    </mat-card>
+
+</main>
