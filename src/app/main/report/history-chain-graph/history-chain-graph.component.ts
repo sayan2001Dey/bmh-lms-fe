@@ -34,6 +34,7 @@ export class HistoryChainGraphComponent {
     let graphData: GraphNode | undefined;
     let graphDataTmpPtr: GraphNode | undefined;
     if (sortedChainDeedData.length) {
+      console.log("im here")
       graphData = {
         data: {
           deedId: sortedChainDeedData[0].deedId,
@@ -57,6 +58,7 @@ export class HistoryChainGraphComponent {
       }
     }
 
+    console.log('graphData: ', graphData);
     return graphData ? graphData : null;
   });
 

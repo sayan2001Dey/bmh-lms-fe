@@ -19,5 +19,5 @@ import { GraphNode } from '../../../../model/graph-node.model';
   styleUrl: './history-chain-graph-view-linear.component.scss',
 })
 export class HistoryChainGraphViewLinearComponent {
-  @Input() graphData: Signal<GraphNode> = signal({} as GraphNode);
+  @Input() graphData: Signal<GraphNode | null> = signal(null);
 }
