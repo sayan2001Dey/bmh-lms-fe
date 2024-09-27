@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { GraphNode } from '../../../../../model/graph-node.model';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'ul.app-graph-node',
@@ -10,4 +11,7 @@ import { GraphNode } from '../../../../../model/graph-node.model';
 })
 export class GraphNodeComponent {
   @Input() graphNodeArray: GraphNode[] = [];
+  onShowDeed(deedId: string) {
+    alert('⚠' + deedId + ' loading failed!');
+  }
 }

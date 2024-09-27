@@ -2,6 +2,7 @@ import {
   Component,
   computed,
   Input,
+  OnChanges,
   Signal,
   signal,
   SimpleChanges,
@@ -24,7 +25,7 @@ import { ChainDeedData } from '../../../model/chain-deed-data.model';
   templateUrl: './history-chain-graph.component.html',
   styleUrl: './history-chain-graph.component.scss',
 })
-export class HistoryChainGraphComponent {
+export class HistoryChainGraphComponent implements OnChanges {
   @Input() chainDeedDataArray: ChainDeedData[] = [];
   @Input() deedList: WritableSignal<Deed[]> = signal([]);
   graphData: GraphNode | null = null;
