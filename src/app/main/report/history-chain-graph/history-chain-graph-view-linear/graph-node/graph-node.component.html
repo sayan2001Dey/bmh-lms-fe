@@ -2,7 +2,7 @@
 <li>
   <a (click)="onShowDeed(graphNode.data.deedId)">{{ graphNode.data.deedNo }}</a>
   @if(graphNode.children.length > 0){
-  <ul class="app-graph-node" [graphNodeArray]="graphNode.children">
+  <ul class="app-graph-node reset-ul" [graphNodeArray]="graphNode.children">
   </ul>
   }
 </li>

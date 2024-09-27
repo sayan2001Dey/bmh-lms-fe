@@ -95,9 +95,11 @@
 
       <section class="container mb-3">
         <div class="pb-2">
-          <mat-card appearance="outlined" class="p-3">
+          <mat-card appearance="outlined" class="p-3 pb-5">
             <p style="color: green;">History Chain Tree</p>
+            @if(newLandRecordForm.get('deedType')?.value === 'chain-deed') {
             <app-history-chain-graph [chainDeedDataArray]="chainDeedDataArray" [deedList]="deedList" />
+            }
           </mat-card>
         </div>
       </section>

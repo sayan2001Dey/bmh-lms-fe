@@ -46,11 +46,9 @@ export class HistoryChainGraphComponent implements OnChanges {
       const sortedChainDeedData: ChainDeedData[] = this.chainDeedDataArray.sort(
         (a, b) => a.order - b.order
       );
-
       let graphData: GraphNode | undefined;
       let graphDataTmpPtr: GraphNode | undefined;
       if (sortedChainDeedData.length) {
-        console.log('im here');
         graphData = {
           data: {
             deedId: sortedChainDeedData[0].deedId,
