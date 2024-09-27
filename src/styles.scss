@@ -78,3 +78,94 @@ body {
   height: 3rem !important;
   background-color: rgba(0, 255, 0, 0.301) !important;
 }
+
+// tree stuff
+
+.tree {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+.tree ul {
+  padding-top: 40px; /* increased padding */
+  position: relative;
+  transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+}
+.tree li {
+  float: left;
+  text-align: center;
+  list-style-type: none;
+  position: relative;
+  padding: 40px 10px 0 10px; /* increased padding */
+  transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+}
+.tree li::before, .tree li::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 50%;
+  border-top: 4px solid #0097a7; /* thicker blue-green connector */
+  width: 50%;
+  height: 40px; /* increased height */
+}
+.tree li::after {
+  right: auto;
+  left: 50%;
+  border-left: 4px solid #0097a7; /* thicker blue-green connector */
+}
+.tree li:only-child::after, .tree li:only-child::before {
+  display: none;
+}
+.tree li:only-child {
+  padding-top: 0;
+}
+.tree li:first-child::before, .tree li:last-child::after {
+  border: 0 none;
+}
+.tree li:last-child::before {
+  border-right: 4px solid #0097a7; /* thicker blue-green connector */
+  border-radius: 0 10px 0 0;
+}
+.tree li:first-child::after {
+  border-radius: 10px 0 0 0;
+}
+.tree ul ul::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  border-left: 4px solid #0097a7; /* thicker blue-green connector */
+  width: 0;
+  height: 40px; /* increased height */
+}
+.tree li a {
+  border: 2px solid #ccc; /* thicker border */
+  padding: 10px 20px; /* increased padding */
+  text-decoration: none;
+  color: #333; /* dark gray text */
+  font-family: Arial, sans-serif;
+  font-size: 18px; /* increased font size */
+  display: inline-block;
+  border-radius: 10px; /* increased border radius */
+  transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  -moz-transition: all 0.5s;
+  background-color: #f2c464; /* orange-yellow background */
+}
+.tree li a:hover, .tree li a:hover+ul li a {
+  background: #8bc34a; /* green background on hover */
+  color: #fff; /* white text on hover */
+  border: 2px solid #4caf50; /* thicker green border on hover */
+}
+.tree li a:hover+ul li::after,
+.tree li a:hover+ul li::before,
+.tree li a:hover+ul::before,
+.tree li a:hover+ul ul::before {
+  border-color: #4caf50; /* green border on hover */
+}

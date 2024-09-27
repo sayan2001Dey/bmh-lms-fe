@@ -4,6 +4,7 @@ import {
   Input,
   Signal,
   signal,
+  SimpleChanges,
   WritableSignal,
 } from '@angular/core';
 import { HistoryChainGraphViewOPMCComponent } from './history-chain-graph-view-opmc/history-chain-graph-view-opmc.component';
@@ -24,48 +25,55 @@ import { ChainDeedData } from '../../../model/chain-deed-data.model';
   styleUrl: './history-chain-graph.component.scss',
 })
 export class HistoryChainGraphComponent {
-  @Input() chainDeedForms: WritableSignal<FormGroup[]> = signal([]);
+  @Input() chainDeedDataArray: ChainDeedData[] = [];
   @Input() deedList: WritableSignal<Deed[]> = signal([]);
-  readonly graphData: Signal<GraphNode | null> = computed(() => {
-    const sortedChainDeedData: ChainDeedData[] = this.chainDeedForms()
-      .map((formGroup) => formGroup.value)
-      .sort((a, b) => a.order - b.order);
-
-    let graphData: GraphNode | undefined;
-    let graphDataTmpPtr: GraphNode | undefined;
-    if (sortedChainDeedData.length) {
-      console.log("im here")
-      graphData = {
-        data: {
-          deedId: sortedChainDeedData[0].deedId,
-          deedNo: this.getDeedNo(sortedChainDeedData[0].deedId),
-        },
-        children: [],
-      };
-      graphDataTmpPtr = graphData;
-
-      if (graphDataTmpPtr) {
-        for (let i = 1; i < sortedChainDeedData.length; i++) {
-          graphDataTmpPtr.children.push({
-            data: {
-              deedId: sortedChainDeedData[i].deedId,
-              deedNo: this.getDeedNo(sortedChainDeedData[i].deedId),
-            },
-            children: [],
-          });
-          graphDataTmpPtr = graphDataTmpPtr?.children[0];
-        }
-      }
-    }
-
-    console.log('graphData: ', graphData);
-    return graphData ? graphData : null;
-  });
+  graphData: GraphNode | null = null;
 
   getDeedNo(deedId: string): string {
     const deed: Deed | undefined = this.deedList().find(
       (deed) => deed.deedId === deedId
     );
     return deed?.deedNo || deedId;
+  }
+
+  ngOnInit(): void {
+    console.log(this.chainDeedDataArray);
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['chainDeedDataArray']) {
+      // this algo only does 1 parent 1 child no matter the order
+      const sortedChainDeedData: ChainDeedData[] = this.chainDeedDataArray.sort(
+        (a, b) => a.order - b.order
+      );
+
+      let graphData: GraphNode | undefined;
+      let graphDataTmpPtr: GraphNode | undefined;
+      if (sortedChainDeedData.length) {
+        console.log('im here');
+        graphData = {
+          data: {
+            deedId: sortedChainDeedData[0].deedId,
+            deedNo: this.getDeedNo(sortedChainDeedData[0].deedId),
+          },
+          children: [],
+        };
+        graphDataTmpPtr = graphData;
+
+        if (graphDataTmpPtr) {
+          for (let i = 1; i < sortedChainDeedData.length; i++) {
+            graphDataTmpPtr.children.push({
+              data: {
+                deedId: sortedChainDeedData[i].deedId,
+                deedNo: this.getDeedNo(sortedChainDeedData[i].deedId),
+              },
+              children: [],
+            });
+            graphDataTmpPtr = graphDataTmpPtr?.children[0];
+          }
+        }
+      }
+      if(graphData)
+        this.graphData = graphData;
+    }
   }
 }
