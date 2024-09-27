@@ -1,11 +1,9 @@
+@for (graphNode of graphNodeArray; track $index) {
 <li>
-
-  @if(graphNode != null) {
-    <ul class="app-graph-node">
-      <li>
-        <a href="#">woe</a>
-      </li>
-    </ul>
+  <a href="#">{{ graphNode.data.deedNo }}</a>
+  @if(graphNode.children.length > 0){
+  <ul class="app-graph-node" [graphNodeArray]="graphNode.children">
+  </ul>
   }
-
 </li>
+}

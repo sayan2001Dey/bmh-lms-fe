@@ -9,5 +9,5 @@ import { GraphNode } from '../../../../../model/graph-node.model';
   styleUrl: './graph-node.component.scss',
 })
 export class GraphNodeComponent {
-  @Input() graphNode: GraphNode | null = null;
+  @Input() graphNodeArray: GraphNode[] = [];
 }
