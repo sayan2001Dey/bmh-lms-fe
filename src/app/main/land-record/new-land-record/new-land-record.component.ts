@@ -87,7 +87,6 @@ export class NewLandRecordComponent implements OnInit {
     deedId: ['', Validators.required],
     deedType: ['main-deed', Validators.required],
     remarks: [''],
-    historyChain: ['', Validators.required],
   });
 
   chainDeedForms: WritableSignal<FormGroup[]> = signal([
