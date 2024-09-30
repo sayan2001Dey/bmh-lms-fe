@@ -84,8 +84,9 @@ export class NewLandRecordComponent implements OnInit {
   viewMode: WritableSignal<boolean> = signal(false);
 
   newLandRecordForm: FormGroup = this.fb.group({
-    deedId: ['', Validators.required],
-    deedType: ['main-deed', Validators.required],
+    // KEEP THIS FOR FUTURE USE
+    // deedId: ['', Validators.required],
+    // deedType: ['main-deed', Validators.required],
     remarks: [''],
   });
 
@@ -206,8 +207,9 @@ export class NewLandRecordComponent implements OnInit {
     const data = this.newLandRecordForm.value;
 
     let chainDeedData: ChainDeedData[] = [];
-
-    if (data.deedType === 'chain-deed') chainDeedData = this.chainDeedDataArray;
+    // KEEP THIS FOR FUTURE USE
+    // if (data.deedType === 'chain-deed')
+      chainDeedData = this.chainDeedDataArray;
 
     data.chainDeedData = chainDeedData;
 
@@ -404,8 +406,9 @@ export class NewLandRecordComponent implements OnInit {
       }
       if (this.viewMode()) {
         this.disableFileRemoval.set(true);
-        this.newLandRecordForm.controls['deedId'].disable();
-        this.newLandRecordForm.controls['deedType'].disable();
+        // KEEP THIS FOR FUTURE USE
+        // this.newLandRecordForm.controls['deedId'].disable();
+        // this.newLandRecordForm.controls['deedType'].disable();
         this.chainDeedForms().forEach((formGroup: FormGroup) => {
           formGroup.disable();
         });

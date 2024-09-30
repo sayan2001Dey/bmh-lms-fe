@@ -14,7 +14,9 @@
     <form [formGroup]="newLandRecordForm">
       <section class="container mb-3">
         <h5 class="font-regular my-3">Deed Details</h5>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+
+        <!-- KEEP THIS FOR FUTURE USE -->
+        <!-- <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
           <mat-form-field appearance="outline">
             <mat-label>Deed No.</mat-label>
             <mat-select formControlName="deedId">
@@ -30,9 +32,10 @@
               <mat-button-toggle value="chain-deed">Chain Deed</mat-button-toggle>
             </mat-button-toggle-group>
           </div>
-        </div>
+        </div> -->
 
-        @if(form["deedType"].value === 'chain-deed') {
+        <!-- KEEP THIS FOR FUTURE USE -->
+        <!-- @if(form["deedType"].value === 'chain-deed') { -->
         <div class="row">
           <div>
             @for (item of chainDeedForms(); track 'deeds-'+$index) {
@@ -81,7 +84,8 @@
             </button>
           </div>
         </div>
-        }
+        <!-- KEEP THIS FOR FUTURE USE -->
+        <!-- } -->
       </section>
 
       <section class="container mb-3">
