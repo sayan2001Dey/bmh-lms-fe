@@ -15,6 +15,10 @@ import { Deed } from '../../../model/deed.model';
 import { DeedMasterService } from '../../master/services/deed-master.service';
 import { ChainDeedData } from '../../../model/chain-deed-data.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-list-land-record',
@@ -25,6 +29,10 @@ import { HttpErrorResponse } from '@angular/common/http';
     MatCardModule,
     MatButtonModule,
     RouterLink,
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    MatAutocompleteModule,
   ],
   templateUrl: './list-land-record.component.html',
   styleUrl: './list-land-record.component.scss',
@@ -91,6 +99,8 @@ export class ListLandRecordComponent {
     );
   }
 
+  
+
   getGroupName(groupId: string): string {
     return (
       this.groupList().find((group) => group.groupId === groupId)?.groupName ||
@@ -129,7 +139,6 @@ export class ListLandRecordComponent {
     return deedId;
   }
 
-
   onDeleteLandRecord(recId: string) {
     if (
       window.confirm(
@@ -140,9 +149,7 @@ export class ListLandRecordComponent {
       this.landRecordsService.deleteLandRecord(recId).subscribe({
         next: () => {
           this.listData.set(
-            this.listData().filter(
-              (record) => record.recId !== recId
-            )
+            this.listData().filter((record) => record.recId !== recId)
           );
         },
         error: (err: HttpErrorResponse) => {
@@ -160,8 +167,6 @@ export class ListLandRecordComponent {
       });
     }
   }
-
-
 
   ngOnInit(): void {
     this.setLandRecordList();

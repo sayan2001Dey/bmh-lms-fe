@@ -1,9 +1,32 @@
 <main class="container py-1">
-  <div class="row">
-    <button mat-raised-button type="button" class="ms-auto add-btn w-auto me-2 my-2" routerLink="./new">
-      <mat-icon>add</mat-icon> Add new land record
-    </button>
-  </div>
+  <section class="d-flex">
+    <div class="container my-3 d-flex align-items-center">
+      <mat-form-field appearance="outline" class="me-2">
+        <mat-label>Deed No.</mat-label>
+        <input matInput type="text">
+        <!-- [formControl]="searchBar" [matAutocomplete]="auto" -->
+        <!-- <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+        @for (option of filteredOptions | async; track option) {
+        <mat-option [value]="option.deedNo">{{option.deedNo}}</mat-option>
+        }
+      </mat-autocomplete> -->
+      </mat-form-field>
+
+      <button mat-flat-button style="height: 3rem !important; margin-bottom: 1.2rem;" aria-label="Search"
+        matTooltip="Search">
+        <!-- (click)="onSearch()" -->
+        <span class="d-none d-md-inline">Search</span>
+        <mat-icon>search</mat-icon>
+      </button>
+    </div>
+
+    <div>
+      <button mat-raised-button type="button" class="ms-auto add-btn w-auto me-2 my-2" routerLink="./new">
+        <mat-icon>add</mat-icon> Add new land record
+      </button>
+    </div>
+  </section>
+
   <mat-card appearance="outlined" class="p-2">
     <table mat-table [dataSource]="listData()">
       <!--- Note that these columns can be defined in any order.
