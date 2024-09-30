@@ -132,11 +132,8 @@ export class LandRecordsService {
     });
   }
 
-  public deleteLandRecord(recId: string): void {
-    this.http.delete(this.uri + '/' + recId).subscribe((data) => {
-      console.log(data);
-      this.router.navigateByUrl('/land-record');
-    });
+  public deleteLandRecord(recId: string): Observable<any> {
+    return this.http.delete(this.uri + '/' + recId)
   }
 
   /**
