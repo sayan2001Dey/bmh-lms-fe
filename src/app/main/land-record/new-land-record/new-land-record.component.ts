@@ -143,6 +143,8 @@ export class NewLandRecordComponent implements OnInit {
     return this.chainDeedForms()[index].value;
   }
 
+    onAddNewDeedMaster(): void {}
+
   onAddChainDeed(
     initialValues: ChainDeedData = {
       deedId: '',

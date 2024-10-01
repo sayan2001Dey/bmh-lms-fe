@@ -71,7 +71,6 @@
                     <input formControlName="order" type="number" min="1" matInput>
                   </mat-form-field>
                 </form>
-                <button type="button" mat-button style="margin-top: -1rem; margin-bottom: 0.5rem;"><mat-icon>add</mat-icon> Create new deed in deed master</button>
               </div>
 
               <span class="mt-2 mb-auto">
@@ -86,6 +85,9 @@
             <button mat-stroked-button type="button" class="btn-sp2" (click)="onAddChainDeed()" [disabled]="viewMode()">
               <mat-icon>add</mat-icon> Add Deeds
             </button>
+
+            <button type="button" mat-flat-button class="btn-sp2 mx-4" (click)="onAddNewDeedMaster()" [disabled]="viewMode()">
+              <mat-icon>add</mat-icon> Create new deed in deed master</button>
           </div>
         </div>
         <!-- KEEP THIS FOR FUTURE USE -->
