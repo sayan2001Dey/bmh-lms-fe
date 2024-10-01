@@ -45,6 +45,7 @@ export class AuthService {
 
   setUser(data: any): void {
     Object.keys(data).forEach((key) => localStorage.setItem(key, data[key]));
+    localStorage.setItem('navState', 'true');
     this.isAuthenticated.set(true);
     this.admin.set(data.admin);
     if (data.name) this.name.set(data.name);

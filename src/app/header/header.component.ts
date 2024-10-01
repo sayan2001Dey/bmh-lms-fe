@@ -1,6 +1,8 @@
 import {
   Component,
+  EffectRef,
   Input,
+  OnDestroy,
   OnInit,
   WritableSignal,
   effect,
@@ -26,7 +28,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnDestroy {
   @Input() navState: WritableSignal<boolean> = signal(true);
   private readonly dialog: Dialog = inject(Dialog);
   private readonly authService: AuthService = inject(AuthService);
@@ -38,13 +40,16 @@ export class HeaderComponent {
   readonly name: WritableSignal<string> = this.authService.getName;
   readonly username: WritableSignal<string> = this.authService.getUsername;
   readonly router: Router = inject(Router);
+  private readonly navStateEffect: EffectRef = effect(() => {
+    if (this.loggedIn())
+      untracked(() =>
+        this.navState.set(
+          localStorage.getItem('navState') === 'true' ? true : false
+        )
+      );
+    else untracked(() => this.navState.set(false));
+  });
 
-  constructor() {
-    effect(() => {
-      if (this.loggedIn()) untracked(() => this.navState.set(true));
-      else untracked(() => this.navState.set(false));
-    });
-  }
   get menuEnabled() {
     return this.loggedIn();
   }
@@ -104,5 +109,9 @@ export class HeaderComponent {
         },
       });
     });
+  }
+
+  ngOnDestroy(): void {
+    this.navStateEffect.destroy();
   }
 }

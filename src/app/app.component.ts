@@ -1,7 +1,10 @@
 import {
   Component,
+  EffectRef,
+  OnDestroy,
   OnInit,
   WritableSignal,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -15,19 +18,31 @@ import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { filter, map, mergeMap } from 'rxjs';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { SideNavComponent } from "./side-nav/side-nav.component";
+import { SideNavComponent } from './side-nav/side-nav.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
-  imports: [MatSidenavModule, RouterOutlet, HeaderComponent, FooterComponent, SideNavComponent],
+  imports: [
+    MatSidenavModule,
+    RouterOutlet,
+    HeaderComponent,
+    FooterComponent,
+    SideNavComponent,
+  ],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   private router: Router = inject(Router);
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
-  readonly navState: WritableSignal<boolean> = signal(true);
+  readonly navState: WritableSignal<boolean> = signal(
+    localStorage.getItem('navState') === 'true' ? true : false
+  );
+  private readonly navStateEffect: EffectRef = effect(() => {
+    localStorage.setItem('navState', String(this.navState()));
+  });
+  readonly sysIsBusy: WritableSignal<boolean> = signal(true);
 
   ngOnInit(): void {
     this.router.events
@@ -47,5 +62,9 @@ export class AppComponent implements OnInit {
           document.title = data['title'];
         }
       });
+  }
+
+  ngOnDestroy(): void {
+    this.navStateEffect.destroy();
   }
 }
