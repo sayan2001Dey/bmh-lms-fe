@@ -1,5 +1,6 @@
 <main style="max-height: 100vh; overflow-y: auto;">
-  <app-deed-master dialogMode='new' [dialogRef]="dialogRef"></app-deed-master>
-  <!-- NOTE: -->
-  <!-- [deedId]="id" -->
+  <app-deed-master
+    [dialogMode]='data?.dialogMode || "new"'
+    [deedId]="data?.deedId || ''"
+    [dialogRef]="dialogRef" />
 </main>

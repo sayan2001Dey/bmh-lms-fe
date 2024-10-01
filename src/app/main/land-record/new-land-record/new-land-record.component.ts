@@ -145,13 +145,10 @@ export class NewLandRecordComponent implements OnInit {
   }
 
   onAddNewDeedMaster(): void {
-    const dialogRef = this.dialog.open<Deed>(
-      DeedMasterDialogComponent,
-      {
-        backdropClass: 'light-blur-backdrop',
-        disableClose: true,
-      }
-    );
+    const dialogRef = this.dialog.open<Deed>(DeedMasterDialogComponent, {
+      backdropClass: 'light-blur-backdrop',
+      disableClose: true,
+    });
 
     dialogRef.backdropClick.subscribe(() => {
       if (
@@ -163,8 +160,9 @@ export class NewLandRecordComponent implements OnInit {
     });
 
     dialogRef.closed.subscribe((res: Deed | undefined) => {
-      console.log(res);
-      this.setDeedList();
+      if (!res) return;
+      // OPTIMIZED
+      this.deedList.set([...this.deedList(), res]);
     });
   }
 

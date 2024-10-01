@@ -1,6 +1,6 @@
-import { DialogRef } from '@angular/cdk/dialog';
-import { Component, inject } from '@angular/core';
-import { DeedMasterComponent } from "../../deed-master.component";
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
+import { Component, Inject, inject } from '@angular/core';
+import { DeedMasterComponent } from '../../deed-master.component';
 
 @Component({
   selector: 'app-deed-master-dialog',
@@ -11,4 +11,16 @@ import { DeedMasterComponent } from "../../deed-master.component";
 })
 export class DeedMasterDialogComponent {
   readonly dialogRef: DialogRef = inject(DialogRef);
+  readonly data;
+  constructor(
+    @Inject(DIALOG_DATA)
+    data:
+      | {
+          deedId: string;
+          dialogMode: 'none' | 'update' | 'view' | 'new';
+        }
+      | undefined = undefined
+  ) {
+    this.data = data;
+  }
 }

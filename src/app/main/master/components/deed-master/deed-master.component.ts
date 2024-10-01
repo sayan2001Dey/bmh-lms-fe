@@ -77,7 +77,7 @@ import { Company } from '../../../../model/company.model';
   styleUrl: './deed-master.component.scss',
 })
 export class DeedMasterComponent implements OnInit, OnDestroy {
-  @Input() dialogMode: string = 'none';
+  @Input() dialogMode: 'none' | 'new' | 'update' | 'view' = 'none';
   @Input() deedId: string = '';
   @Input() dialogRef: DialogRef | null = null;
   private readonly groupMasterService: GroupMasterService =
