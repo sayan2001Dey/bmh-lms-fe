@@ -17,7 +17,7 @@ import { ChainDeedData } from '../../../model/chain-deed-data.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @Component({
@@ -57,11 +57,39 @@ export class ListLandRecordComponent {
   readonly groupList: WritableSignal<Group[]> = signal([]);
   readonly mouzaList: WritableSignal<Mouza[]> = signal([]);
   readonly sysIsBusy: WritableSignal<boolean> = signal(false);
+  readonly filteredListData: WritableSignal<any[]> = signal([]);
+  readonly searchBar: FormControl<string | null> =
+    inject(FormBuilder).control('');
+
+  get searchValue(): string {
+    return this.searchBar.value || '';
+  }
+
+  onSearch(): void {
+    const listData = this.listData();
+    const searchValue = this.searchValue.toLowerCase();
+    this.filteredListData.set(
+      listData.filter((data, idx) => {
+        if ((data.recId as string).toLowerCase().includes(searchValue))
+          return true;
+
+        const deedNos: string[] = this.getDeedNos(idx);
+        for (const deedNo of deedNos) {
+          if (deedNo.toLowerCase().includes(searchValue)) return true;
+        }
+
+        return false;
+      })
+    );
+
+    console.log('filteredListData: ', this.filteredListData());
+  }
 
   setLandRecordList(): void {
     this.landRecordsService.getLandRecordList().subscribe((data: any) => {
       console.log('listData: ', data);
       this.listData.set(data);
+      this.onSearch();
     });
   }
 
@@ -99,8 +127,6 @@ export class ListLandRecordComponent {
     );
   }
 
-  
-
   getGroupName(groupId: string): string {
     return (
       this.groupList().find((group) => group.groupId === groupId)?.groupName ||
@@ -132,10 +158,20 @@ export class ListLandRecordComponent {
     return res;
   }
 
+  getDeedNosFiltered(idx: number): string[] {
+    const filteredListData = this.filteredListData();
+    let res: string[] = [];
+    if (idx < filteredListData.length && idx > -1) {
+      filteredListData[idx].chainDeedData.map((chainDeed: ChainDeedData) =>
+        res.push(this.getDeedNo(chainDeed.deedId))
+      );
+    }
+    return res;
+  }
+
   getDeedNo(deedId: string): string {
     const deedList: Deed[] = this.deedList();
     for (const deed of deedList) if (deed.deedId === deedId) return deed.deedNo;
-
     return deedId;
   }
 
