@@ -44,31 +44,35 @@
                 {{ $index + 1 }}.
               </span>
 
-              <form [formGroup]="item" class="d-flex align-items-center flex-wrap">
-                <mat-form-field class="mx-2">
-                  <mat-label>Deed No.</mat-label>
-                  <mat-select formControlName="deedId" required>
-                    @for (deed of deedList(); track 'deed-'+$index) {
-                    <mat-option [value]="deed.deedId">{{deed.deedNo}}</mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
+              <div>
 
-                <div class="mx-2">
-                  <mat-form-field>
-                    <mat-label>Deed Type</mat-label>
-                    <mat-select formControlName="deedType" required>
-                      <mat-option value="Main Deed">Main Deed</mat-option>
-                      <mat-option value="Chain Deed">Chain Deed</mat-option>
+                <form [formGroup]="item" class="d-flex align-items-center flex-wrap">
+                  <mat-form-field class="mx-2">
+                    <mat-label>Deed No.</mat-label>
+                    <mat-select formControlName="deedId" required>
+                      @for (deed of deedList(); track 'deed-'+$index) {
+                      <mat-option [value]="deed.deedId">{{deed.deedNo}}</mat-option>
+                      }
                     </mat-select>
                   </mat-form-field>
-                </div>
 
-                <mat-form-field class="mx-2 deed-order-input">
-                  <mat-label>Order</mat-label>
-                  <input formControlName="order" type="number" min="1" matInput>
-                </mat-form-field>
-              </form>
+                  <div class="mx-2">
+                    <mat-form-field>
+                      <mat-label>Deed Type</mat-label>
+                      <mat-select formControlName="deedType" required>
+                        <mat-option value="Main Deed">Main Deed</mat-option>
+                        <mat-option value="Chain Deed">Chain Deed</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+
+                  <mat-form-field class="mx-2 deed-order-input">
+                    <mat-label>Order</mat-label>
+                    <input formControlName="order" type="number" min="1" matInput>
+                  </mat-form-field>
+                </form>
+                <button type="button" mat-button style="margin-top: -1rem; margin-bottom: 0.5rem;"><mat-icon>add</mat-icon> Create new deed in deed master</button>
+              </div>
 
               <span class="mt-2 mb-auto">
                 <button mat-icon-button type="button" (click)="onRemoveChainDeed($index)" [disabled]="viewMode()">
@@ -79,7 +83,7 @@
               </span>
             </div>
             }
-            <button mat-button type="button" class="btn-sp2" (click)="onAddChainDeed()" [disabled]="viewMode()">
+            <button mat-stroked-button type="button" class="btn-sp2" (click)="onAddChainDeed()" [disabled]="viewMode()">
               <mat-icon>add</mat-icon> Add Deeds
             </button>
           </div>

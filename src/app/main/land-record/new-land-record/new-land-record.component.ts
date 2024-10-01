@@ -36,6 +36,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { ChainDeedData } from '../../../model/chain-deed-data.model';
 import { HistoryChainGraphComponent } from '../../report/history-chain-graph/history-chain-graph.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { AsyncPipe } from '@angular/common';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-new-land-record',
@@ -59,6 +62,8 @@ import { HistoryChainGraphComponent } from '../../report/history-chain-graph/his
     ReactiveFormsModule,
     MatTooltipModule,
     MatButtonToggleModule,
+    MatAutocompleteModule,
+    AsyncPipe,
     HistoryChainGraphComponent,
   ],
   templateUrl: './new-land-record.component.html',
