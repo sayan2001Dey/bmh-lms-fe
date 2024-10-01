@@ -82,12 +82,17 @@
               </span>
             </div>
             }
-            <button mat-stroked-button type="button" class="btn-sp2" (click)="onAddChainDeed()" [disabled]="viewMode()">
+          </div>
+          <div class="d-flex align-items-center flex-wrap">
+            <button mat-stroked-button type="button" class="btn-sp2 m-2" (click)="onAddChainDeed()"
+              [disabled]="viewMode()">
               <mat-icon>add</mat-icon> Add Deeds
             </button>
 
-            <button type="button" mat-flat-button class="btn-sp2 mx-4" (click)="onAddNewDeedMaster()" [disabled]="viewMode()">
-              <mat-icon>add</mat-icon> Create new deed in deed master</button>
+            <button type="button" mat-raised-button class="btn-sp2 m-2" (click)="onAddNewDeedMaster()"
+              [disabled]="viewMode()">
+              <mat-icon>add</mat-icon> Create new deed in deed master
+            </button>
           </div>
         </div>
         <!-- KEEP THIS FOR FUTURE USE -->

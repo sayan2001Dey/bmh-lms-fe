@@ -1,5 +1,5 @@
 <main class="container py-1">
-  @if(listMode()) {
+  @if(listMode() && dialogMode === 'none') {
   <div class="row">
     <button mat-raised-button type="button" class="ms-auto add-btn w-auto me-2 my-2" routerLink="./new"
       (click)="onNewDeed()">
@@ -71,9 +71,15 @@
   </mat-card>
   } @else {
   <section class="my-5 d-flex">
-    <button mat-icon-button class="my-sm-auto back-icon-button" routerLink="./" (click)="listMode.set(true)">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
+    @if(dialogMode === 'none') {
+      <button mat-icon-button class="my-sm-auto back-icon-button" routerLink="./" (click)="listMode.set(true)">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+    } @else {
+      <button mat-icon-button class="my-sm-auto back-icon-button" (click)="dialogRef?.close()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+    }
     <span class="h1 my-auto">
       {{ updateMode() ? "Update" : viewMode() ? "View" : "Add new" }} deed
       master</span>

@@ -4,6 +4,7 @@ import {
   effect,
   EffectRef,
   inject,
+  Input,
   OnDestroy,
   OnInit,
   signal,
@@ -35,7 +36,7 @@ import { MortgageData } from '../../../../model/mortgage-data.model';
 import { PartlySoldData } from '../../../../model/partly-sold-data.model';
 import { DialogMortgageFormComponent } from './modal/mortgage-form/mortgage-form.dialog';
 import { DialogPartlySoldFormComponent } from './modal/partly-sold-form/partly-sold-form.dialog';
-import { Dialog } from '@angular/cdk/dialog';
+import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { GroupMasterService } from '../../services/group-master.service';
 import { MouzaMasterService } from '../../services/mouza-master.service';
@@ -76,6 +77,9 @@ import { Company } from '../../../../model/company.model';
   styleUrl: './deed-master.component.scss',
 })
 export class DeedMasterComponent implements OnInit, OnDestroy {
+  @Input() dialogMode: string = 'none';
+  @Input() deedId: string = '';
+  @Input() dialogRef: DialogRef | null = null;
   private readonly groupMasterService: GroupMasterService =
     inject(GroupMasterService);
   private readonly companyMasterService: CompanyMasterService =
@@ -566,15 +570,19 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
           this.oldFileInfoArray,
           {
             next: (data: Partial<Deed>) => {
-              this.deedList.set(
-                this.deedList().map((deed) => {
-                  if (deed.deedId === this.id()) {
-                    return data;
-                  }
-                  return deed;
-                }) as Deed[]
-              );
-              this.onListDeed();
+              if (this.dialogMode === 'none' || this.dialogRef === null) {
+                this.deedList.set(
+                  this.deedList().map((deed) => {
+                    if (deed.deedId === this.id()) {
+                      return data;
+                    }
+                    return deed;
+                  }) as Deed[]
+                );
+                this.onListDeed();
+              } else {
+                this.dialogRef.close(data as Deed);
+              }
             },
             error: () => {
               console.error('error bro error');
@@ -592,8 +600,12 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
           this.fileInfoArray,
           {
             next: (data: Partial<Deed>) => {
-              this.deedList.set([{ ...data } as Deed, ...this.deedList()]);
-              this.onListDeed();
+              if (this.dialogMode === 'none' || this.dialogRef === null) {
+                this.deedList.set([{ ...data } as Deed, ...this.deedList()]);
+                this.onListDeed();
+              } else {
+                this.dialogRef.close(data as Deed);
+              }
             },
             error: () => {
               console.error('error bro error');
@@ -936,7 +948,8 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
   }
 
   onNewDeed(): void {
-    this.router.navigate(['master', 'deed', 'new']);
+    if (this.dialogMode === 'none')
+      this.router.navigate(['master', 'deed', 'new']);
     this.areaMapGridView.set(false);
     this.formResetHelper();
     this.listMode.set(false);
@@ -947,7 +960,8 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
 
   onUpdateDeed(deedId: string) {
     console.log('deed id', deedId);
-    this.router.navigate(['master', 'deed', 'update', deedId]);
+    if (this.dialogMode === 'none')
+      this.router.navigate(['master', 'deed', 'update', deedId]);
     this.updateMode.set(true);
     this.viewMode.set(false);
 
@@ -958,7 +972,8 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
   }
 
   onViewDeed(deedId: string): void {
-    this.router.navigate(['master', 'deed', 'view', deedId]);
+    if (this.dialogMode === 'none')
+      this.router.navigate(['master', 'deed', 'view', deedId]);
     this.updateMode.set(false);
     this.viewMode.set(true);
 
@@ -1155,7 +1170,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
   }
 
   onListDeed() {
-    this.router.navigate(['master', 'deed']);
+    if (this.dialogMode === 'none') this.router.navigate(['master', 'deed']);
     this.listMode.set(true);
     this.updateMode.set(false);
     this.viewMode.set(false);
@@ -1374,22 +1389,37 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
     this.setMouzaList();
     this.setDeedList();
 
-    if (this.route.children[0]) {
-      this.route.children[0].url.subscribe((data) => {
-        if (data[0].path) {
-          if (data[0].path === 'update') {
-            this.onUpdateDeed(data[1].path);
-          } else if (data[0].path === 'new') {
-            this.onNewDeed();
-          } else if (data[0].path === 'view') {
-            this.onViewDeed(data[1].path);
-          } else {
-            this.onListDeed();
-          }
+    switch (this.dialogMode) {
+      case 'new':
+        this.onNewDeed();
+        break;
+
+      case 'update':
+        this.onUpdateDeed(this.deedId);
+        break;
+
+      case 'view':
+        this.onViewDeed(this.deedId);
+        break;
+
+      default:
+        if (this.route.children[0]) {
+          this.route.children[0].url.subscribe((data) => {
+            if (data[0].path) {
+              if (data[0].path === 'update') {
+                this.onUpdateDeed(data[1].path);
+              } else if (data[0].path === 'new') {
+                this.onNewDeed();
+              } else if (data[0].path === 'view') {
+                this.onViewDeed(data[1].path);
+              } else {
+                this.onListDeed();
+              }
+            }
+          });
+        } else {
+          this.onListDeed();
         }
-      });
-    } else {
-      this.onListDeed();
     }
 
     this.deedForm.controls['deedId'].disable();

@@ -39,6 +39,7 @@ import { HistoryChainGraphComponent } from '../../report/history-chain-graph/his
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AsyncPipe } from '@angular/common';
 import { Observable } from 'rxjs';
+import { DeedMasterDialogComponent } from '../../master/components/deed-master/modal/deed-master-dialog/deed-master-dialog.component';
 
 @Component({
   selector: 'app-new-land-record',
@@ -143,7 +144,29 @@ export class NewLandRecordComponent implements OnInit {
     return this.chainDeedForms()[index].value;
   }
 
-    onAddNewDeedMaster(): void {}
+  onAddNewDeedMaster(): void {
+    const dialogRef = this.dialog.open<Deed>(
+      DeedMasterDialogComponent,
+      {
+        backdropClass: 'light-blur-backdrop',
+        disableClose: true,
+      }
+    );
+
+    dialogRef.backdropClick.subscribe(() => {
+      if (
+        window.confirm(
+          '⚠  CAUTION: ALL CHANGES WILL BE LOST!\n\nDo you really want to leave?'
+        )
+      )
+        dialogRef.close();
+    });
+
+    dialogRef.closed.subscribe((res: Deed | undefined) => {
+      console.log(res);
+      this.setDeedList();
+    });
+  }
 
   onAddChainDeed(
     initialValues: ChainDeedData = {
@@ -216,7 +239,7 @@ export class NewLandRecordComponent implements OnInit {
     let chainDeedData: ChainDeedData[] = [];
     // KEEP THIS FOR FUTURE USE
     // if (data.deedType === 'chain-deed')
-      chainDeedData = this.chainDeedDataArray;
+    chainDeedData = this.chainDeedDataArray;
 
     data.chainDeedData = chainDeedData;
 
