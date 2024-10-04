@@ -91,6 +91,7 @@ export class HistoryChainReportComponent implements OnInit {
       alert('⛔ ERROR: THIS DEED IS NOT PART OF A RECORD\n\nDeed not found.');
     }
 
+    console.log("deeList", this.deedList());
     console.log(recId);
     this.sysIsBusy.set(true);
     this.landRecordService.getLandRecord(recId).subscribe({
