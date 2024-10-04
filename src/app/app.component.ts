@@ -19,6 +19,7 @@ import { FooterComponent } from './footer/footer.component';
 import { filter, map, mergeMap } from 'rxjs';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { SideNavComponent } from './side-nav/side-nav.component';
+import { HistoryChainGraphDynamicComponent } from "./main/report/history-chain-graph/history-chain-graph-dynamic/history-chain-graph-dynamic.component";
 
 @Component({
   selector: 'app-root',
@@ -31,7 +32,8 @@ import { SideNavComponent } from './side-nav/side-nav.component';
     HeaderComponent,
     FooterComponent,
     SideNavComponent,
-  ],
+    HistoryChainGraphDynamicComponent
+],
 })
 export class AppComponent implements OnInit, OnDestroy {
   private router: Router = inject(Router);
