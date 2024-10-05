@@ -1,92 +1,44 @@
-export const historyChainTD = [{
-  "_id": {
-    "$oid": "66d04f0ac5d1e36b0fc43cf4"
+import { HistoryChainData } from '../../../model/history-chain-data.model';
+
+export const historyChainTD: HistoryChainData[] = [
+  {
+    deedId: 'DM-1868',
+    parents: [],
+    children: ['DM-3569'],
   },
-  "name": "sayan",
-  "recId": "1",
-  "parents": [],
-  "children": [
-    "2",
-    "3",
-    "6"
-  ],
-  "_class": "com.bmh.lms.model.HistoryChain"
-},
-{
-  "_id": {
-    "$oid": "66d052960a053b7522604a0f"
+  {
+    deedId: 'DM-3569',
+    parents: ['DM-1868', 'DM-4610'],
+    children: [],
   },
-  "name": "A",
-  "recId": "3",
-  "parents": [
-    "1",
-    "2"
-  ],
-  "children": [
-    "5"
-  ],
-  "_class": "com.bmh.lms.model.HistoryChain"
-},
-{
-  "_id": {
-    "$oid": "66d052a00a053b7522604a10"
+  {
+    deedId: 'DM-4610',
+    parents: [],
+    children: ['DM-3569'],
   },
-  "name": "Archisman",
-  "recId": "4",
-  "parents": [
-    "2"
-  ],
-  "children": [
-    "5"
-  ],
-  "_class": "com.bmh.lms.model.HistoryChain"
-},
-{
-  "_id": {
-    "$oid": "66d052af0a053b7522604a11"
-  },
-  "name": "Archisman",
-  "recId": "5",
-  "parents": [
-    "3",
-    "4"
-  ],
-  "children": [],
-  "_class": "com.bmh.lms.model.HistoryChain"
-},
-{
-  "_id": {
-    "$oid": "66d053c10a053b7522604a12"
-  },
-  "name": "Archisman",
-  "recId": "6",
-  "parents": [
-    "1"
-  ],
-  "children": [],
-  "_class": "com.bmh.lms.model.HistoryChain"
-},
-{
-  "_id": {
-    "$oid": "66d053ed0a053b7522604a13"
-  },
-  "name": "Archisman",
-  "recId": "7",
-  "parents": [],
-  "children": [
-    "8"
-  ],
-  "_class": "com.bmh.lms.model.HistoryChain"
-},
-{
-  "_id": {
-    "$oid": "66d053fb0a053b7522604a14"
-  },
-  "name": "Archisman",
-  "recId": "8",
-  "parents": [
-    "7"
-  ],
-  "children": [],
-  "_class": "com.bmh.lms.model.HistoryChain"
-}]
+  // {
+  //   deedId: 'DM-5537',
+  //   parents: ['DM-3569', 'DM-4610'],
+  //   children: [],
+  // },
+  // {
+  //   deedId: 'DM-6418',
+  //   parents: ['DM-1868'],
+  //   children: [],
+  // },
+  // {
+  //   deedId: 'DM-7359',
+  //   parents: [],
+  //   children: ['DM-8580'],
+  // },
+  // {
+  //   deedId: 'DM-8580',
+  //   parents: ['DM-7359'],
+  //   children: [],
+  // },
+  // {
+  //   deedId: 'DM-2332',
+  //   parents: ['DM-4610', 'DM-3569', 'DM-1868'],
+  //   children: [],
+  // }
+];

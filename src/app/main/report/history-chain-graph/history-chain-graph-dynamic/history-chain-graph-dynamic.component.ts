@@ -1,8 +1,12 @@
 import {
   Component,
+  effect,
+  EffectRef,
   Input,
+  OnDestroy,
   signal,
   Signal,
+  untracked,
   ViewChild,
   ViewEncapsulation,
   WritableSignal,
@@ -26,23 +30,17 @@ import { GraphStateData } from '../../../../model/graph-state-data.model';
 export class HistoryChainGraphDynamicComponent {
   @ViewChild('myDiagram', { static: true })
   public myDiagramComponent!: DiagramComponent;
-  @ViewChild('myPalette', { static: true })
-  public myPaletteComponent!: PaletteComponent;
-  @Input()
-  public stateSignal: WritableSignal<GraphStateData> | Signal<GraphStateData> =
-    signal({
-      diagramNodeData: [],
-      diagramLinkData: [],
-      diagramModelData: {},
-      skipsDiagramUpdate: true,
-    });
 
   // Big object that holds app-level state data
   // As of gojs-angular 2.0, immutability is expected and required of state for ease of change detection.
   // Whenever updating state, immutability must be preserved. It is recommended to use immer for this, a small package that makes working with immutable data easy.
-  public get state(): GraphStateData {
-    return this.stateSignal();
-  }
+  @Input()
+  public state: GraphStateData = {
+    diagramNodeData: [],
+    diagramLinkData: [],
+    diagramModelData: {},
+    skipsDiagramUpdate: true,
+  };
 
   public diagramDivClassName = 'myDiagramDiv';
 

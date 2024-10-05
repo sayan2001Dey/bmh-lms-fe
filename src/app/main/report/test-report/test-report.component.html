@@ -1,1 +1,3 @@
-<app-history-chain-graph-dynamic [stateSignal]="stateSignal"></app-history-chain-graph-dynamic>
+@if(renderDiagramComponent()) {
+<app-history-chain-graph-dynamic [state]="stateSignal()"></app-history-chain-graph-dynamic>
+}
