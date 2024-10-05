@@ -1,9 +1,7 @@
 import {
   Component,
-  computed,
   Input,
   OnChanges,
-  Signal,
   signal,
   SimpleChanges,
   WritableSignal,
@@ -11,7 +9,6 @@ import {
 import { HistoryChainGraphViewOPMCComponent } from './history-chain-graph-view-opmc/history-chain-graph-view-opmc.component';
 import { HistoryChainGraphViewLinearComponent } from './history-chain-graph-view-linear/history-chain-graph-view-linear.component';
 import { GraphNode } from '../../../model/graph-node.model';
-import { FormGroup } from '@angular/forms';
 import { Deed } from '../../../model/deed.model';
 import { ChainDeedData } from '../../../model/chain-deed-data.model';
 

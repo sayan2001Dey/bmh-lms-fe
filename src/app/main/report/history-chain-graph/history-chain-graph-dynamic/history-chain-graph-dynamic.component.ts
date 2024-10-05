@@ -1,10 +1,19 @@
-import { Component, ViewChild, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  Input,
+  signal,
+  Signal,
+  ViewChild,
+  ViewEncapsulation,
+  WritableSignal,
+} from '@angular/core';
 import {
   DiagramComponent,
   GojsAngularModule,
   PaletteComponent,
 } from 'gojs-angular';
 import * as go from 'gojs';
+import { GraphStateData } from '../../../../model/graph-state-data.model';
 
 @Component({
   selector: 'app-history-chain-graph-dynamic',
@@ -19,28 +28,22 @@ export class HistoryChainGraphDynamicComponent {
   public myDiagramComponent!: DiagramComponent;
   @ViewChild('myPalette', { static: true })
   public myPaletteComponent!: PaletteComponent;
+  @Input()
+  public stateSignal: WritableSignal<GraphStateData> | Signal<GraphStateData> =
+    signal({
+      diagramNodeData: [],
+      diagramLinkData: [],
+      diagramModelData: {},
+      skipsDiagramUpdate: true,
+    });
 
   // Big object that holds app-level state data
   // As of gojs-angular 2.0, immutability is expected and required of state for ease of change detection.
   // Whenever updating state, immutability must be preserved. It is recommended to use immer for this, a small package that makes working with immutable data easy.
-  public state = {
-    // Diagram state props
-    diagramNodeData: [
-      { key: 'Alpha', text: 'Alpha', color: 'lightblue', loc: '0 0' },
-      { key: 'Beta', text: 'Beta', color: 'orange', loc: '150 0' },
-      { key: 'Gamma', text: 'Gamma', color: 'lightgreen', loc: '0 100' },
-      { key: 'Delta', text: 'Delta', color: 'pink', loc: '100 100' },
-    ],
-    diagramLinkData: [
-      { key: -1, from: 'Alpha', to: 'Beta', fromPort: 'r', toPort: 'l' },
-      { key: -2, from: 'Alpha', to: 'Gamma', fromPort: 'b', toPort: 't' },
-      { key: -3, from: 'Beta', to: 'Beta' },
-      { key: -4, from: 'Gamma', to: 'Delta', fromPort: 'r', toPort: 'l' },
-      { key: -5, from: 'Delta', to: 'Alpha', fromPort: 't', toPort: 'r' },
-    ],
-    diagramModelData: { prop: 'value' },
-    skipsDiagramUpdate: true,
-  };
+  public get state(): GraphStateData {
+    return this.stateSignal();
+  }
+
   public diagramDivClassName = 'myDiagramDiv';
 
   public initDiagram(): go.Diagram {

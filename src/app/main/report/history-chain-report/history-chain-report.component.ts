@@ -21,6 +21,7 @@ import { LandRecordsService } from '../../land-record/land-records.service';
 import { HistoryChainGraphComponent } from '../history-chain-graph/history-chain-graph.component';
 import { ChainDeedData } from '../../../model/chain-deed-data.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { TestReportComponent } from "../test-report/test-report.component";
 
 @Component({
   selector: 'app-history-chain-report',
@@ -36,7 +37,8 @@ import { HttpErrorResponse } from '@angular/common/http';
     ReactiveFormsModule,
     AsyncPipe,
     HistoryChainGraphComponent,
-  ],
+    TestReportComponent
+],
   templateUrl: './history-chain-report.component.html',
   styleUrl: './history-chain-report.component.scss',
 })

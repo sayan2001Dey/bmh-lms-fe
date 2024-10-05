@@ -11,7 +11,7 @@
   <ul>
     @for(ld of state.diagramLinkData; track $index){
     <li>
-      Link Key: {{ld.key}}, To: {{ld.to}}, From: {{ ld.from }}
+      Link Key: {{ld['key']}}, To: {{ld['to']}}, From: {{ ld['from'] }}
     </li>
     }
   </ul>
@@ -22,7 +22,7 @@
   <ul>
     @for(nd of state.diagramNodeData; track $index){
     <li>
-      Node Key: {{nd.key}}, Text: {{nd.text}}, Color: {{nd.color}}, Loc: {{nd.loc}}
+      Node Key: {{nd['key']}}, Text: {{nd['text']}}, Color: {{nd['color']}}, Loc: {{nd['loc']}}
     </li>
     }
   </ul>
