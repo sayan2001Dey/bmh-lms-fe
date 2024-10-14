@@ -66,9 +66,18 @@
                     </mat-form-field>
                   </div>
 
-                  <mat-form-field class="mx-2 deed-order-input">
+                  <!-- <mat-form-field class="mx-2 deed-order-input">
                     <mat-label>Order</mat-label>
                     <input formControlName="order" type="number" min="1" matInput>
+                  </mat-form-field> -->
+
+                  <mat-form-field class="mx-2">
+                    <mat-label>Parent Deed(s)</mat-label>
+                    <mat-select formControlName="parentDeedIds" multiple>
+                      @for (deed of deedList(); track 'deed-'+$index) {
+                      <mat-option [value]="deed.deedId">{{deed.deedNo}}</mat-option>
+                      }
+                    </mat-select>
                   </mat-form-field>
                 </form>
               </div>

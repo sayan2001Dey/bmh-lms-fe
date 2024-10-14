@@ -100,7 +100,7 @@ export class NewLandRecordComponent implements OnInit {
     this.fb.group({
       deedId: ['', Validators.required],
       deedType: ['chain-deed', Validators.required],
-      order: [NaN, Validators.required],
+      parentDeedIds: [],
     }),
   ]);
 
@@ -170,7 +170,7 @@ export class NewLandRecordComponent implements OnInit {
     initialValues: ChainDeedData = {
       deedId: '',
       deedType: 'chain-deed',
-      order: NaN,
+      parentDeedIds: [],
     }
   ): void {
     this.chainDeedForms.update((formsArray: FormGroup[]) => {
@@ -178,10 +178,7 @@ export class NewLandRecordComponent implements OnInit {
         this.fb.group({
           deedId: [initialValues.deedId, Validators.required],
           deedType: [initialValues.deedType, Validators.required],
-          order: [
-            initialValues.order,
-            [Validators.required, Validators.min(1)],
-          ],
+          parentDeedIds: [initialValues.parentDeedIds],
         })
       );
       return formsArray;
@@ -254,6 +251,9 @@ export class NewLandRecordComponent implements OnInit {
    * @return {void} This function does not return anything.
    */
   onSubmit(): void {
+    // TODO: TRIM
+    console.log("exp ", this.chainDeedDataArray);
+    // return;
     if (this.newLandRecordForm.valid) {
       if (this.updateMode()) {
         this.landRecordsService.updateLandRecord(

@@ -41,7 +41,8 @@ export class HistoryChainGraphComponent implements OnChanges {
     if (changes['chainDeedDataArray']) {
       // this algo only does 1 parent 1 child no matter the order
       const sortedChainDeedData: ChainDeedData[] = this.chainDeedDataArray.sort(
-        (a, b) => a.order - b.order
+        // TODO: check back later
+        // (a, b) => a.order - b.order
       );
       let graphData: GraphNode | undefined;
       let graphDataTmpPtr: GraphNode | undefined;
