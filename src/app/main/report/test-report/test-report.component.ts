@@ -64,10 +64,8 @@ export class TestReportComponent implements OnInit {
       complete: () => {
         this.sysIsBusy.set(false);
         console.log('deedFetchComplete: ', this.deedList());
-        setTimeout(() => {
-          this.processData();
-          this.renderDiagramComponent.set(true);
-        }, 3000);
+        this.processData();
+        this.renderDiagramComponent.set(true);
       },
     });
   }
@@ -91,7 +89,7 @@ export class TestReportComponent implements OnInit {
       let d = this.jsonData[i];
       nodesData.push({
         key: d.deedId,
-        text: d.deedId,
+        text: this.getDeedNo(d.deedId)+'\n'+d.deedId,
         color: 'lightgreen',
         // TODO
         // loc: '0 150',
