@@ -101,6 +101,7 @@ export class NewLandRecordComponent implements OnInit {
       deedId: ['', Validators.required],
       deedType: ['chain-deed', Validators.required],
       parentDeedIds: [],
+      childDeedIds: [],
     }),
   ]);
 
@@ -171,6 +172,7 @@ export class NewLandRecordComponent implements OnInit {
       deedId: '',
       deedType: 'chain-deed',
       parentDeedIds: [],
+      childDeedIds: [],
     }
   ): void {
     this.chainDeedForms.update((formsArray: FormGroup[]) => {
@@ -179,6 +181,7 @@ export class NewLandRecordComponent implements OnInit {
           deedId: [initialValues.deedId, Validators.required],
           deedType: [initialValues.deedType, Validators.required],
           parentDeedIds: [initialValues.parentDeedIds],
+          childDeedIds: [initialValues.childDeedIds],
         })
       );
       return formsArray;
@@ -252,7 +255,7 @@ export class NewLandRecordComponent implements OnInit {
    */
   onSubmit(): void {
     // TODO: TRIM
-    console.log("exp ", this.chainDeedDataArray);
+    console.log('exp ', this.chainDeedDataArray);
     // return;
     if (this.newLandRecordForm.valid) {
       if (this.updateMode()) {
@@ -408,6 +411,26 @@ export class NewLandRecordComponent implements OnInit {
    */
   getDateFromString(dateString: string): string {
     return new Date(dateString).toISOString();
+  }
+
+  onChangeChildParent(pct: 'parent' | 'child', idx: number): void {
+    // DON'T JUDGE ME I KNOW IT'S CHEATING
+    setTimeout(() => {
+      const dataArr = this.chainDeedDataArray;
+
+      dataArr[idx][pct == 'parent' ? 'parentDeedIds' : 'childDeedIds'].forEach(
+        (data) => {
+          if (!dataArr.find((d) => d.deedId == data)) {
+            this.onAddChainDeed({
+              deedId: data,
+              deedType: 'chain-deed',
+              parentDeedIds: [],
+              childDeedIds: [],
+            });
+          }
+        }
+      );
+    }, 100);
   }
 
   ngOnInit(): void {
