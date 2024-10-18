@@ -1,3 +1,4 @@
+import { HistoryChainReportService } from './history-chain-report.service';
 import {
   Component,
   inject,
@@ -19,9 +20,11 @@ import { AsyncPipe } from '@angular/common';
 import { map, Observable, startWith } from 'rxjs';
 import { LandRecordsService } from '../../land-record/land-records.service';
 import { HistoryChainGraphComponent } from '../history-chain-graph/history-chain-graph.component';
-import { ChainDeedData } from '../../../model/chain-deed-data.model';
 import { HttpErrorResponse } from '@angular/common/http';
-import { TestReportComponent } from "../test-report/test-report.component";
+import { TestReportComponent } from '../test-report/test-report.component';
+import { HistoryChainData } from '../../../model/history-chain-data.model';
+import { GraphStateData } from '../../../model/graph-state-data.model';
+import { HistoryChainGraphDynamicComponent } from "../history-chain-graph/history-chain-graph-dynamic/history-chain-graph-dynamic.component";
 
 @Component({
   selector: 'app-history-chain-report',
@@ -37,7 +40,8 @@ import { TestReportComponent } from "../test-report/test-report.component";
     ReactiveFormsModule,
     AsyncPipe,
     HistoryChainGraphComponent,
-    TestReportComponent
+    TestReportComponent,
+    HistoryChainGraphDynamicComponent
 ],
   templateUrl: './history-chain-report.component.html',
   styleUrl: './history-chain-report.component.scss',
@@ -46,12 +50,13 @@ export class HistoryChainReportComponent implements OnInit {
   private readonly deedService: DeedMasterService = inject(DeedMasterService);
   private readonly landRecordService: LandRecordsService =
     inject(LandRecordsService);
+  private readonly historyChainReportService: HistoryChainReportService =
+    inject(HistoryChainReportService);
   readonly searchBar: FormControl<string | null> =
     inject(FormBuilder).control('');
   readonly deedList: WritableSignal<Deed[]> = signal([]);
   readonly sysIsBusy: WritableSignal<boolean> = signal(false);
   readonly serverUnreachable: WritableSignal<boolean> = signal(false);
-  readonly chainDeedDataArray: WritableSignal<ChainDeedData[]> = signal([]);
   readonly filteredOptions: Observable<Deed[]> =
     this.searchBar.valueChanges.pipe(
       startWith(''),
@@ -62,6 +67,13 @@ export class HistoryChainReportComponent implements OnInit {
           : this.deedList().slice();
       })
     );
+  readonly stateSignal: WritableSignal<GraphStateData> = signal({
+    diagramNodeData: [],
+    diagramLinkData: [],
+    diagramModelData: { prop: 'value' },
+    skipsDiagramUpdate: true,
+  });
+  readonly renderDiagramComponent: WritableSignal<boolean> = signal(false);
 
   setDeedList(): void {
     this.sysIsBusy.set(true);
@@ -86,23 +98,24 @@ export class HistoryChainReportComponent implements OnInit {
       alert('⛔ ERROR: INVALID INPUT\n\nSearch bar cannot be empty.');
       return;
     }
-    const recId =
-      this.deedList().find((deed) => deed.deedNo === searchBarVal)?.recId || '';
+    const deedId =
+      this.deedList().find((deed) => deed.deedNo === searchBarVal)?.deedId || '';
 
-    if (recId === '') {
-      alert('⛔ ERROR: THIS DEED IS NOT PART OF A RECORD\n\nDeed not found.');
+    if (deedId === '') {
+      alert('⛔ ERROR: UNKNOWN INPUT\n\nDeed not found.');
     }
 
-    console.log(recId);
     this.sysIsBusy.set(true);
-    this.landRecordService.getLandRecord(recId).subscribe({
+    this.renderDiagramComponent.set(false);
+    this.historyChainReportService.getHistoryChainReport(deedId).subscribe({
       next: (data) => {
         this.serverUnreachable.set(false);
-        this.chainDeedDataArray.set(data.chainDeedData);
+        this.processData(data);
+        this.renderDiagramComponent.set(true);
       },
       error: (err: HttpErrorResponse) => {
         if (err.status === 404) {
-          alert('⛔ ERROR: LAND RECORD NOT FOUND\n\nPlease try again later.');
+          alert('⛔ ERROR: DEED NOT FOUND\n\nPlease try again later.');
         } else {
           this.serverUnreachable.set(true);
           alert('⛔ ERROR: SERVER UNREACHABLE\n\nPlease try again later.');
@@ -112,6 +125,47 @@ export class HistoryChainReportComponent implements OnInit {
         this.sysIsBusy.set(false);
       },
     });
+  }
+
+  processData(historyChainDataList: HistoryChainData[]) {
+    console.log(historyChainDataList);
+
+    console.log('start process');
+
+    let nodesData: any[] = [];
+    let linkData: any[] = [];
+
+    for (let i = 0; i < historyChainDataList.length; i++) {
+      let d = historyChainDataList[i];
+      nodesData.push({
+        key: d.deedId,
+        text: this.getDeedNo(d.deedId) + '\n' + d.deedId,
+        color: 'lightgreen',
+        // TODO
+        // loc: '0 150',
+      });
+      for (const parentId of d.parents) {
+        linkData.push({
+          key: -linkData.length - 1,
+          from: parentId,
+          to: d.deedId,
+        });
+      }
+    }
+
+    this.stateSignal.set(
+      (() => {
+        let d = this.stateSignal();
+        d.diagramNodeData = nodesData;
+        d.diagramLinkData = linkData;
+        return d;
+      })()
+    );
+  }
+
+  getDeedNo(deedId: string): string {
+    let d = this.deedList().find((d) => d.deedId === deedId);
+    return d ? d.deedNo : deedId;
   }
 
   private _filter(name: string): Deed[] {
