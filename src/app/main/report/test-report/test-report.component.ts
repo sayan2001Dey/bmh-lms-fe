@@ -64,8 +64,10 @@ export class TestReportComponent implements OnInit {
       complete: () => {
         this.sysIsBusy.set(false);
         console.log('deedFetchComplete: ', this.deedList());
-        this.processData();
-        this.renderDiagramComponent.set(true);
+        setTimeout(() => {
+          this.processData();
+          this.renderDiagramComponent.set(true);
+        }, 3000);
       },
     });
   }
