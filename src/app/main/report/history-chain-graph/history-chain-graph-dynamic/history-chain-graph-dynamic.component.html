@@ -1,26 +1,4 @@
 <gojs-diagram #myDiagram [initDiagram]='initDiagram' [nodeDataArray]='state.diagramNodeData'
-  [linkDataArray]='state.diagramLinkData' divClassName='myDiagramDiv' [modelData]='state.diagramModelData'
+  [linkDataArray]='state.diagramLinkData' divClassName='hcGraphDiv' [modelData]='state.diagramModelData'
   [skipsDiagramUpdate]='state.skipsDiagramUpdate'>
 </gojs-diagram>
-
-<!-- <div class="clear left box">
-  <h3>Links in app data</h3>
-  <ul>
-    @for(ld of state.diagramLinkData; track $index){
-    <li>
-      Link Key: {{ld['key']}}, To: {{ld['to']}}, From: {{ ld['from'] }}
-    </li>
-    }
-  </ul>
-</div>
-
-<div class="left box">
-  <h3>Nodes in app data</h3>
-  <ul>
-    @for(nd of state.diagramNodeData; track $index){
-    <li>
-      Node Key: {{nd['key']}}, Text: {{nd['text']}}, Color: {{nd['color']}}, Loc: {{nd['loc']}}
-    </li>
-    }
-  </ul>
-</div> -->

@@ -1,23 +1,9 @@
-import {
-  Component,
-  effect,
-  EffectRef,
-  Input,
-  OnDestroy,
-  signal,
-  Signal,
-  untracked,
-  ViewChild,
-  ViewEncapsulation,
-  WritableSignal,
-} from '@angular/core';
-import {
-  DiagramComponent,
-  GojsAngularModule,
-  PaletteComponent,
-} from 'gojs-angular';
+import { Component, inject, Input, ViewChild, ViewEncapsulation } from '@angular/core';
+import { DiagramComponent, GojsAngularModule } from 'gojs-angular';
 import * as go from 'gojs';
 import { GraphStateData } from '../../../../model/graph-state-data.model';
+import { Dialog } from '@angular/cdk/dialog';
+import { DeedMasterDialogComponent } from '../../../master/components/deed-master/modal/deed-master-dialog/deed-master-dialog.component';
 
 @Component({
   selector: 'app-history-chain-graph-dynamic',
@@ -29,8 +15,17 @@ import { GraphStateData } from '../../../../model/graph-state-data.model';
 })
 export class HistoryChainGraphDynamicComponent {
   @ViewChild('myDiagram', { static: true })
+  private readonly dialog: Dialog = inject(Dialog);
   public myDiagramComponent!: DiagramComponent;
-
+  private nodeClickHandlerFn = (e: go.InputEvent, obj: go.GraphObject) => {
+    const deedId = obj?.part?.data?.key;
+    if (deedId) {
+      this.onShowDeed(deedId);
+    } else {
+      alert('⛔ ERROR: UNKNOWN ERROR\n\nImpossible Deed ID.');
+    }
+  }
+  
   // Big object that holds app-level state data
   // As of gojs-angular 2.0, immutability is expected and required of state for ease of change detection.
   // Whenever updating state, immutability must be preserved. It is recommended to use immer for this, a small package that makes working with immutable data easy.
@@ -71,6 +66,17 @@ export class HistoryChainGraphDynamicComponent {
           })
         )
       ),
+      click: (e: any, obj: any) => {
+        const deedId = obj?.part?.data?.key;
+        if (deedId) {
+          alert(deedId);
+          console.log(deedId);
+          // this.onShowDeed(deedId);
+          // global.onShowDeed?.call(null, deedId);
+        } else {
+          alert('⛔ ERROR: UNKNOWN ERROR\n\nImpossible Deed ID.');
+        }
+      }
     })
       .bindTwoWay('location', 'loc', go.Point.parse, go.Point.stringifyFixed(1))
       .add(
@@ -89,9 +95,25 @@ export class HistoryChainGraphDynamicComponent {
       toEndSegmentLength: 30,
     }).add(
       new go.Shape({ strokeWidth: 1.5 }),
-      new go.Shape({ toArrow: 'Standard' })
+      new go.Shape({ toArrow: 'Standard' }),
     );
 
     return diagram;
+  }
+
+  onShowDeed(deedId: string) {
+    const dialogRef = this.dialog.open(DeedMasterDialogComponent, {
+      backdropClass: 'light-blur-backdrop',
+      disableClose: true,
+      data: {
+        deedId,
+        dialogMode: 'view',
+      },
+    });
+
+    dialogRef.backdropClick.subscribe(() => {
+      if (window.confirm('⚠  CONFIRM: EXIT\n\nDo you really want to leave?'))
+        dialogRef.close();
+    });
   }
 }
