@@ -1,9 +1,7 @@
-<div class="center">
-  <gojs-diagram #myDiagram [initDiagram]='initDiagram' [nodeDataArray]='state.diagramNodeData'
-    [linkDataArray]='state.diagramLinkData' [divClassName]='diagramDivClassName' [modelData]='state.diagramModelData'
-    [skipsDiagramUpdate]='state.skipsDiagramUpdate'>
-  </gojs-diagram>
-</div>
+<gojs-diagram #myDiagram [initDiagram]='initDiagram' [nodeDataArray]='state.diagramNodeData'
+  [linkDataArray]='state.diagramLinkData' divClassName='myDiagramDiv' [modelData]='state.diagramModelData'
+  [skipsDiagramUpdate]='state.skipsDiagramUpdate'>
+</gojs-diagram>
 
 <!-- <div class="clear left box">
   <h3>Links in app data</h3>

@@ -42,16 +42,19 @@ export class HistoryChainGraphDynamicComponent {
     skipsDiagramUpdate: true,
   };
 
-  public diagramDivClassName = 'myDiagramDiv';
-
   public initDiagram(): go.Diagram {
     const diagram = new go.Diagram({
       'commandHandler.archetypeGroupData': { key: 'Group', isGroup: true },
-      'clickCreatingTool.archetypeNodeData': {
-        text: 'new node',
-        color: 'lightblue',
-      },
-      'undoManager.isEnabled': true,
+      'undoManager.isEnabled': false,
+      initialContentAlignment: go.Spot.Center,
+      contentAlignment: go.Spot.Center,
+      allowMove: true,
+      allowCopy: false,
+      allowDelete: false,
+      allowDragOut: true,
+      allowTextEdit: false,
+      allowHorizontalScroll: true,
+      allowVerticalScroll: true,
       model: new go.GraphLinksModel({
         linkToPortIdProperty: 'toPort', // want to support multiple ports per node
         linkFromPortIdProperty: 'fromPort',
