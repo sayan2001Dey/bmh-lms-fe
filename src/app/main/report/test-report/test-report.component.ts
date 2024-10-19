@@ -89,7 +89,7 @@ export class TestReportComponent implements OnInit {
       let d = this.jsonData[i];
       nodesData.push({
         key: d.deedId,
-        text: d.deedId,
+        text: this.getDeedNo(d.deedId)+'\n'+d.deedId,
         color: 'lightgreen',
         // TODO
         // loc: '0 150',

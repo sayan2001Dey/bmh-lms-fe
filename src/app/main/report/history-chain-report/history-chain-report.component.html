@@ -1,4 +1,4 @@
-<!-- <main class="container py-1">
+<main class="container py-1">
   <section class="my-5 container d-flex">
     <span class="h1 my-auto">Get history chain graph</span>
   </section>
@@ -15,7 +15,8 @@
         </mat-autocomplete>
       </mat-form-field>
 
-      <button mat-flat-button style="height: 3rem !important; margin-bottom: 1.2rem;" aria-label="Search" matTooltip="Search" (click)="onSearch()">
+      <button mat-flat-button style="height: 3rem !important; margin-bottom: 1.2rem;" aria-label="Search"
+        matTooltip="Search" (click)="onSearch()">
         <span class="d-none d-md-inline">Search</span>
         <mat-icon>search</mat-icon>
       </button>
@@ -25,8 +26,9 @@
       <div class="pb-2">
         <mat-card appearance="outlined" class="p-3">
           <p style="color: green;">History Chain Tree</p>
-          <app-history-chain-graph [chainDeedDataArray]="chainDeedDataArray()" [deedList]="deedList" />
-
+          @if(renderDiagramComponent()) {
+          <app-history-chain-graph-dynamic [state]="stateSignal()" />
+          }
           <div class="mt-5">
             <button type="button" mat-flat-button>
               <mat-icon>print</mat-icon>
@@ -37,6 +39,4 @@
       </div>
     </section>
   </mat-card>
-</main> -->
-
-<app-test-report></app-test-report>
+</main>
