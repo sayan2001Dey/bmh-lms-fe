@@ -234,9 +234,7 @@ export class DeedMasterComponent implements OnInit, OnDestroy {
   readonly displayedColumns: WritableSignal<string[]> = signal([
     'slno',
     'deedId',
-    'deedName',
-    'panNumber',
-    'deedAddress',
+    'deedNo',
     'action',
   ]);
 

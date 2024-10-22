@@ -1,4 +1,4 @@
-import { Component, inject, Input, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, inject, Input, OnDestroy, ViewChild, ViewEncapsulation } from '@angular/core';
 import { DiagramComponent, GojsAngularModule } from 'gojs-angular';
 import * as go from 'gojs';
 import { GraphStateData } from '../../../../model/graph-state-data.model';
@@ -13,18 +13,9 @@ import { DeedMasterDialogComponent } from '../../../master/components/deed-maste
   styleUrls: ['./history-chain-graph-dynamic.component.scss'],
   encapsulation: ViewEncapsulation.ShadowDom,
 })
-export class HistoryChainGraphDynamicComponent {
+export class HistoryChainGraphDynamicComponent implements OnDestroy {
   @ViewChild('myDiagram', { static: true })
-  private readonly dialog: Dialog = inject(Dialog);
   public myDiagramComponent!: DiagramComponent;
-  private nodeClickHandlerFn = (e: go.InputEvent, obj: go.GraphObject) => {
-    const deedId = obj?.part?.data?.key;
-    if (deedId) {
-      this.onShowDeed(deedId);
-    } else {
-      alert('⛔ ERROR: UNKNOWN ERROR\n\nImpossible Deed ID.');
-    }
-  }
   
   // Big object that holds app-level state data
   // As of gojs-angular 2.0, immutability is expected and required of state for ease of change detection.
@@ -36,6 +27,10 @@ export class HistoryChainGraphDynamicComponent {
     diagramModelData: {},
     skipsDiagramUpdate: true,
   };
+
+  constructor(private readonly dialog: Dialog) {
+    (window as any).hcDynamicGraphClassRef = this;
+  }
 
   public initDiagram(): go.Diagram {
     const diagram = new go.Diagram({
@@ -69,10 +64,8 @@ export class HistoryChainGraphDynamicComponent {
       click: (e: any, obj: any) => {
         const deedId = obj?.part?.data?.key;
         if (deedId) {
-          alert(deedId);
-          console.log(deedId);
-          // this.onShowDeed(deedId);
-          // global.onShowDeed?.call(null, deedId);
+          console.log("opening", deedId);
+          (window as any).hcDynamicGraphClassRef.onShowDeed(deedId);
         } else {
           alert('⛔ ERROR: UNKNOWN ERROR\n\nImpossible Deed ID.');
         }
@@ -115,5 +108,10 @@ export class HistoryChainGraphDynamicComponent {
       if (window.confirm('⚠  CONFIRM: EXIT\n\nDo you really want to leave?'))
         dialogRef.close();
     });
+  }
+
+  ngOnDestroy(): void {
+    // remove ref to this class for gc efficiency
+    (window as any).hcDynamicGraphClassRef = undefined;
   }
 }
