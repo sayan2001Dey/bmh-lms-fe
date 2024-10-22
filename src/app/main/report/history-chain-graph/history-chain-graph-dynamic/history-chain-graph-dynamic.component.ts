@@ -29,6 +29,7 @@ export class HistoryChainGraphDynamicComponent implements OnDestroy {
   };
 
   constructor(private readonly dialog: Dialog) {
+    // really unsafe but it works
     (window as any).hcDynamicGraphClassRef = this;
   }
 
