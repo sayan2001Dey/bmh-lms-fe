@@ -74,6 +74,7 @@ export class HistoryChainReportComponent implements OnInit {
     skipsDiagramUpdate: true,
   });
   readonly renderDiagramComponent: WritableSignal<boolean> = signal(false);
+  private highlightDeedId: string = '';
 
   setDeedList(): void {
     this.sysIsBusy.set(true);
@@ -110,7 +111,8 @@ export class HistoryChainReportComponent implements OnInit {
     this.historyChainReportService.getHistoryChainReport(deedId).subscribe({
       next: (data) => {
         this.serverUnreachable.set(false);
-        this.processData(data);
+        this.highlightDeedId = deedId; //1
+        this.processData(data); //2
         this.renderDiagramComponent.set(true);
       },
       error: (err: HttpErrorResponse) => {
@@ -140,7 +142,7 @@ export class HistoryChainReportComponent implements OnInit {
       nodesData.push({
         key: d.deedId,
         text: this.getDeedNo(d.deedId) + '\n' + d.deedId,
-        color: 'lightgreen',
+        color: d.deedId === this.highlightDeedId ? 'orange' : 'lightgreen',
         // TODO
         // loc: '0 150',
       });
