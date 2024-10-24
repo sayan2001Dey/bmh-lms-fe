@@ -130,55 +130,7 @@ export class HistoryChainReportComponent implements OnInit {
 
   processData(historyChainDataList: HistoryChainData[]) {
     console.log(historyChainDataList);
-
     console.log('start process');
-
-    let nodesData: any[] = [];
-    let linkData: any[] = [];
-
-    const layoutData = this.processLayout2(historyChainDataList);
-    console.log('layoutData', layoutData);
-
-    // /*
-    let rowLayoutData: GraphRowLayoutMatrix =
-      this.processLayout(historyChainDataList);
-    let data = rowLayoutData.data;
-
-    let x = 0;
-    let y = 0;
-
-    //DEBUG
-    console.log(
-      'Test: ' +
-        rowLayoutData.maxWidth / 2 +
-        ', data.length:' +
-        data.length +
-        ', data[i].length:' +
-        data[1].length
-    );
-    for (let i = 0; i < data.length; i++, x++) {
-      for (let j = 0; j < data[i].length; j++) {
-        let d = data[i][j];
-        const node: any = {
-          key: d.deedId,
-          text: this.getDeedNo(d.deedId) + '\n' + d.deedId,
-          color: d.deedId === this.highlightDeedId ? 'orange' : 'lightgreen',
-          loc: j * 100 + ' ' + i * 120,
-        };
-        if (i === 0)
-          node.loc = (rowLayoutData.maxWidth / 2) * 100 + ' ' + x * 120;
-        nodesData.push(node);
-
-        for (const parentId of d.parents) {
-          linkData.push({
-            key: -linkData.length - 1,
-            from: parentId,
-            to: d.deedId,
-          });
-        }
-      }
-    }
-    // */
 
     /*
     for (let i = 0; i < historyChainDataList.length; i++) {
@@ -203,11 +155,32 @@ export class HistoryChainReportComponent implements OnInit {
     this.stateSignal.set(
       (() => {
         let d = this.stateSignal();
-        d.diagramNodeData = nodesData;
-        d.diagramLinkData = linkData;
+        d.diagramNodeData = this.makeNodesData(this.processLayout2(historyChainDataList));
+        d.diagramLinkData = this.makeGraphLinks(historyChainDataList);
         return d;
       })()
     );
+  }
+
+  makeNodesData(layoutData: HCGraphLayoutTreeNode[]): any[] {
+    const nodesData: any[] = [];
+
+    return nodesData;
+  }
+
+  makeGraphLinks(historyChainDataList: HistoryChainData[]): any[] {
+    const linkData: any[] = [];
+    for (let i = 0; i < historyChainDataList.length; i++) {
+      let d = historyChainDataList[i];
+      for (const parentId of d.parents) {
+        linkData.push({
+          key: -linkData.length - 1,
+          from: parentId,
+          to: d.deedId,
+        });
+      }
+    }
+    return linkData;
   }
 
   processLayout2(
@@ -248,8 +221,6 @@ export class HistoryChainReportComponent implements OnInit {
           tmp.children.reduce((prev, curr) => {
             return Math.max(prev, curr.depth);
           }, 0) + 1;
-        // From where do i remove?
-        // fml
         tmpIncurredNodes.forEach((deedId) => {
           if (res.find((node) => node.deedId === deedId)) dupes.push(deedId);
           incurredNodes.add(deedId);
