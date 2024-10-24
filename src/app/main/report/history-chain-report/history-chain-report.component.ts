@@ -234,6 +234,7 @@ export class HistoryChainReportComponent implements OnInit {
       }
     }
 
+    const dupes: string[] = [];
     for (let i = 0; i < res.length; i++) {
       const tmp = res[i];
       const tmpIncurredNodes: Set<string> = new Set();
@@ -249,16 +250,22 @@ export class HistoryChainReportComponent implements OnInit {
           }, 0) + 1;
         // From where do i remove?
         // fml
-        incurredNodes.forEach((id) => {
-          // How?
-          // fml 2.0
+        tmpIncurredNodes.forEach((deedId) => {
+          if (res.find((node) => node.deedId === deedId)) dupes.push(deedId);
+          incurredNodes.add(deedId);
         });
       }
     }
 
+    dupes.forEach((deedId) => {
+      const foundIdx = res.findIndex((node) => node.deedId === deedId)
+      if(foundIdx != undefined) // since 0 is also valid
+        res.splice(foundIdx, 1)
+    })
+
     //DEBUG
-    console.clear();
-    console.log(res);
+    // console.clear();
+    // console.log(res);
     return res;
   }
 
